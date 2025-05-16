@@ -1,4 +1,5 @@
 dist
 node_modules
-back
-front
+/back/
+/front/
+.DS_Store
