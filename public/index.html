@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Mighty Pong</title>
+  <meta name="description" content="A simple Pong game based on Babylon.js, written in TypeScript, built with Webpack">
+  <meta name="author" content="mmakagon">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #renderCanvas {
+      width: 80%;
+      height: 80%;
+      border: 2px solid white;
+      background-color: black;
+      touch-action: none;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="renderCanvas" touch-action="none"></canvas>
+
+  <!-- Webpack JS -->
+  <%= game %>
+</body>
+</html>
