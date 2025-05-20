@@ -1,4 +1,5 @@
 import type { Mesh } from "@babylonjs/core/Meshes/mesh";
+import type { Vector3 } from "@babylonjs/core/Maths/math.vector";
 
 export type MeshName =
 	| "ground"
@@ -20,3 +21,52 @@ export type MeshesDict = {
 	edgeTop: Mesh,
 	edgeBottom: Mesh
 };
+
+export type GUID = string & { __brand: "GUID" };
+
+export type User = {
+	id: GUID,
+	gameId?: GUID,
+	nick?: string,
+	socket?: WebSocket
+};
+
+export type Game = {
+	id: GUID,
+	state: GameState,
+	players: User[]
+};
+
+export type GameState =
+	| "init"
+	| "start"
+	| "play"
+	| "finish";
+
+export type PlayerInput = {
+	type: "PlayerInput",
+	user: User,
+	game: Game,
+	key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'
+};
+
+export type MeshPosition = {
+	type: "MeshPosition",
+	game: Game,
+	meshName: MeshName,
+	position: Vector3
+};
+
+export type ChatMessage =
+  | { type: 'register', user: User }
+  | { type: 'message', to: User, content: string }
+  | { type: 'block', user: User }
+  | { type: 'unblock', user: User }
+  | { type: 'invite', to: User; game?: GUID }
+  | { type: 'notify', content: string }
+  | { type: 'profile', user: User };
+
+export type WSMessage =
+	| PlayerInput
+	| MeshPosition
+	| ChatMessage;

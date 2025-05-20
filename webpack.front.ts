@@ -1,9 +1,9 @@
-import fs					from "fs";
-import path					from "path";
+import fs					from "node:fs";
+import path					from "node:path";
 import { ProgressPlugin }	from "webpack";
 import HtmlWebpackPlugin	from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
-import webpack			from "webpack";
+import type webpack			from "webpack";
 
 import { assetLoader, scssLoader, tsLoader }	from "./webpack.buildHelpers"
 import type { BuildMode, BuildPaths }			from "./webpack.buildHelpers";
@@ -29,7 +29,8 @@ export default (env: { mode: BuildMode }) => {
 		entry: appPaths.entry,
 		output: {
 			path: appPaths.output,
-			filename: "js/[name].[contenthash].js",
+			filename: "js/game.[contenthash].js",
+			chunkFilename: "js/[name].[contenthash].js",
 			clean: true
 		},
 		devtool: isDev ? "inline-source-map" : false,
@@ -51,9 +52,11 @@ export function buildFrontPlugins(paths: BuildPaths, isDev: boolean) : webpack.C
 			templateParameters(compilation, assets) {
 				if (compilation.errors)
 					console.log(compilation.errors);
-				const game = assets.js.filter(file => file.includes("main"))
+				const game = assets.js.filter(file => file.includes("game"))
 					.map(file => `<script src="${file}"></script>`)
 					.join('\n');
+				if (!game)
+					console.error("Maybe your game script has wrong name!");
 				return { game };
 			},
 		})
