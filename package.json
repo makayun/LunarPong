@@ -2,11 +2,11 @@
   "name": "fuckingpong",
   "version": "1.0.0",
   "description": "",
-  "main": "back/main.js",
+  "main": "back/server.js",
   "scripts": {
     "build": "npx webpack --env mode=development",
     "build:prod": "npx webpack --env mode=production",
-    "start": "node back/main.js"
+    "start": "node ."
   },
   "keywords": [],
   "author": "",

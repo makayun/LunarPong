@@ -4,8 +4,8 @@ import { PongFrontScene }	from "../scenes/PongFrontScene";
 import { paddleMovement }	from "./paddleMovements";
 
 export const babylonInit = async (): Promise<void> => {
-	const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
-	const engine: Engine = new Engine(canvas, true);
+	const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
+	const engine: Engine = await new Engine(canvas, true);
 	const pongScene: PongFrontScene = new PongFrontScene(engine);
 
 	engine.runRenderLoop(function () {

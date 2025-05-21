@@ -16,7 +16,7 @@ export default (env: { mode: BuildMode }) => {
 	const isDev: boolean = env.mode === "development";
 
 	const appPaths: BuildPaths = {
-		entry: path.resolve(appDir, srcDir, backDir, "server.ts"),
+		entry: { server: path.resolve(appDir, srcDir, backDir, "server.ts") },
 		output: path.resolve(appDir, backDir)
 	}
 

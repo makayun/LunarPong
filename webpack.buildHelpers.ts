@@ -4,7 +4,7 @@ import MiniCssExtractPlugin from "mini-css-extract-plugin";
 export type BuildMode = "production" | "development";
 
 export type BuildPaths = {
-	entry:		string,
+	entry:		Record<string, string>,
 	output:		string,
 	public?:	string,
 	html?:		string,

@@ -17,7 +17,10 @@ export default (env: { mode: BuildMode }) => {
 	const isDev: boolean = env.mode === "development";
 
 	const appPaths: BuildPaths = {
-		entry: path.resolve(appDir, srcDir, frontDir, "game.ts"),
+		entry: {
+			"game": path.resolve(appDir, srcDir, frontDir, "game.ts"),
+			"chat": path.resolve(appDir, srcDir, frontDir, "chat.ts")
+		},
 		output: path.resolve(appDir, frontDir),
 		public: path.resolve(appDir, pubDir),
 		html: path.resolve(appDir, pubDir, "index.html"),
@@ -57,7 +60,12 @@ export function buildFrontPlugins(paths: BuildPaths, isDev: boolean) : webpack.C
 					.join('\n');
 				if (!game)
 					console.error("Maybe your game script has wrong name!");
-				return { game };
+				const chat = assets.js.filter(file => file.includes("chat"))
+					.map(file => `<script src="${file}"></script>`)
+					.join('\n');
+				if (!game)
+					console.error("Maybe your chat script has wrong name!");
+				return { game, chat };
 			},
 		})
 	];
