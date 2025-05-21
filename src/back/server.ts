@@ -42,8 +42,7 @@ let games: Game[] = [];
 
 server.listen(listenOpts);
 
-
-server.get("/initgame", (_request: FastifyRequest, reply: FastifyReply) => {
+server.get("/initgame", { websocket: true }, (_request: FastifyRequest, reply: FastifyReply) => {
 	const newUser: User = { id: generateQuickGuid() };
 
 	users.push(newUser);

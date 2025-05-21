@@ -35,7 +35,8 @@
     "dist",
     "back",
     "front",
-    "tmp"
+    "tmp",
+
   ],
   "include": [
     "src/**/*.ts"

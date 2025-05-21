@@ -21,6 +21,8 @@ export const babylonInit = async (): Promise<void> => {
 			pongScene.meshes.edgeRight
 		]);
 	});
+
+
 };
 
 babylonInit().then(() => {});

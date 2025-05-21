@@ -50,11 +50,12 @@ export type PlayerInput = {
 	key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'
 };
 
-export type MeshPosition = {
+export type MeshPositions = {
 	type: "MeshPosition",
 	game: Game,
-	meshName: MeshName,
-	position: Vector3
+	ball: Vector3,
+	paddleLeft: Vector3,
+	paddleRight: Vector3
 };
 
 export type ChatMessage =
@@ -68,5 +69,5 @@ export type ChatMessage =
 
 export type WSMessage =
 	| PlayerInput
-	| MeshPosition
+	| MeshPositions
 	| ChatMessage;
