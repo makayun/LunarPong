@@ -42,28 +42,49 @@ let games: Game[] = [];
 
 server.listen(listenOpts);
 
-server.get("/initgame", { websocket: true }, (_request: FastifyRequest, reply: FastifyReply) => {
-	const newUser: User = { id: generateQuickGuid() };
+server.get("/ws", { websocket: true }, (connection, _req: FastifyRequest) => {
+	console.log("WebSocket client connected");
 
-	users.push(newUser);
+	connection.on("message", (message) => {
+		let msg;
+		try {
+			msg = JSON.parse(message.toString());
+		} catch (e) {
+			console.error("Invalid JSON:", message);
+			return;
+		}
 
-	let newGame = games.find(game => game.state === "init" && game.players.length === 1);
-
-	if (!newGame) {
-		newGame = {
-			id: generateQuickGuid(),
-			state: "init",
-			players: [ newUser ]
-		};
-		games.push(newGame);
-	}
-	else {
-		newGame.players.push(newUser);
-	}
-	newUser.gameId = newGame.id;
-
-	reply.send({ user: newUser });
+		if (msg.type === "initgame") {
+			console.log("Initializing game for:", msg.playerId);
+			const newUser: User = { id: msg.user.id };
+			users.push(newUser);
+			connection.send(JSON.stringify({ type: "game-initialized", status: "ok" }));
+		}
+	});
 });
+
+// server.get("/initgame", { websocket: true }, (_request: FastifyRequest, reply: FastifyReply) => {
+// 	const newUser: User = { id: generateQuickGuid() };
+
+// 	users.push(newUser);
+
+// 	let newGame = games.find(game => game.state === "init" && game.players.length === 1);
+
+// 	if (!newGame) {
+// 		newGame = {
+// 			id: generateQuickGuid(),
+// 			state: "init",
+// 			players: [ newUser ]
+// 		};
+// 		games.push(newGame);
+// 	}
+// 	else {
+// 		newGame.players.push(newUser);
+// 	}
+// 	newUser.gameId = newGame.id;
+
+// 	reply.send({ user: newUser });
+// });
 
 // everything connected to the game should happen here, in this async function
 (async () => {

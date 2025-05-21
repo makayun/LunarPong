@@ -6,22 +6,31 @@ import { Scene }				from "@babylonjs/core/scene";
 import { Vector3 }				from "@babylonjs/core/Maths/math.vector";
 import type { AbstractEngine }	from "@babylonjs/core/Engines/abstractEngine";
 
-import { GROUND_WIDTH,
-		GROUND_HEIGHT,
-		PADDLE_RADIUS,
-		EDGE_HEIGHT,
-		PADDLE_POS_X,
-		TB_EDGES_POS_Z,
-		LR_EDGES_POS_X }		from "../defines/constants";
-import type { MeshesDict }		from "../defines/types";
-import type { MeshName }		from "../defines/types";
+import {
+	GROUND_WIDTH,
+	GROUND_HEIGHT,
+	PADDLE_RADIUS,
+	EDGE_HEIGHT,
+	PADDLE_POS_X,
+	TB_EDGES_POS_Z,
+	LR_EDGES_POS_X
+}	from "../defines/constants";
+
+import type {
+	MeshesDict,
+	MeshName,
+	GameState
+}	from "../defines/types";
+
 
 export class PongBaseScene {
 	public engine: AbstractEngine;
 	public scene: Scene;
 	public meshes: MeshesDict;
+	public state: GameState;
 
 	constructor (inEngine: AbstractEngine) {
+		this.state = "init";
 		this.engine = inEngine;
 		this.scene = new Scene(this.engine);
 

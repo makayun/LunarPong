@@ -39,9 +39,14 @@ export type Game = {
 
 export type GameState =
 	| "init"
-	| "start"
-	| "play"
-	| "finish";
+	| "running"
+	| "reset"
+	| "over";
+
+export type GameType =
+	| "local"
+	| "remote"
+	| "AI";
 
 export type PlayerInput = {
 	type: "PlayerInput",
@@ -58,6 +63,11 @@ export type MeshPositions = {
 	paddleRight: Vector3
 };
 
+export type InitMessage = {
+	type: "WsInit",
+	user: User
+};
+
 export type ChatMessage =
   | { type: 'register', user: User }
   | { type: 'message', to: User, content: string }
@@ -68,6 +78,7 @@ export type ChatMessage =
   | { type: 'profile', user: User };
 
 export type WSMessage =
+	| InitMessage
 	| PlayerInput
 	| MeshPositions
 	| ChatMessage;
