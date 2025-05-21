@@ -32,7 +32,7 @@ export default (env: { mode: BuildMode }) => {
 		entry: appPaths.entry,
 		output: {
 			path: appPaths.output,
-			filename: "js/game.[contenthash].js",
+			filename: "js/[name].[contenthash].js",
 			chunkFilename: "js/[name].[contenthash].js",
 			clean: true
 		},
@@ -55,16 +55,18 @@ export function buildFrontPlugins(paths: BuildPaths, isDev: boolean) : webpack.C
 			templateParameters(compilation, assets) {
 				if (compilation.errors)
 					console.log(compilation.errors);
-				const game = assets.js.filter(file => file.includes("game"))
-					.map(file => `<script src="${file}"></script>`)
-					.join('\n');
-				if (!game)
-					console.error("Maybe your game script has wrong name!");
-				const chat = assets.js.filter(file => file.includes("chat"))
-					.map(file => `<script src="${file}"></script>`)
-					.join('\n');
-				if (!game)
-					console.error("Maybe your chat script has wrong name!");
+				function buildScript(scriptName: string) : string {
+					const script: string = assets.js.filter(file => file.includes(scriptName))
+						.map(file => `<script src="${file}"></script>`)
+						.join('\n');
+					if (!script)
+						console.error(`\x1b[31m[ERROR]\x1b[0m Maybe your ${scriptName} file has the wrong name!`);
+
+					return (script);
+				}
+				const game: string = buildScript("game");
+				const chat: string = buildScript("chat");
+
 				return { game, chat };
 			},
 		})

@@ -23,7 +23,7 @@ export default (env: { mode: BuildMode }) => {
 	const config: webpack.Configuration = {
 		mode: env.mode ?? "development",
 		entry: appPaths.entry,
-		output: { path: appPaths.output, clean: true },
+		output: { "path": appPaths.output, clean: true },
 		externalsPresets: { node: true },
 		devtool: isDev ? "inline-source-map" : false,
 		resolve: { extensions: [ ".tsx", ".ts", ".js"] },
