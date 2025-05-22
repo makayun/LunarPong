@@ -1,5 +1,7 @@
 import type { Mesh } from "@babylonjs/core/Meshes/mesh";
 import type { Vector3 } from "@babylonjs/core/Maths/math.vector";
+import type { WebSocket } from "@fastify/websocket";
+import { PongBaseScene } from "../scenes/PongBaseScene";
 
 export type MeshName =
 	| "ground"
@@ -33,7 +35,9 @@ export type User = {
 
 export type Game = {
 	id: GUID,
+	type: GameType,
 	state: GameState,
+	scene: PongBaseScene,
 	players: User[]
 };
 

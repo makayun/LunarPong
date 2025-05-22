@@ -7,13 +7,14 @@ import closeWithGrace					from "close-with-grace";
 import type { FastifyInstance }			from "fastify/fastify";
 import type { FastifyServerOptions }	from "fastify";
 import type { FastifyListenOptions }	from "fastify";
-import type { FastifyRequest }			from "fastify";
-import type { FastifyReply }			from "fastify";
+// import type { FastifyRequest }			from "fastify";
+// import type { FastifyReply }			from "fastify";
 
 import { initGame }				from "./initGame";
-import { generateQuickGuid }	from "../helpers/helpers";
+// import { generateQuickGuid }	from "../helpers/helpers";
 import type { PongBackScene }	from "../scenes/PongBackScene";
-import type { User, Game }		from "../defines/types";
+import type { User, Game, GUID }		from "../defines/types";
+import { wsGameMessages } from "./ws-game";
 // import type { WSMessage }		from "../defines/types";
 
 const appDir: string = fs.realpathSync(process.cwd());
@@ -36,32 +37,15 @@ server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 server.register(websocket);
 // const wss = server.websocketServer;
 
-let users: User[] = [];
-let games: Game[] = [];
+let users: Record<GUID, User> = {};
+let games: Record<GUID, Game> = {};
+
+wsGameMessages(server, users, games);
 
 
 server.listen(listenOpts);
 
-server.get("/ws", { websocket: true }, (connection, _req: FastifyRequest) => {
-	console.log("WebSocket client connected");
 
-	connection.on("message", (message) => {
-		let msg;
-		try {
-			msg = JSON.parse(message.toString());
-		} catch (e) {
-			console.error("Invalid JSON:", message);
-			return;
-		}
-
-		if (msg.type === "initgame") {
-			console.log("Initializing game for:", msg.playerId);
-			const newUser: User = { id: msg.user.id };
-			users.push(newUser);
-			connection.send(JSON.stringify({ type: "game-initialized", status: "ok" }));
-		}
-	});
-});
 
 // server.get("/initgame", { websocket: true }, (_request: FastifyRequest, reply: FastifyReply) => {
 // 	const newUser: User = { id: generateQuickGuid() };

@@ -1,5 +1,4 @@
 import { Engine }				from "@babylonjs/core/Engines/engine";
-
 import { PongFrontScene }		from "../scenes/PongFrontScene";
 import { paddleMovement }		from "./paddleMovements";
 import { generateQuickGuid }	from "../helpers/helpers";
@@ -8,7 +7,7 @@ import type { GUID, User, WSMessage }	from "../defines/types";
 
 export const babylonInit = async (): Promise<void> => {
 	const player: User = { id: getOrCreateClientId() };
-	const socket: WebSocket = new WebSocket("ws://localhost:12800/ws");
+	const socket: WebSocket = new WebSocket("ws://localhost:12800/ws-game");
 
 	const startButton = document.getElementById("startButton") as HTMLButtonElement;
 	const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
