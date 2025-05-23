@@ -30,15 +30,16 @@ export type User = {
 	id: GUID,
 	gameId?: GUID,
 	nick?: string,
-	socket?: WebSocket
+	socket?: WebSocket,
+	blocked?: Set<GUID>
 };
 
 export type Game = {
 	id: GUID,
-	type: GameType,
 	state: GameState,
-	scene: PongBaseScene,
 	players: User[]
+	scene?: PongBaseScene,
+	type?: GameType,
 };
 
 export type GameState =
@@ -51,6 +52,9 @@ export type GameType =
 	| "local"
 	| "remote"
 	| "AI";
+
+
+//!!! EVERY WEBSOCKET MESSAGE TYPE MUST CONTAIN A 'type' FIELD !!!
 
 export type PlayerInput = {
 	type: "PlayerInput",

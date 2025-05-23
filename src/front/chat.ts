@@ -1,15 +1,17 @@
+import { getOrCreateClientId } from "../helpers/helpers";
+import type { User } from "../defines/types"
+
 const input = document.getElementById('input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
+const socket = new WebSocket('ws://localhost:12800/ws-chat');
 
-const socket = new WebSocket('ws://localhost:3001');
-
-const userId = Math.floor(Math.random() * 10000).toString();
-const userName = `User ${userId}`;
+const user: User = { id: getOrCreateClientId() };
+user.nick = `User ${user.id}`;
 
 socket.addEventListener('open', () => {
-  socket.send(JSON.stringify({ type: 'register', id: userId, name: userName }));
-  addMessage(`[System] You are ${userName}`);
+  socket.send(JSON.stringify({ type: 'register', id: user.id, name: user.nick }));
+  addMessage(`[System] You are ${user.nick}`);
 });
 
 socket.addEventListener('message', (event) => {
@@ -42,7 +44,7 @@ input.addEventListener('keydown', (e: KeyboardEvent) => {
       const payload = {
         type: 'message',
         to,
-        from: userId,
+        from: user.id,
         content: text,
       };
       socket.send(JSON.stringify(payload));
@@ -61,7 +63,7 @@ function addMessage(msg: string) {
 function updateUserList(users: string[]) {
   recipient.innerHTML = '<option value="all">Broadcast</option>';
   users.forEach((u) => {
-    if (u !== userId) {
+    if (u !== user.id) {
       const option = document.createElement('option');
       option.value = u;
       option.textContent = `User ${u}`;

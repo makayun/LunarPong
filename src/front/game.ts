@@ -1,8 +1,8 @@
 import { Engine }				from "@babylonjs/core/Engines/engine";
 import { PongFrontScene }		from "../scenes/PongFrontScene";
 import { paddleMovement }		from "./paddleMovements";
-import { generateQuickGuid }	from "../helpers/helpers";
-import type { GUID, User, WSMessage }	from "../defines/types";
+import { getOrCreateClientId }	from "../helpers/helpers";
+import type { User, WSMessage }	from "../defines/types";
 
 
 export const babylonInit = async (): Promise<void> => {
@@ -41,14 +41,3 @@ export const babylonInit = async (): Promise<void> => {
 };
 
 babylonInit().then(() => {});
-
-function getOrCreateClientId() : GUID {
-	const key = "pong-client-id";
-	let clientId = localStorage.getItem(key);
-
-	if (!clientId) {
-		clientId = generateQuickGuid();
-		localStorage.setItem(key, clientId);
-	}
-	return clientId as GUID;
-}

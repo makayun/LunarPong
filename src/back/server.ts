@@ -11,10 +11,10 @@ import type { FastifyListenOptions }	from "fastify";
 // import type { FastifyReply }			from "fastify";
 
 import { initGame }				from "./initGame";
-// import { generateQuickGuid }	from "../helpers/helpers";
+// import { generateGuid }	from "../helpers/helpers";
 import type { PongBackScene }	from "../scenes/PongBackScene";
-import type { User, Game, GUID }		from "../defines/types";
-import { wsGameMessages } from "./ws-game";
+import type { User, Game }		from "../defines/types";
+import { registerWsGameMessages } from "./ws-game";
 // import type { WSMessage }		from "../defines/types";
 
 const appDir: string = fs.realpathSync(process.cwd());
@@ -37,38 +37,13 @@ server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 server.register(websocket);
 // const wss = server.websocketServer;
 
-let users: Record<GUID, User> = {};
-let games: Record<GUID, Game> = {};
+let users: User[] = [];
+let games: Game[] = [];
 
-wsGameMessages(server, users, games);
+registerWsGameMessages(server, users, games);
 
 
 server.listen(listenOpts);
-
-
-
-// server.get("/initgame", { websocket: true }, (_request: FastifyRequest, reply: FastifyReply) => {
-// 	const newUser: User = { id: generateQuickGuid() };
-
-// 	users.push(newUser);
-
-// 	let newGame = games.find(game => game.state === "init" && game.players.length === 1);
-
-// 	if (!newGame) {
-// 		newGame = {
-// 			id: generateQuickGuid(),
-// 			state: "init",
-// 			players: [ newUser ]
-// 		};
-// 		games.push(newGame);
-// 	}
-// 	else {
-// 		newGame.players.push(newUser);
-// 	}
-// 	newUser.gameId = newGame.id;
-
-// 	reply.send({ user: newUser });
-// });
 
 // everything connected to the game should happen here, in this async function
 (async () => {
