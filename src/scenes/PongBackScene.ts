@@ -11,23 +11,23 @@ const ammoReadyPromise = Ammo();
 export class PongBackScene extends PongBaseScene {
 	preTasks = [ammoReadyPromise];
 
-	async enablePhysics(): Promise<void> {
+	async enablePongPhysics(): Promise<void> {
 		const ammo = await ammoReadyPromise;
 		const physics = new AmmoJSPlugin(true, ammo);
-		this.scene.enablePhysics(new Vector3(0, -9.81, 0), physics);
+		this.enablePhysics(new Vector3(0, -9.81, 0), physics);
 
-		this.meshes.ball.physicsImpostor = new PhysicsImpostor(
-			this.meshes.ball,
+		this.pongMeshes.ball.physicsImpostor = new PhysicsImpostor(
+			this.pongMeshes.ball,
 			PhysicsImpostor.SphereImpostor,
 			{ mass: 2, restitution: 0.8 },
-			this.scene
+			this
 		);
 
-		this.meshes.ground.physicsImpostor = new PhysicsImpostor(
-			this.meshes.ground,
+		this.pongMeshes.ground.physicsImpostor = new PhysicsImpostor(
+			this.pongMeshes.ground,
 			PhysicsImpostor.BoxImpostor,
 			{ mass: 0, restitution: 0.6 },
-			this.scene
+			this
 		);
 	}
 }

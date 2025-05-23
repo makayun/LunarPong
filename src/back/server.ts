@@ -4,14 +4,14 @@ import { fastify }						from "fastify";
 import { fastifyStatic }				from "@fastify/static";
 import websocket						from "@fastify/websocket";
 import closeWithGrace					from "close-with-grace";
+import { NullEngine }					from "@babylonjs/core/Engines/nullEngine";
 import type { FastifyInstance }			from "fastify/fastify";
 import type { FastifyServerOptions }	from "fastify";
 import type { FastifyListenOptions }	from "fastify";
 
-import { initGame }					from "./initGame";
-import { wsGamePlugin }				from "./ws-game";
-import type { PongBackScene }		from "../scenes/PongBackScene";
-import type { User, Game }			from "../defines/types";
+import { wsGamePlugin }			from "./ws-game";
+import type { User, Game }		from "../defines/types";
+import type { PongBackScene } from "../scenes/PongBackScene";
 
 async function main() {
 	const appDir: string = fs.realpathSync(process.cwd());
@@ -30,28 +30,21 @@ async function main() {
 
 	const server: FastifyInstance = fastify(serverOpts);
 
-	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
-	server.register(websocket);
-
+	const engine = new PongBackEngine();
 	let users: User[] = [];
 	let games: Game[] = [];
 
+	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
+	server.register(websocket);
 	await server.register(wsGamePlugin, { users, games });
 
 	await server.listen(listenOpts);
 
-	// everything connected to the game should happen here
-	const pongScene: PongBackScene = await initGame();
-
-	let lastTime = Date.now();
-	pongScene.engine.runRenderLoop(() => {
-		const now = Date.now();
-		const deltaTime = (now - lastTime) / 1000;
-		lastTime = now;
-
-		pongScene.scene.getPhysicsEngine()?._step(deltaTime);
+	engine.runRenderLoop(() => {
+		// manage input
+		engine.scenes.forEach(scene => scene.render());
+		// send coordinates
 	});
-
 
 	closeWithGrace(async ({ signal, err }) => {
 		if (err) {
@@ -61,6 +54,11 @@ async function main() {
 		}
 		await server.close();
 	});
+}
+
+
+class PongBackEngine extends NullEngine {
+	override scenes: PongBackScene[] = [];
 }
 
 main().catch(err => {

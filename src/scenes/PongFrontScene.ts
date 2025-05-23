@@ -1,4 +1,4 @@
-import { ArcRotateCamera }	from "@babylonjs/core/Cameras/arcRotateCamera";
+// import { ArcRotateCamera }	from "@babylonjs/core/Cameras/arcRotateCamera";
 import { HemisphericLight }	from "@babylonjs/core/Lights/hemisphericLight";
 import { DirectionalLight }	from "@babylonjs/core/Lights/directionalLight";
 import { Vector3 }			from "@babylonjs/core/Maths/math.vector";
@@ -17,7 +17,7 @@ import { PongBaseScene } from "./PongBaseScene";
 // import grassTextureUrl from "../../assets/grass.jpg";
 
 export class PongFrontScene extends PongBaseScene {
-	public camera: ArcRotateCamera;
+	// public camera: ArcRotateCamera;
 	public light1: HemisphericLight;
 	public light2: DirectionalLight;
 	public shadows: ShadowGenerator;
@@ -25,26 +25,26 @@ export class PongFrontScene extends PongBaseScene {
 	constructor (inEngine: Engine) {
 		super(inEngine);
 
-		this.camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 5, 0, Vector3.Zero(), this.scene);
+		// this.camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 5, 0, Vector3.Zero(), this);
 		this.camera.zoomOnFactor = 1;
-		this.camera.zoomOn([this.meshes.ground, this.meshes.edgeLeft, this.meshes.edgeRight]);
+		this.camera.zoomOn([this.pongMeshes.ground, this.pongMeshes.edgeLeft, this.pongMeshes.edgeRight]);
 
-		this.light1 = new HemisphericLight("light", new Vector3(0, 1, 0), this.scene);
+		this.light1 = new HemisphericLight("light", new Vector3(0, 1, 0), this);
 		this.light1.intensity = 0.4;
 
-		this.light2 = new DirectionalLight("light2", new Vector3(0, -1, 1), this.scene);
+		this.light2 = new DirectionalLight("light2", new Vector3(0, -1, 1), this);
 		this.light2.intensity = 0.3;
 		this.light2.position.y = -10;
-		this.light2.parent = this.meshes.ball;
+		this.light2.parent = this.pongMeshes.ball;
 
 		this.shadows = new ShadowGenerator(512, this.light2);
 		this.shadows.useBlurExponentialShadowMap = true;
 		this.shadows.blurScale = 2;
 		this.shadows.setDarkness(0.2);
 		this.shadows.getShadowMap()?.renderList?.push(
-			this.meshes.ball,
-			this.meshes.paddleLeft,
-			this.meshes.paddleRight
+			this.pongMeshes.ball,
+			this.pongMeshes.paddleLeft,
+			this.pongMeshes.paddleRight
 		);
 
 	}

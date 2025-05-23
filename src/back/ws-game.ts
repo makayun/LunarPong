@@ -17,22 +17,22 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 		console.log("WebSocket game client connected");
 
 		socket.on("message", (message: string) => {
-		try {
-			const msg: WSMessage = JSON.parse(message);
+			try {
+				const msg: WSMessage = JSON.parse(message);
 
-			switch (msg.type) {
-			case "WsInit":
-				processWsInit(users, games, socket, msg as InitMessage);
-				break;
-			default:
-				console.error(`Bad WS message type: ${msg.type}`);
-				socket.send(`Bad WS message type: ${msg.type}`);
+				switch (msg.type) {
+				case "WsInit":
+					processWsInit(users, games, socket, msg as InitMessage);
+					break;
+				default:
+					console.error(`Bad WS message type: ${msg.type}`);
+					socket.send(`Bad WS message type: ${msg.type}`);
+				}
 			}
-		}
-		catch (e) {
-			console.error(e, message);
-		}
-	});
+			catch (e) {
+				console.error(e, message);
+			}
+		});
 	});
 }
 

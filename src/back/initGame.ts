@@ -1,12 +1,11 @@
 import { PongBackScene }	from "../scenes/PongBackScene";
-import { NullEngine }		from "@babylonjs/core/Engines/nullEngine";
+import type { NullEngine }		from "@babylonjs/core/Engines/nullEngine";
 
-export async function initGame(): Promise<PongBackScene> {
-	const engine = new NullEngine();
+export async function initGame(engine: NullEngine): Promise<PongBackScene> {
 	const pongScene = new PongBackScene(engine);
 
-	await pongScene.preTasks;
-	await pongScene.enablePhysics();
+	pongScene.preTasks;
+	await pongScene.enablePongPhysics();
 
 	return pongScene;
 }

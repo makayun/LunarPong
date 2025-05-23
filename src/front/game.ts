@@ -25,17 +25,17 @@ export const babylonInit = async (): Promise<void> => {
 
 	engine.runRenderLoop(function () {
 		if (pongScene.state !== "init") {
-			paddleMovement(pongScene.scene, pongScene.meshes);
+			paddleMovement(pongScene, pongScene.pongMeshes);
 		}
-		pongScene.scene.render();
+		pongScene.render();
 	});
 
 	window.addEventListener("resize", function () {
 		engine.resize();
 		pongScene.camera.zoomOn([
-			pongScene.meshes.edgeBottom,
-			pongScene.meshes.edgeLeft,
-			pongScene.meshes.edgeRight
+			pongScene.pongMeshes.edgeBottom,
+			pongScene.pongMeshes.edgeLeft,
+			pongScene.pongMeshes.edgeRight
 		]);
 	});
 };
