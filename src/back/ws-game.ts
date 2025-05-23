@@ -1,64 +1,64 @@
-import type { FastifyInstance }	from "fastify/types/instance";
-import type { WebSocket }		from "@fastify/websocket";
-import type { FastifyRequest }	from "fastify/types/request";
+import type { FastifyInstance } from "fastify";
+import type { WebSocket } from "@fastify/websocket";
+import type { FastifyRequest } from "fastify";
 
-import { generateGuid }					from "../helpers/helpers";
-import type { InitMessage, WSMessage }	from "../defines/types";
-import type { User, Game }				from "../defines/types";
+import type { InitMessage, WSMessage, User, Game } from "../defines/types";
+import { generateGuid } from "../helpers/helpers";
 
-export function registerWsGameMessages (server: FastifyInstance, users: User[], games: Game[]) : void {
-	server.register(async function(server: FastifyInstance) {
-		server.get("/ws-game", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
-			console.log("WebSocket game client connected");
+export interface WsGamePluginOptions {
+	users: User[];
+	games: Game[];
+}
 
-			socket.on("message", (message: string) => {
-				let msg: WSMessage;
-				try {
-					msg = JSON.parse(message);
+export async function wsGamePlugin(server: FastifyInstance, options: WsGamePluginOptions) {
+	const { users, games } = options;
 
+	server.get("/ws-game", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
+		console.log("WebSocket game client connected");
 
-				// TODO: add a generic type validating function for all messages
-					switch(msg.type) {
-						case "WsInit":
-							processWsInit(users, games, socket, msg as InitMessage);
-							break;
-						default:
-							console.error(`Bad WS message: ${msg} !!!`);
-							socket.send(`Bad WS message: ${msg} !!!`,)
-					}
-				}
-				catch (e) {
-					console.error("Invalid JSON:", message);
-					return;
-				}
-			});
-		});
+		socket.on("message", (message: string) => {
+		try {
+			const msg: WSMessage = JSON.parse(message);
+
+			switch (msg.type) {
+			case "WsInit":
+				processWsInit(users, games, socket, msg as InitMessage);
+				break;
+			default:
+				console.error(`Bad WS message type: ${msg.type}`);
+				socket.send(`Bad WS message type: ${msg.type}`);
+			}
+		}
+		catch (e) {
+			console.error(e, message);
+		}
+	});
 	});
 }
 
-function processWsInit(users: User[], games: Game[], socket: WebSocket, msg: InitMessage) : void {
-	console.log("Initializing game for:", msg.user);
+function processWsInit(users: User[], games: Game[], socket: WebSocket, msg: InitMessage): void {
+	console.log("Initializing game for:", msg.user.id);
 
 	if (users.find(user => user.id === msg.user.id || user.socket === socket)) {
-		console.error(`User ${msg.user} is alrady playing!`);
+		console.error(`User ${msg.user.id} is already playing!`);
 		return;
 	}
 
-	const newUser: User = { id: msg.user.id, socket: socket };
+	const newUser: User = { id: msg.user.id, socket };
 	users.push(newUser);
 
-	let newGame: Game | undefined = games.find(game => game.state === "init" && game.players.length === 1);
+	let newGame = games.find(game => game.state === "init" && game.players.length === 1);
 	if (!newGame) {
 		newGame = {
 			id: generateGuid(),
 			state: "init",
-			players: [ newUser ]
+			players: [newUser]
 		};
 		games.push(newGame);
+	} else {
+	newGame.players.push(newUser);
 	}
-	else {
-		newGame.players.push(newUser);
-	}
+
 	newUser.gameId = newGame.id;
 	socket.send(JSON.stringify({ type: "game-initialized", status: "ok" }));
 }

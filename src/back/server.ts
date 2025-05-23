@@ -7,66 +7,63 @@ import closeWithGrace					from "close-with-grace";
 import type { FastifyInstance }			from "fastify/fastify";
 import type { FastifyServerOptions }	from "fastify";
 import type { FastifyListenOptions }	from "fastify";
-// import type { FastifyRequest }			from "fastify";
-// import type { FastifyReply }			from "fastify";
 
-import { initGame }				from "./initGame";
-// import { generateGuid }	from "../helpers/helpers";
-import type { PongBackScene }	from "../scenes/PongBackScene";
-import type { User, Game }		from "../defines/types";
-import { registerWsGameMessages } from "./ws-game";
-// import type { WSMessage }		from "../defines/types";
+import { initGame }					from "./initGame";
+import { wsGamePlugin }				from "./ws-game";
+import type { PongBackScene }		from "../scenes/PongBackScene";
+import type { User, Game }			from "../defines/types";
 
-const appDir: string = fs.realpathSync(process.cwd());
-const frontDir: string = "front";
+async function main() {
+	const appDir: string = fs.realpathSync(process.cwd());
+	const frontDir: string = "front";
 
-const serverOpts: FastifyServerOptions = {
-	logger: { level: "info" },
+	const serverOpts: FastifyServerOptions = {
+		logger: process.stdout.isTTY
+			? { transport: { target: "pino-pretty" } }
+			: { level: "info" },
+	};
 
-};
-if (process.stdout.isTTY) { serverOpts.logger = { transport: { target: "pino-pretty" }}};
+	const listenOpts: FastifyListenOptions = {
+		port: 12800,
+		host: "0.0.0.0"
+	};
 
-const listenOpts: FastifyListenOptions = {
-	port: 12800,
-	host: "0.0.0.0"
-}
+	const server: FastifyInstance = fastify(serverOpts);
 
-const server: FastifyInstance = fastify(serverOpts);
+	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
+	server.register(websocket);
 
-server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
-server.register(websocket);
-// const wss = server.websocketServer;
+	let users: User[] = [];
+	let games: Game[] = [];
 
-let users: User[] = [];
-let games: Game[] = [];
+	await server.register(wsGamePlugin, { users, games });
 
-registerWsGameMessages(server, users, games);
+	await server.listen(listenOpts);
 
-
-server.listen(listenOpts);
-
-// everything connected to the game should happen here, in this async function
-(async () => {
+	// everything connected to the game should happen here
 	const pongScene: PongBackScene = await initGame();
 
 	let lastTime = Date.now();
-
 	pongScene.engine.runRenderLoop(() => {
 		const now = Date.now();
 		const deltaTime = (now - lastTime) / 1000;
 		lastTime = now;
 
 		pongScene.scene.getPhysicsEngine()?._step(deltaTime);
-
-		// console.log(pongScene.meshes.ball.position.y);
 	});
-})();
 
 
-closeWithGrace(async ({signal, err}) => {
-	if (err)
-		server.log.error(err);
-	else
-		server.log.info(`${signal} received, server closing`);
-	await server.close();
-})
+	closeWithGrace(async ({ signal, err }) => {
+		if (err) {
+			server.log.error(err);
+		} else {
+			server.log.info(`${signal} received, server closing`);
+		}
+		await server.close();
+	});
+}
+
+main().catch(err => {
+	console.error("Failed to start server:", err);
+	process.exit(1);
+});
