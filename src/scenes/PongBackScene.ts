@@ -8,11 +8,28 @@ import "@babylonjs/core/Physics/physicsEngineComponent"
 import { PongBaseScene }	from "./PongBaseScene";
 import { generateGuid }		from "../helpers/helpers";
 import type { User, Game, GUID } from "../defines/types";
+import { WebSocket } from "@fastify/websocket";
 
 const ammoReadyPromise = Ammo();
 
 export class PongBackEngine extends NullEngine {
 	override scenes: PongBackScene[] = [];
+
+	public removePlayerBySocket(socket: WebSocket) {
+		this.scenes.forEach(scene => {
+			scene.players = scene.players.filter(player => player.socket !== socket);
+		});
+	}
+
+	public removeEmptyScenes() {
+		this.scenes = this.scenes.filter(scene => {
+			if (scene.players.length === 0) {
+				scene.dispose();
+				return false;
+			}
+			return true;
+		})
+	}
 }
 
 export class PongBackScene extends PongBaseScene implements Game {

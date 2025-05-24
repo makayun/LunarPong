@@ -12,8 +12,6 @@ import { wsGamePlugin }			from "./ws-game";
 import { wsChatPlugin }			from "./ws-chat"; // ✅ импорт чата
 import { PongBackEngine }		from "../scenes/PongBackScene";
 
-
-
 async function main() {
 	const appDir: string = fs.realpathSync(process.cwd());
 	const frontDir: string = "front";

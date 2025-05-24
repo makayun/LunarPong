@@ -18,7 +18,7 @@ export const babylonInit = async (): Promise<void> => {
 	startButton.addEventListener("click", () => {
 		startButton.hidden = true;
 		startButton.disabled = true;
-		const initMsg: WSMessage = { type: "WsInit", user: player };
+		const initMsg: WSMessage = { type: "InitGameRequest", user: player };
 		socket.send(JSON.stringify(initMsg));
 		pongScene.state = "running";
 	})

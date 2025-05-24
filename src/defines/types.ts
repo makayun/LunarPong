@@ -69,10 +69,16 @@ export type MeshPositions = {
 	paddleRight: Vector3
 };
 
-export type InitMessage = {
-	type: "WsInit",
+export type InitGameRequest = {
+	type: "InitGameRequest",
 	user: User
 };
+
+export type InitGameSuccess = {
+	type: "InitGameSuccess",
+	status: "ok",
+	gameId: GUID
+}
 
 export type ChatMessage =
   | { type: 'register', user: User }
@@ -85,7 +91,7 @@ export type ChatMessage =
   | { type: 'profile', user: User };
 
 export type WSMessage =
-	| InitMessage
+	| InitGameRequest
 	| PlayerInput
 	| MeshPositions
 	| ChatMessage;

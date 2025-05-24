@@ -4,7 +4,7 @@ import type { FastifyRequest }	from "fastify";
 
 import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
-import type { InitMessage, WSMessage, User } from "../defines/types";
+import type { InitGameRequest, WSMessage, User, InitGameSuccess } from "../defines/types";
 
 export interface WsGamePluginOptions { engine: PongBackEngine; }
 
@@ -19,8 +19,8 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 				const msg: WSMessage = JSON.parse(message);
 
 				switch (msg.type) {
-				case "WsInit":
-					processWsInit(engine, socket, msg as InitMessage);
+				case "InitGameRequest":
+					processInitGameRequest(engine, socket, msg as InitGameRequest);
 					break;
 				default:
 					console.error(`Bad WS message: ${msg}`);
@@ -28,13 +28,19 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 				}
 			}
 			catch (e) {
+				socket.terminate();
 				console.error(e, message);
 			}
+		});
+
+		socket.on("close", () => {
+			engine.removePlayerBySocket(socket);
+			engine.removeEmptyScenes();
 		});
 	});
 }
 
-function processWsInit(engine: PongBackEngine, socket: WebSocket, msg: InitMessage): void {
+function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: InitGameRequest): void {
 	console.log("Initializing game for player:", [msg.user.id]);
 
 	engine.scenes.forEach(
@@ -61,5 +67,11 @@ function processWsInit(engine: PongBackEngine, socket: WebSocket, msg: InitMessa
 	console.log("Game:", [newGame.id], ", number of players:", newGame.players.length);
 	console.log("Player IDs in this scene:", newGame.players.map(player => player.id));
 	newUser.gameId = newGame.id;
-	socket.send(JSON.stringify({ type: "game-initialized", status: "ok" }));
+
+	const response: InitGameSuccess = {
+		type: "InitGameSuccess",
+		status: "ok",
+		gameId: newGame.id
+	}
+	socket.send(JSON.stringify(response));
 }
