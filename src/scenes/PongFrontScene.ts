@@ -1,4 +1,3 @@
-// import { ArcRotateCamera }	from "@babylonjs/core/Cameras/arcRotateCamera";
 import { HemisphericLight }	from "@babylonjs/core/Lights/hemisphericLight";
 import { DirectionalLight }	from "@babylonjs/core/Lights/directionalLight";
 import { Vector3 }			from "@babylonjs/core/Maths/math.vector";
@@ -17,17 +16,12 @@ import { PongBaseScene } from "./PongBaseScene";
 // import grassTextureUrl from "../../assets/grass.jpg";
 
 export class PongFrontScene extends PongBaseScene {
-	// public camera: ArcRotateCamera;
 	public light1: HemisphericLight;
 	public light2: DirectionalLight;
 	public shadows: ShadowGenerator;
 
 	constructor (inEngine: Engine) {
 		super(inEngine);
-
-		// this.camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 5, 0, Vector3.Zero(), this);
-		this.camera.zoomOnFactor = 1;
-		this.camera.zoomOn([this.pongMeshes.ground, this.pongMeshes.edgeLeft, this.pongMeshes.edgeRight]);
 
 		this.light1 = new HemisphericLight("light", new Vector3(0, 1, 0), this);
 		this.light1.intensity = 0.4;

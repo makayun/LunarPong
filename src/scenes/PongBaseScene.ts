@@ -24,7 +24,8 @@ import type {
 }	from "../defines/types";
 
 
-export class PongBaseScene extends Scene  {
+
+export class PongBaseScene extends Scene {
 	public camera: ArcRotateCamera;
 	public pongMeshes: MeshesDict;
 	public state: GameState;
@@ -53,6 +54,8 @@ export class PongBaseScene extends Scene  {
 		this.pongMeshes.edgeRight.position.x = LR_EDGES_POS_X;
 
 		this.camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 5, 0, Vector3.Zero(), this);
+		this.camera.zoomOnFactor = 1;
+		this.camera.zoomOn([this.pongMeshes.ground, this.pongMeshes.edgeLeft, this.pongMeshes.edgeRight]);
 	}
 
 	private pongGround() : MeshesDict["ground"] {

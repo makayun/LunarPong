@@ -4,14 +4,14 @@ import { fastify }						from "fastify";
 import { fastifyStatic }				from "@fastify/static";
 import websocket						from "@fastify/websocket";
 import closeWithGrace					from "close-with-grace";
-import { NullEngine }					from "@babylonjs/core/Engines/nullEngine";
 import type { FastifyInstance }			from "fastify/fastify";
 import type { FastifyServerOptions }	from "fastify";
 import type { FastifyListenOptions }	from "fastify";
 
 import { wsGamePlugin }			from "./ws-game";
-import type { User, Game }		from "../defines/types";
-import type { PongBackScene } from "../scenes/PongBackScene";
+import { PongBackEngine }		from "../scenes/PongBackScene";
+
+
 
 async function main() {
 	const appDir: string = fs.realpathSync(process.cwd());
@@ -31,12 +31,10 @@ async function main() {
 	const server: FastifyInstance = fastify(serverOpts);
 
 	const engine = new PongBackEngine();
-	let users: User[] = [];
-	let games: Game[] = [];
 
 	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 	server.register(websocket);
-	await server.register(wsGamePlugin, { users, games });
+	await server.register(wsGamePlugin, { engine });
 
 	await server.listen(listenOpts);
 
@@ -54,11 +52,6 @@ async function main() {
 		}
 		await server.close();
 	});
-}
-
-
-class PongBackEngine extends NullEngine {
-	override scenes: PongBackScene[] = [];
 }
 
 main().catch(err => {
