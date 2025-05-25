@@ -77,6 +77,7 @@ export type InitMessage = {
 export type ChatMessage =
   | { type: 'register', user: User }
   | { type: 'message', to: User, content: string }
+  | { type: 'broadcast', content: string } // 🐬 dobavila etu stroku
   | { type: 'block', user: User }
   | { type: 'unblock', user: User }
   | { type: 'invite', to: User; game?: GUID }
