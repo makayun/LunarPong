@@ -7,6 +7,7 @@ import type { User, WSMessage }	from "../defines/types";
 
 export const babylonInit = async (): Promise<void> => {
 	const player: User = { id: getOrCreateClientId() };
+	// let opponent: User;
 	const socket: WebSocket = new WebSocket("ws://localhost:12800/ws-game");
 
 	const startButton = document.getElementById("startButton") as HTMLButtonElement;
@@ -23,11 +24,14 @@ export const babylonInit = async (): Promise<void> => {
 		pongScene.state = "running";
 	})
 
+	// socket on message - changes coordinates and state of the game
+
 	engine.runRenderLoop(function () {
 		if (pongScene.state !== "init") {
+			// apply coordinates
+			pongScene.render();
 			paddleMovement(pongScene, pongScene.pongMeshes);
 		}
-		pongScene.render();
 	});
 
 	window.addEventListener("resize", function () {
