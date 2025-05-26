@@ -46,7 +46,7 @@ function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: 
 	engine.scenes.forEach(
 		scene => scene.players.forEach(
 			player => {
-				if (player.id === msg.user.id || player.socket === msg.user.socket) {
+				if (player.id === msg.user.id || player.gameSocket === msg.user.gameSocket) {
 					console.error("User", [msg.user.id], "is already playing!");
 					return;
 				}
@@ -54,7 +54,7 @@ function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: 
 		)
 	)
 
-	const newUser: User = { id: msg.user.id, socket };
+	const newUser: User = { id: msg.user.id, gameSocket: socket };
 
 	let newGame = engine.scenes.find(
 		scene => scene.state === "init" && scene.players.length === 1);

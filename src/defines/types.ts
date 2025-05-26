@@ -29,7 +29,8 @@ export type User = {
 	id: GUID,
 	gameId?: GUID,
 	nick?: string,
-	socket?: WebSocket,
+	gameSocket?: WebSocket,
+	chatSocket?: WebSocket,
 	blocked?: Set<GUID>
 };
 

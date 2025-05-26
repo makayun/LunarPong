@@ -17,7 +17,7 @@ export class PongBackEngine extends NullEngine {
 
 	public removePlayerBySocket(socket: WebSocket) {
 		this.scenes.forEach(scene => {
-			scene.players = scene.players.filter(player => player.socket !== socket);
+			scene.players = scene.players.filter(player => player.gameSocket !== socket);
 		});
 	}
 
