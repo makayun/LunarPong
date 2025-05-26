@@ -3,3 +3,4 @@ node_modules
 /back/
 /front/
 .DS_Store
+tmp
