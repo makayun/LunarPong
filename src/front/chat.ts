@@ -15,6 +15,7 @@ socket.addEventListener('open', () => {
 });
 
 socket.addEventListener('message', (event) => {
+  console.log('Received:', event.data); // 😈
   try {
     const data = JSON.parse(event.data);
     switch (data.type) {

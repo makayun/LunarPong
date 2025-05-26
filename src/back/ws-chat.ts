@@ -1,139 +1,141 @@
 import type { FastifyInstance } from "fastify";
 import type { WebSocket } from "@fastify/websocket";
 import type { FastifyRequest } from "fastify";
-// import type { ChatMessage } from "../defines/types";
+import type { ChatMessage, User, GUID } from "../defines/types";
 
-export type ChatMessage =
-  | { type: 'register'; id: string; name?: string }
-  | { type: 'message'; to: string; from: string; content: string }
-  | { type: 'block'; userId: string }
-  | { type: 'unblock'; userId: string }
-  | { type: 'invite'; to: string; game?: string }
-  | { type: 'notify'; content: string }
-  | { type: 'profile'; userId: string };
-
-export type ChatUser = {
-  id: string;
-  name: string;
-  socket: WebSocket;
-  blocked: Set<string>;
+export interface WsChatPluginOptions { 
+    users: Map<GUID, User> 
 };
 
-const users: Map<string, ChatUser> = new Map();
+const users = new Map<GUID, User>();
 
 function broadcastUserList() {
-  const payload = JSON.stringify({
-    type: 'userlist',
-    users: Array.from(users.values()).map((u) => u.id),
-  });
-  for (const user of users.values()) {
-    user.socket.send(payload);
-  }
+    const payload = JSON.stringify({
+        type: 'userlist',
+        users: Array.from(users.values()).map((u) => u.id),
+    });
+    for (const user of users.values()) {
+        user.chatSocket?.send(payload);
+    }
 }
 
-function sendToUser(userId: string, message: any) {
-  const user = users.get(userId);
-  if (user) {
-    user.socket.send(JSON.stringify(message));
-  }
+function sendToUser(userId: GUID, message: ChatMessage) {
+    const user = users.get(userId);
+    if (user && user.chatSocket) {
+        user.chatSocket.send(JSON.stringify(message));
+    }
 }
 
 export async function wsChatPlugin(server: FastifyInstance) {
-  server.get("/ws-chat", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
-    let currentUser: ChatUser | null = null;
+    server.get("/ws-chat", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
+        let currentUser: User | null = null;
 
-    socket.on("message", (data: string) => {
-      try {
-        const msg: ChatMessage = JSON.parse(data.toString());
+        socket.on("message", (data: string) => {
+            try {
+                const msg: ChatMessage = JSON.parse(data.toString());
 
-        switch (msg.type) {
-          case 'register': {
-            const id = msg.id;
-            const name = msg.name || `User ${id}`;
-            currentUser = { id, name, socket, blocked: new Set() };
-            users.set(id, currentUser);
-            socket.send(JSON.stringify({ type: 'system', content: `Welcome, ${name}` }));
-            broadcastUserList();
-            break;
-          }
+                switch (msg.type) {
+                    case 'register': {
+                        currentUser = msg.user;
+                        currentUser.chatSocket = socket;
+                        users.set(currentUser.id, currentUser);
+                        socket.send(JSON.stringify({ 
+                            type: 'notify', 
+                            content: `Welcome, ${currentUser.nick || currentUser.id}` 
+                        }));
+                        broadcastUserList();
+                        break;
+                    }
 
-          case 'message': {
-            if (!currentUser) return;
-            const recipient = msg.to;
-            const senderId = currentUser.id;
+                    case 'message': {
+                        if (!currentUser) return;
+                        
+                        if ('broadcast' in msg) {
+                            // Handle broadcast message
+                            for (const user of users.values()) {
+                                if (user.id !== currentUser.id && 
+                                    !user.blocked?.has(currentUser.id) && 
+                                    user.chatSocket) {
+                                    user.chatSocket.send(JSON.stringify({
+                                        type: 'message',
+                                        content: msg.content
+                                    }));
+                                }
+                            }
+                        } else {
+                            // Handle direct message
+                            if (!msg.to.chatSocket) return;
+                            if (msg.to.blocked?.has(currentUser.id)) return;
+                            
+                            msg.to.chatSocket.send(JSON.stringify({
+                                type: 'message',
+                                content: msg.content
+                            }));
+                        }
+                        break;
+                    }
 
-            if (recipient === 'all') {
-              for (const user of users.values()) {
-                if (user.id !== senderId && !user.blocked.has(senderId)) {
-                  user.socket.send(JSON.stringify({
-                    type: 'message',
-                    from: senderId,
-                    content: msg.content,
-                  }));
+                    case 'block': {
+                        if (!currentUser) return;
+                        if (!currentUser.blocked) {
+                            currentUser.blocked = new Set();
+                        }
+                        currentUser.blocked.add(msg.user.id);
+                        break;
+                    }
+
+                    case 'unblock': {
+                        if (!currentUser?.blocked) return;
+                        currentUser.blocked.delete(msg.user.id);
+                        break;
+                    }
+
+                    case 'invite': {
+                        if (!currentUser) return;
+                        if (msg.to.chatSocket) {
+                            msg.to.chatSocket.send(JSON.stringify({
+                                type: 'invite',
+                                to: msg.to,
+                                game: msg.game
+                            }));
+                        }
+                        break;
+                    }
+
+                    case 'notify': {
+                        for (const user of users.values()) {
+                            if (user.chatSocket) {
+                                user.chatSocket.send(JSON.stringify({ 
+                                    type: 'notify', 
+                                    content: msg.content 
+                                }));
+                            }
+                        }
+                        break;
+                    }
+
+                    case 'profile': {
+                        if (!currentUser) return;
+                        console.log(`User ${currentUser.id} requested profile of ${msg.user.id}`);
+                        break;
+                    }
+
+                    default:
+                        console.warn("Unknown message type:", (msg as any).type);
                 }
-              }
-            } else {
-              sendToUser(recipient, {
-                type: 'message',
-                from: senderId,
-                content: msg.content,
-              });
+            } catch (err) {
+                socket.send(JSON.stringify({ 
+                    type: 'notify', 
+                    content: 'Invalid message format.' 
+                }));
             }
-            break;
-          }
+        });
 
-          case 'block': {
-            if (!currentUser) return;
-            currentUser.blocked.add(msg.userId);
-            break;
-          }
-
-          case 'unblock': {
-            if (!currentUser) return;
-            currentUser.blocked.delete(msg.userId);
-            break;
-          }
-
-          case 'invite': {
-            if (!currentUser) return;
-            sendToUser(msg.to, {
-              type: 'invite',
-              from: currentUser.id,
-              game: msg.game || 'pong',
-            });
-            break;
-          }
-
-          case 'notify': {
-            if (!currentUser) return;
-            for (const user of users.values()) {
-              user.socket.send(JSON.stringify({ type: 'system', content: msg.content }));
+        socket.on("close", () => {
+            if (currentUser) {
+                users.delete(currentUser.id);
+                broadcastUserList();
             }
-            break;
-          }
-
-          case 'profile': {
-            if (!currentUser) return;
-            console.log(`User ${currentUser.id} запросил профиль ${msg.userId}`);
-            break;
-          }
-
-          default:
-            console.warn("Unknown message type:", msg);
-        }
-      } catch (err) {
-        socket.send(JSON.stringify({ type: 'system', content: 'Invalid message format.' }));
-      }
+        });
     });
-
-    socket.on("close", () => {
-      if (currentUser) {
-        users.delete(currentUser.id);
-        broadcastUserList();
-      }
-    });
-  });
 }
-
-// npx webpack --env mode=development
-// npm start

@@ -11,8 +11,10 @@ import type { FastifyListenOptions }	from "fastify";
 import { wsGamePlugin }			from "./ws-game";
 import { wsChatPlugin }			from "./ws-chat"; // ✅ импорт чата
 import { PongBackEngine }		from "../scenes/PongBackScene";
+import type { User }			from "../defines/types";
 
 async function main() {
+	const users: User[] = [];
 	const appDir: string = fs.realpathSync(process.cwd());
 	const frontDir: string = "front";
 
@@ -33,8 +35,8 @@ async function main() {
 
 	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 	server.register(websocket);
-	await server.register(wsGamePlugin, { engine });
-	await server.register(wsChatPlugin);             // 💬 плагин чата
+	await server.register(wsGamePlugin, { engine, users });
+	await server.register(wsChatPlugin, { users });             // 💬 плагин чата
 
 	await server.listen(listenOpts);
 
