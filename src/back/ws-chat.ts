@@ -1,15 +1,16 @@
 import type { FastifyInstance } from "fastify";
 import type { WebSocket } from "@fastify/websocket";
 import type { FastifyRequest } from "fastify";
+import type { ChatMessage } from "../defines/types";
 
-export type ChatMessage =
-  | { type: 'register'; id: string; name?: string }
-  | { type: 'message'; to: string; from: string; content: string }
-  | { type: 'block'; userId: string }
-  | { type: 'unblock'; userId: string }
-  | { type: 'invite'; to: string; game?: string }
-  | { type: 'notify'; content: string }
-  | { type: 'profile'; userId: string };
+// export type ChatMessage =
+//   | { type: 'register'; id: string; name?: string }
+//   | { type: 'message'; to: string; from: string; content: string }
+//   | { type: 'block'; userId: string }
+//   | { type: 'unblock'; userId: string }
+//   | { type: 'invite'; to: string; game?: string }
+//   | { type: 'notify'; content: string }
+//   | { type: 'profile'; userId: string };
 
 export type ChatUser = {
   id: string;
