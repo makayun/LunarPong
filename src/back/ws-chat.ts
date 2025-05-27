@@ -8,7 +8,7 @@ const users: Map<GUID, User> = new Map();
 function broadcastUserList() {
   const payload = JSON.stringify({
     type: 'userlist',
-    users: Array.from(users.values()).map((u) => u.id),
+    users: Array.from(users.values()).map((u) => ({ id: u.id, nick: u.nick })),
   });
   for (const user of users.values()) {
     user.chatSocket?.send(payload);
@@ -31,19 +31,39 @@ export async function wsChatPlugin(server: FastifyInstance) {
         const msg: ChatMessage = JSON.parse(data.toString());
 
         switch (msg.type) {
-          case 'register': {
-            const user = msg.user;
-            const blocked = new Set<GUID>();
-            currentUser = {
-              ...user,
-              chatSocket: socket,
-              blocked,
+            case 'register': {
+                const rawUser = msg.user;
+                const nickname = (rawUser.nick && rawUser.nick.trim()) || `User-${rawUser.id.slice(0, 6)}`;
+
+                currentUser = {
+                ...rawUser,
+                nick: nickname,
+                chatSocket: socket,
+                blocked: new Set<GUID>(),
             };
-            users.set(user.id, currentUser);
-            socket.send(JSON.stringify({ type: 'system', content: `Welcome, ${user.nick || user.id}` }));
+
+            users.set(currentUser.id, currentUser);
+            socket.send(JSON.stringify({ type: 'system', content: `Welcome, ${currentUser.nick}` }));
             broadcastUserList();
             break;
-          }
+            }
+
+        //   case 'register': {
+        //     const user = msg.user;
+        //     const nickname = (user.nick && user.nick.trim()) || `User ${user.id.slice(0, 6)}`;
+
+        //     const blocked = new Set<GUID>();
+        //     currentUser = {
+        //       ...user,
+        //       nick: nickname,
+        //       chatSocket: socket,
+        //       blocked,
+        //     };
+        //     users.set(user.id, currentUser);
+        //     socket.send(JSON.stringify({ type: 'system', content: `Welcome, ${user.nick || user.id}` }));
+        //     broadcastUserList();
+        //     break;
+        //   }
 
           case 'message': {
             if (!currentUser) return;
@@ -56,6 +76,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
             recipient.chatSocket?.send(JSON.stringify({
               type: 'message',
               from: senderId,
+              to: { id: recipientId },
               content: msg.content,
             }));
             break;
@@ -129,3 +150,5 @@ export async function wsChatPlugin(server: FastifyInstance) {
     });
   });
 }
+
+
