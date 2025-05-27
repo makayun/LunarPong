@@ -1,20 +1,25 @@
 import { getOrCreateClientId } from "../helpers/helpers";
-import type { User } from "../defines/types"
+import type { User, GUID } from "../defines/types"
 
 const input = document.getElementById('input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
 const socket = new WebSocket('ws://localhost:12800/ws-chat');
 
-const user: User = { id: getOrCreateClientId() };
+function toGUID(id: string): GUID {
+  return id as GUID;
+}
+
+const user: User = { id: toGUID(getOrCreateClientId()) };
 user.nick = `User ${user.id}`;
 
 socket.addEventListener('open', () => {
-  socket.send(JSON.stringify({ type: 'register', id: user.id, name: user.nick }));
+  socket.send(JSON.stringify({ type: 'register', user }));
   addMessage(`[System] You are ${user.nick}`);
 });
 
 socket.addEventListener('message', (event) => {
+  console.log('Received:', event.data);
   try {
     const data = JSON.parse(event.data);
     switch (data.type) {
@@ -40,20 +45,27 @@ input.addEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key === 'Enter') {
     const text = input.value.trim();
     if (text !== '') {
-      const to = recipient.value;
-      const payload = {
-        type: 'message',
-        to,
-        from: user.id,
-        content: text,
-      };
+      let payload;
+      if (recipient.value === 'all') {
+        payload = {
+          type: 'broadcast',
+          content: text,
+        };
+      } else {
+        payload = {
+          type: 'message',
+          to: { id: recipient.value },
+          content: text,
+        };
+      }
       socket.send(JSON.stringify(payload));
-      const direction = to === 'all' ? 'all' : to;
+      const direction = recipient.value === 'all' ? 'all' : recipient.value;
       addMessage(`[You -> ${direction}] ${text}`);
       input.value = '';
     }
   }
 });
+
 
 function addMessage(msg: string) {
   messages.textContent += msg + '\n';
@@ -75,7 +87,7 @@ function updateUserList(users: string[]) {
 export function blockUser() {
   const target = recipient.value;
   if (target !== 'all') {
-    socket.send(JSON.stringify({ type: 'block', userId: target }));
+    socket.send(JSON.stringify({ type: 'block', user: { id: toGUID(target) } }));
     addMessage(`[System] Blocked user ${target}`);
   }
 }
@@ -83,7 +95,7 @@ export function blockUser() {
 export function inviteUser() {
   const target = recipient.value;
   if (target !== 'all') {
-    socket.send(JSON.stringify({ type: 'invite', to: target, game: 'pong' }));
+    socket.send(JSON.stringify({ type: 'invite', to: { id: toGUID(target) }, game: 'pong' }));
     addMessage(`[System] Invited user ${target} to play pong`);
   }
 }

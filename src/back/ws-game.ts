@@ -6,7 +6,7 @@ import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
 import type { InitGameRequest, WSMessage, User, InitGameSuccess } from "../defines/types";
 
-export interface WsGamePluginOptions { engine: PongBackEngine; }
+export interface WsGamePluginOptions { engine: PongBackEngine; users: User[] };
 
 export async function wsGamePlugin(server: FastifyInstance, options: WsGamePluginOptions) {
 	const { engine } = options;
