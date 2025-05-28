@@ -1,7 +1,7 @@
 import type { GUID } from "../defines/types";
 
-const adjectives = ["Quick", "Bright", "Calm", "Sharp", "Warm"];
-const nouns = ["Book", "Star", "Tree", "Cloud", "Key"];
+const adjectives = [ "Quick", "Bright", "Calm", "Sharp", "Mighty", "Lazy", "Sad", "Angry" ];
+const nouns = ["Cat", "Star", "Tree", "Cloud", "Bird", "Snail", "Thor", "Hulk", "Groot", "Loki"];
 
 export function generateGuid(): GUID {
 	return (
