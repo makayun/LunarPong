@@ -1,17 +1,15 @@
-import { getOrCreateClientId } from "../helpers/helpers";
-import type { User, GUID } from "../defines/types"
+import { getOrCreateClientId, getOrCreateNickname } from "../helpers/helpers";
+// import type { GUID } from "../defines/types";
 
 const input = document.getElementById('input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
 const socket = new WebSocket('ws://localhost:12800/ws-chat');
 
-function toGUID(id: string): GUID {
-  return id as GUID;
-}
-
-const user: User = { id: toGUID(getOrCreateClientId()) };
-user.nick = `User ${user.id}`;
+const user = {
+  id: getOrCreateClientId(),
+  nick: getOrCreateNickname(),
+};
 
 socket.addEventListener('open', () => {
   socket.send(JSON.stringify({ type: 'register', user }));
@@ -23,14 +21,21 @@ socket.addEventListener('message', (event) => {
   try {
     const data = JSON.parse(event.data);
     switch (data.type) {
-      case 'message':
-        addMessage(`[${data.from}] ${data.content}`);
+      case 'message': {
+        let direction = 'all';
+        if (data.to?.nick === user.nick) {
+          direction = 'you';
+        } else if (data.to?.nick) {
+          direction = data.to.nick;
+        }
+        addMessage(`[${data.from} -> ${direction}] ${data.content}`);
         break;
+      }
       case 'system':
         addMessage(`[System] ${data.content}`);
         break;
       case 'userlist':
-        updateUserList(data.users);
+        updateUserList(data.users); // now: [{ id, nick }]
         break;
       case 'invite':
         addMessage(`[Invite] ${data.from} invited you to play ${data.game}`);
@@ -66,19 +71,22 @@ input.addEventListener('keydown', (e: KeyboardEvent) => {
   }
 });
 
-
 function addMessage(msg: string) {
   messages.textContent += msg + '\n';
   messages.scrollTop = messages.scrollHeight;
 }
 
-function updateUserList(users: string[]) {
+let userMap = new Map<string, string>(); // id -> nick
+
+function updateUserList(users: { id: string; nick: string }[]) {
+  userMap.clear();
   recipient.innerHTML = '<option value="all">Broadcast</option>';
   users.forEach((u) => {
-    if (u !== user.id) {
+    userMap.set(u.id, u.nick);
+    if (u.nick !== user.nick) {
       const option = document.createElement('option');
-      option.value = u;
-      option.textContent = `User ${u}`;
+      option.value = u.id;
+      option.textContent = u.nick;
       recipient.appendChild(option);
     }
   });
@@ -87,7 +95,7 @@ function updateUserList(users: string[]) {
 export function blockUser() {
   const target = recipient.value;
   if (target !== 'all') {
-    socket.send(JSON.stringify({ type: 'block', user: { id: toGUID(target) } }));
+    socket.send(JSON.stringify({ type: 'block', user: { id: target } }));
     addMessage(`[System] Blocked user ${target}`);
   }
 }
@@ -95,7 +103,7 @@ export function blockUser() {
 export function inviteUser() {
   const target = recipient.value;
   if (target !== 'all') {
-    socket.send(JSON.stringify({ type: 'invite', to: { id: toGUID(target) }, game: 'pong' }));
+    socket.send(JSON.stringify({ type: 'invite', to: { id: target }, game: 'pong' }));
     addMessage(`[System] Invited user ${target} to play pong`);
   }
 }
@@ -106,3 +114,7 @@ export function viewProfile() {
     alert(`Open profile of user ${target}`);
   }
 }
+
+(window as any).blockUser = blockUser;
+(window as any).inviteUser = inviteUser;
+(window as any).viewProfile = viewProfile;
