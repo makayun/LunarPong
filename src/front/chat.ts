@@ -1,5 +1,5 @@
 import { getOrCreateClientId, getOrCreateNickname } from "../helpers/helpers";
-// import type { GUID } from "../defines/types";
+import type { GUID } from "../defines/types";
 
 const input = document.getElementById('input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
@@ -17,7 +17,7 @@ socket.addEventListener('open', () => {
 });
 
 socket.addEventListener('message', (event) => {
-  console.log('Received:', event.data);
+  console.log('Received:', event.data); // 💥
   try {
     const data = JSON.parse(event.data);
     switch (data.type) {
@@ -26,20 +26,22 @@ socket.addEventListener('message', (event) => {
         if (data.to?.nick === user.nick) {
           direction = 'you';
         } else if (data.to?.nick) {
-          direction = data.to.nick;
+          direction = userMap.get(data.to.id as GUID) || data.to.id;
         }
-        addMessage(`[${data.from} -> ${direction}] ${data.content}`);
+        const fromNick = userMap.get(data.from as GUID) || data.from; // ???🔥
+        addMessage(`[${fromNick} -> ${direction}] ${data.content}`); // ???🔥
         break;
       }
       case 'system':
         addMessage(`[System] ${data.content}`);
         break;
       case 'userlist':
-        updateUserList(data.users); // now: [{ id, nick }]
+        updateUserList(data.users);
         break;
       case 'invite':
-        addMessage(`[Invite] ${data.from} invited you to play ${data.game}`);
-        break;
+        const fromNick = userMap.get(data.from as GUID) || data.from;
+        addMessage(`[Invite] ${fromNick} invited you to play ${data.game}`);
+      break;
     }
   } catch {
     addMessage(event.data);
@@ -64,7 +66,9 @@ input.addEventListener('keydown', (e: KeyboardEvent) => {
         };
       }
       socket.send(JSON.stringify(payload));
-      const direction = recipient.value === 'all' ? 'all' : recipient.value;
+      const nick = recipient.value === 'all' ? 'all' : userMap.get(recipient.value as GUID);
+      const direction = nick || recipient.value;
+      console.log('Sending to:', { id: recipient.value, nick }); // 💥
       addMessage(`[You -> ${direction}] ${text}`);
       input.value = '';
     }
@@ -76,9 +80,10 @@ function addMessage(msg: string) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-let userMap = new Map<string, string>(); // id -> nick
+let userMap = new Map<GUID, string>();
 
-function updateUserList(users: { id: string; nick: string }[]) {
+function updateUserList(users: { id: GUID; nick: string }[]) {
+  console.log('Received users:', users); // 💥
   userMap.clear();
   recipient.innerHTML = '<option value="all">Broadcast</option>';
   users.forEach((u) => {
@@ -90,6 +95,7 @@ function updateUserList(users: { id: string; nick: string }[]) {
       recipient.appendChild(option);
     }
   });
+  console.log('userMap after update:', Array.from(userMap.entries())); // 💥
 }
 
 export function blockUser() {
@@ -101,10 +107,16 @@ export function blockUser() {
 }
 
 export function inviteUser() {
-  const target = recipient.value;
+  const recipientElement = document.getElementById('recipient') as HTMLSelectElement | null;
+  if (!recipientElement) {
+    console.error('Recipient element not found'); // 💥
+    return;
+  }
+  const target = recipientElement.value;
   if (target !== 'all') {
     socket.send(JSON.stringify({ type: 'invite', to: { id: target }, game: 'pong' }));
-    addMessage(`[System] Invited user ${target} to play pong`);
+    const targetNick = userMap.get(target as GUID) || target;
+    addMessage(`[System] Invited ${targetNick} to play pong`);
   }
 }
 

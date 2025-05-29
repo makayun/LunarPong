@@ -10,6 +10,7 @@ export function generateGuid(): GUID {
 	) as GUID;
 }
 
+// proverka na unikalnost!!! 🔥
 function generateNickname(): string {
 	const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
 	const noun = nouns[Math.floor(Math.random() * nouns.length)];
@@ -37,23 +38,3 @@ export function getOrCreateNickname(): string {
 	}
 	return nickname;
 }
-
-
-
-// import type { GUID } from "../defines/types";
-
-// export function generateGuid() : GUID {
-//     return Math.random().toString(36).substring(2, 15) +
-//         Math.random().toString(36).substring(2, 15) as GUID;
-// }
-
-// export function getOrCreateClientId() : GUID {
-// 	const key = "pong-client-id";
-// 	let clientId = sessionStorage.getItem(key);
-
-// 	if (!clientId) {
-// 		clientId = generateGuid();
-// 		sessionStorage.setItem(key, clientId);
-// 	}
-// 	return clientId as GUID;
-// }

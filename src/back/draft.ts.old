@@ -137,3 +137,37 @@ export async function wsChatPlugin(server: FastifyInstance) {
 
 // npx webpack --env mode=development
 // npm start
+
+socket.addEventListener('message', (event) => {
+  console.log('Received:', event.data);
+  try {
+    const data = JSON.parse(event.data);
+    console.log('Parsed data:', data);
+    switch (data.type) {
+      case 'message': {
+        let direction = 'all';
+        if (data.to?.id === user.id) {
+          direction = 'you';
+        } else if (data.to?.nick) {
+          direction = data.to.nick;
+        } else if (data.to?.id) {
+          direction = userMap.get(data.to.id as GUID) || data.to.id;
+        }
+        const fromNick = userMap.get(data.from as GUID) || data.from; // Преобразуем data.from
+        addMessage(`[${fromNick} -> ${direction}] ${data.content}`);
+        break;
+      }
+      case 'system':
+        addMessage(`[System] ${data.content}`);
+        break;
+      case 'userlist':
+        updateUserList(data.users);
+        break;
+      case 'invite':
+        addMessage(`[Invite] ${data.from} invited you to play ${data.game}`);
+        break;
+    }
+  } catch {
+    addMessage(event.data);
+  }
+});

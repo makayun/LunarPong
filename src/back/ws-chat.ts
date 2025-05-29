@@ -48,23 +48,6 @@ export async function wsChatPlugin(server: FastifyInstance) {
             break;
             }
 
-        //   case 'register': {
-        //     const user = msg.user;
-        //     const nickname = (user.nick && user.nick.trim()) || `User ${user.id.slice(0, 6)}`;
-
-        //     const blocked = new Set<GUID>();
-        //     currentUser = {
-        //       ...user,
-        //       nick: nickname,
-        //       chatSocket: socket,
-        //       blocked,
-        //     };
-        //     users.set(user.id, currentUser);
-        //     socket.send(JSON.stringify({ type: 'system', content: `Welcome, ${user.nick || user.id}` }));
-        //     broadcastUserList();
-        //     break;
-        //   }
-
           case 'message': {
             if (!currentUser) return;
             const recipientId = msg.to.id;
@@ -110,7 +93,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
 
           case 'invite': {
             if (!currentUser) return;
-            console.log('Invite received from', currentUser.id, 'to', msg.to.id);
+            console.log('Invite received from', currentUser.id, 'to', msg.to.id); // 💥
 
             sendToUser(msg.to.id, {
               type: 'invite',
@@ -130,12 +113,12 @@ export async function wsChatPlugin(server: FastifyInstance) {
 
           case 'profile': {
             if (!currentUser) return;
-            console.log(`User ${currentUser.id} запросил профиль ${msg.user.id}`);
+            console.log(`User ${currentUser.id} запросил профиль ${msg.user.id}`); // 💥
             break;
           }
 
           default:
-            console.warn("Unknown message type:", msg);
+            console.warn("Unknown message type:", msg); // 💥
         }
       } catch (err) {
         socket.send(JSON.stringify({ type: 'system', content: 'Invalid message format.' }));
