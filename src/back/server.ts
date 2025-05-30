@@ -12,6 +12,7 @@ import { wsGamePlugin }			from "./ws-game";
 import { wsChatPlugin }			from "./ws-chat"; // ✅ импорт чата
 import { PongBackEngine }		from "../scenes/PongBackScene";
 import type { User }			from "../defines/types";
+import type { MeshPositions } from "../defines/types";
 
 async function main() {
 	const users: User[] = [];
@@ -43,7 +44,17 @@ async function main() {
 	engine.runRenderLoop(() => {
 		// manage input
 		engine.scenes.forEach(scene => scene.render());
-		// send coordinates
+		engine.scenes.forEach(scene => {
+			const posMessage: MeshPositions = {
+				type: "MeshPositions",
+				ball: scene.pongMeshes.ball.position,
+				paddleLeft: scene.pongMeshes.paddleLeft.position,
+				paddleRight: scene.pongMeshes.paddleRight.position
+			};
+			scene.players.forEach(player =>
+				player.gameSocket?.send(JSON.stringify(posMessage))
+			)
+		})
 	});
 
 	closeWithGrace(async ({ signal, err }) => {

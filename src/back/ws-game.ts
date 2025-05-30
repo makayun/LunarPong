@@ -9,7 +9,7 @@ import type { InitGameRequest, WSMessage, User, InitGameSuccess } from "../defin
 export interface WsGamePluginOptions { engine: PongBackEngine; users: User[] };
 
 export async function wsGamePlugin(server: FastifyInstance, options: WsGamePluginOptions) {
-	const { engine } = options;
+	const { engine, users } = options;
 
 	server.get("/ws-game", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
 		console.log("WebSocket game client connected");
@@ -20,7 +20,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 
 				switch (msg.type) {
 				case "InitGameRequest":
-					processInitGameRequest(engine, socket, msg as InitGameRequest);
+					processInitGameRequest(engine, users, socket, msg as InitGameRequest);
 					break;
 				default:
 					console.error(`Bad WS message: ${msg}`);
@@ -34,13 +34,14 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 		});
 
 		socket.on("close", () => {
+
 			engine.removePlayerBySocket(socket);
 			engine.removeEmptyScenes();
 		});
 	});
 }
 
-function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: InitGameRequest): void {
+function processInitGameRequest(engine: PongBackEngine, users: User[], socket: WebSocket, msg: InitGameRequest): void {
 	console.log("Initializing game for player:", [msg.user.id]);
 
 	engine.scenes.forEach(
@@ -62,15 +63,19 @@ function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: 
 		newGame = new PongBackScene(engine);
 		console.log("Creating new pong game, id:", [newGame.id])
 	}
+	else {
+		newGame.enablePongPhysics();
+	}
+	newUser.gameId = newGame.id;
 	newGame.players.push(newUser);
+	users.push(newUser);
 
 	console.log("Game:", [newGame.id], ", number of players:", newGame.players.length);
 	console.log("Player IDs in this scene:", newGame.players.map(player => player.id));
-	newUser.gameId = newGame.id;
 
 	const response: InitGameSuccess = {
 		type: "InitGameSuccess",
-		status: "ok",
+		gameState: "running",
 		gameId: newGame.id
 	}
 	socket.send(JSON.stringify(response));
