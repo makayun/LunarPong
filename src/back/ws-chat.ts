@@ -33,7 +33,17 @@ export async function wsChatPlugin(server: FastifyInstance) {
         switch (msg.type) {
             case 'register': {
                 const rawUser = msg.user;
-                const nickname = (rawUser.nick && rawUser.nick.trim()) || `User-${rawUser.id.slice(0, 6)}`;
+                let nickname = (rawUser.nick && rawUser.nick.trim()) || `User-${rawUser.id.slice(0, 6)}`;
+                const isNickTaken = Array.from(users.values()).some(u => u.nick === nickname);
+
+                  if (isNickTaken) {
+                  let suffix = 1;
+                  let newNick: string;
+                  do {
+                    newNick = `${nickname}_${suffix++}`;
+                  } while (Array.from(users.values()).some(u => u.nick === newNick));
+                  nickname = newNick;
+                }
 
                 currentUser = {
                 ...rawUser,
@@ -45,8 +55,9 @@ export async function wsChatPlugin(server: FastifyInstance) {
             users.set(currentUser.id, currentUser);
             socket.send(JSON.stringify({ type: 'system', content: `Welcome, ${currentUser.nick}` }));
             broadcastUserList();
+            socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
             break;
-            }
+          }
 
           case 'message': {
             if (!currentUser) return;
@@ -59,7 +70,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
             recipient.chatSocket?.send(JSON.stringify({
               type: 'message',
               from: senderId,
-              to: { id: recipientId },
+              to: { id: recipientId, nick: users.get(recipientId)?.nick },
               content: msg.content,
             }));
             break;
@@ -113,7 +124,28 @@ export async function wsChatPlugin(server: FastifyInstance) {
 
           case 'profile': {
             if (!currentUser) return;
-            console.log(`User ${currentUser.id} запросил профиль ${msg.user.id}`); // 💥
+  
+            const requestedUser = users.get(msg.user.id);
+            if (!requestedUser) {
+              socket.send(JSON.stringify({
+                type: 'profile',
+                user: { id: msg.user.id },
+                error: 'User not found'
+              }));
+              return;
+            }
+
+            // 💥💥💥Здесь должны быть реальные данные! 
+            socket.send(JSON.stringify({
+              type: 'profile',
+              user: {
+                id: requestedUser.id,
+                nick: requestedUser.nick
+              },
+              rating: 4.2,       // 💥💥💥Заглушка
+              wins: 42,          // 💥💥💥Заглушка
+              streak: 5          // 💥💥💥Заглушка
+            }));
             break;
           }
 

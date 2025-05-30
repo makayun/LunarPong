@@ -20,6 +20,13 @@ socket.addEventListener('message', (event) => {
   console.log('Received:', event.data); // 💥
   try {
     const data = JSON.parse(event.data);
+    if (data.type === 'nick-confirm') {
+      if (data.nick !== user.nick) {
+        user.nick = data.nick;
+        sessionStorage.setItem('pong-nickname', data.nick);
+        addMessage(`[System] Your nickname was changed to ${data.nick} because the previous one was taken.`);
+      }
+    }
     switch (data.type) {
       case 'message': {
         let direction = 'all';
@@ -40,7 +47,7 @@ socket.addEventListener('message', (event) => {
         break;
       case 'invite':
         const fromNick = userMap.get(data.from as GUID) || data.from;
-        addMessage(`[Invite] ${fromNick} invited you to play ${data.game}`);
+        addMessage(`[Invite] ⚡ ${fromNick} invited you to play ${data.game}`);
       break;
     }
   } catch {
@@ -76,7 +83,10 @@ input.addEventListener('keydown', (e: KeyboardEvent) => {
 });
 
 function addMessage(msg: string) {
-  messages.textContent += msg + '\n';
+  const div = document.createElement('div');
+  div.className = 'message';
+  div.textContent = msg;
+  messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
 }
 
@@ -102,7 +112,8 @@ export function blockUser() {
   const target = recipient.value;
   if (target !== 'all') {
     socket.send(JSON.stringify({ type: 'block', user: { id: target } }));
-    addMessage(`[System] Blocked user ${target}`);
+    const targetNick = userMap.get(target as GUID) || target;
+    addMessage(`[System] 👿 Blocked user ${targetNick}`);
   }
 }
 
@@ -123,7 +134,50 @@ export function inviteUser() {
 export function viewProfile() {
   const target = recipient.value;
   if (target !== 'all') {
-    alert(`Open profile of user ${target}`);
+    const playerNick = userMap.get(target as GUID) || target;
+
+    socket.send(JSON.stringify({
+      type: 'profile',
+      user: { id: target }
+    }));
+
+    const profileHandler = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'profile' && data.user.id === target) {
+          socket.removeEventListener('message', profileHandler);
+
+          const profileHTML = `
+            <div class="player-profile" style="
+              background: #2a2a2a;
+              border: 2px solid #6a0dad;
+              border-radius: 10px;
+              padding: 10px;
+              color: white;
+              margin: 4px 0;
+              line-height: 1.2;
+            ">
+              <h3 style="color: #ff6b6b; margin: 0 0 6px 0;">🎮 ${playerNick}</h3>
+              <p style="margin: 2px 0;">⭐ Rating: ${data.rating || 'N/A'}</p>
+              <p style="margin: 2px 0;">🏆 Wins: ${data.wins || 0}</p>
+              <p style="margin: 2px 0;">🔥 Streak: ${data.streak || 0}</p>
+            </div>
+          `;
+
+          const existingProfile = document.getElementById('player-profile');
+          if (existingProfile) {
+            existingProfile.innerHTML = profileHTML;
+          } else {
+            const profileDiv = document.createElement('div');
+            profileDiv.id = 'player-profile';
+            profileDiv.innerHTML = profileHTML;
+            messages.appendChild(profileDiv);
+          }
+        }
+      } catch {}
+    };
+
+    socket.addEventListener('message', profileHandler);
   }
 }
 
