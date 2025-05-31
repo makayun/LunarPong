@@ -53,7 +53,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
             };
 
             users.set(currentUser.id, currentUser);
-            socket.send(JSON.stringify({ type: 'system', content: `Welcome, ${currentUser.nick}` }));
+            socket.send(JSON.stringify({ type: 'system', content: `Welcome, ✨${currentUser.nick}✨` }));
             broadcastUserList();
             socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
             break;
@@ -104,7 +104,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
 
           case 'invite': {
             if (!currentUser) return;
-            console.log('Invite received from', currentUser.id, 'to', msg.to.id); // 💥
+            console.log('Invite received from', currentUser.id, 'to', msg.to.id);
 
             sendToUser(msg.to.id, {
               type: 'invite',
@@ -150,7 +150,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
           }
 
           default:
-            console.warn("Unknown message type:", msg); // 💥
+            console.warn("Unknown message type:", msg);
         }
       } catch (err) {
         socket.send(JSON.stringify({ type: 'system', content: 'Invalid message format.' }));

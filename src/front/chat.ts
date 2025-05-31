@@ -17,7 +17,7 @@ socket.addEventListener('open', () => {
 });
 
 socket.addEventListener('message', (event) => {
-  console.log('Received:', event.data); // 💥
+  console.log('Received:', event.data);
   try {
     const data = JSON.parse(event.data);
     if (data.type === 'nick-confirm') {
@@ -35,8 +35,8 @@ socket.addEventListener('message', (event) => {
         } else if (data.to?.nick) {
           direction = userMap.get(data.to.id as GUID) || data.to.id;
         }
-        const fromNick = userMap.get(data.from as GUID) || data.from; // ???🔥
-        addMessage(`[${fromNick} -> ${direction}] ${data.content}`); // ???🔥
+        const fromNick = userMap.get(data.from as GUID) || data.from;
+        addMessage(`[${fromNick} -> ${direction}] ${data.content}`);
         break;
       }
       case 'system':
@@ -75,7 +75,7 @@ input.addEventListener('keydown', (e: KeyboardEvent) => {
       socket.send(JSON.stringify(payload));
       const nick = recipient.value === 'all' ? 'all' : userMap.get(recipient.value as GUID);
       const direction = nick || recipient.value;
-      console.log('Sending to:', { id: recipient.value, nick }); // 💥
+      console.log('Sending to:', { id: recipient.value, nick });
       addMessage(`[You -> ${direction}] ${text}`);
       input.value = '';
     }
@@ -93,9 +93,9 @@ function addMessage(msg: string) {
 let userMap = new Map<GUID, string>();
 
 function updateUserList(users: { id: GUID; nick: string }[]) {
-  console.log('Received users:', users); // 💥
+  console.log('Received users:', users);
   userMap.clear();
-  recipient.innerHTML = '<option value="all">Broadcast</option>';
+  recipient.innerHTML = '<option value="all">All Players</option>';
   users.forEach((u) => {
     userMap.set(u.id, u.nick);
     if (u.nick !== user.nick) {
@@ -105,7 +105,7 @@ function updateUserList(users: { id: GUID; nick: string }[]) {
       recipient.appendChild(option);
     }
   });
-  console.log('userMap after update:', Array.from(userMap.entries())); // 💥
+  console.log('userMap after update:', Array.from(userMap.entries()));
 }
 
 export function blockUser() {
@@ -120,7 +120,7 @@ export function blockUser() {
 export function inviteUser() {
   const recipientElement = document.getElementById('recipient') as HTMLSelectElement | null;
   if (!recipientElement) {
-    console.error('Recipient element not found'); // 💥
+    console.error('Recipient element not found');
     return;
   }
   const target = recipientElement.value;
@@ -149,30 +149,29 @@ export function viewProfile() {
 
           const profileHTML = `
             <div class="player-profile" style="
-              background: #2a2a2a;
+              background:rgb(32, 28, 28);
               border: 2px solid #6a0dad;
               border-radius: 10px;
-              padding: 10px;
-              color: white;
-              margin: 4px 0;
-              line-height: 1.2;
+              padding: 6px 8px;
+              color:rgb(168, 230, 230);
+              margin: 2px 0;
+              line-height: 1.0;
             ">
-              <h3 style="color: #ff6b6b; margin: 0 0 6px 0;">🎮 ${playerNick}</h3>
+              <h3 style="color:rgb(200, 245, 117); margin: 0 0 6px 0;">🎮 ${playerNick}</h3>
               <p style="margin: 2px 0;">⭐ Rating: ${data.rating || 'N/A'}</p>
               <p style="margin: 2px 0;">🏆 Wins: ${data.wins || 0}</p>
               <p style="margin: 2px 0;">🔥 Streak: ${data.streak || 0}</p>
             </div>
           `;
 
-          const existingProfile = document.getElementById('player-profile');
-          if (existingProfile) {
-            existingProfile.innerHTML = profileHTML;
-          } else {
-            const profileDiv = document.createElement('div');
-            profileDiv.id = 'player-profile';
-            profileDiv.innerHTML = profileHTML;
-            messages.appendChild(profileDiv);
-          }
+          // const existingProfile = document.getElementById('player-profile');
+          // if (existingProfile) {
+          //   existingProfile.remove();
+          // }
+          const profileDiv = document.createElement('div');
+          profileDiv.id = 'player-profile';
+          profileDiv.innerHTML = profileHTML;
+          messages.appendChild(profileDiv);
         }
       } catch {}
     };

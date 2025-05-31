@@ -27,6 +27,8 @@
       flex-direction: column;
     }
     .chat {
+      min-width: 240px; /*chat*/
+      max-width: 400px; /*chat*/
       padding: 10px;
       gap: 10px;
       background-color: pink;
@@ -46,7 +48,9 @@
       padding: 10px;
       background-color: #111;
       color: #0f0;
-      white-space: pre-wrap;
+      /* white-space: pre-wrap; */
+      /* word-break: break-word; */
+      overflow-wrap: break-word; /*cards*/
       font-size: 14px;
     }
     .input {
@@ -130,7 +134,7 @@
     <div class="chat">
       <div class="controls">
         <select id="recipient">
-          <option value="all">Broadcast</option>
+          <option value="all">All Players</option>
         </select>
         <button onclick="blockUser()">Block</button>
         <button onclick="inviteUser()">Invite</button>

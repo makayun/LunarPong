@@ -6,6 +6,7 @@
 
 🔹 3. Invite to Pong (Приглашение в игру Pong) - ✅
 
+Надо соединить с турнирами - 🔥
 
 🔹 4. Tournament Notifications (Уведомления от системы) - 🔥
 
