@@ -1,6 +1,8 @@
 import type { Mesh } from "@babylonjs/core/Meshes/mesh";
-import type { Vector3 } from "@babylonjs/core/Maths/math.vector";
+import type { Vector3 as BabylonVector3 } from "@babylonjs/core/Maths/math.vector";
 import type { WebSocket } from "@fastify/websocket";
+
+export type Vector3 = BabylonVector3;
 
 export type MeshName =
 	| "ground"

@@ -40,7 +40,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
                   let suffix = 1;
                   let newNick: string;
                   do {
-                    newNick = `${nickname}_${suffix++}`;
+                    newNick = `${nickname}_${suffix++}`;  // никнейм_номер
                   } while (Array.from(users.values()).some(u => u.nick === newNick));
                   nickname = newNick;
                 }
