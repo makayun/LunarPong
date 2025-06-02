@@ -1,10 +1,21 @@
+import { Animation }		from "@babylonjs/core/Animations";
+import type { Mesh }		from "@babylonjs/core/Meshes";
+// import type { Scene }		from "@babylonjs/core/scene";
+
+import { PADDLE_MIN_Z,
+		PADDLE_MAX_Z,
+		FPS,
+		STEP }				from "../defines/constants";
+// import type { MeshesDict }	from "../defines/types";
+
+
 import type { FastifyInstance }	from "fastify";
 import type { WebSocket }		from "@fastify/websocket";
 import type { FastifyRequest }	from "fastify";
 
 import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
-import type { InitGameRequest, WSMessage, User, InitGameSuccess } from "../defines/types";
+import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide } from "../defines/types";
 
 export interface WsGamePluginOptions { engine: PongBackEngine; users: User[] };
 
@@ -23,7 +34,13 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 					processInitGameRequest(engine, users, socket, msg as InitGameRequest);
 					break;
 				case "PlayerInput":
-					process
+					let scene = engine.scenes.find(scene => scene.id === msg.gameId);
+					if (scene) {
+						const paddle = msg.side === "left" ? scene.pongMeshes.paddleLeft : scene.pongMeshes.paddleRight;
+						scene.stopAnimation(paddle);
+						animatePaddleToX(paddle, paddle.position.z + STEP * msg.direction);
+					}
+					break;
 				default:
 					console.error(`Bad WS message: ${msg}`);
 					// socket.send(`Bad WS message: ${msg}`);
@@ -58,15 +75,18 @@ function processInitGameRequest(engine: PongBackEngine, users: User[], socket: W
 	)
 
 	const newUser: User = { id: msg.user.id, gameSocket: socket };
+	let side: PlayerSide;
 
 	let newGame = engine.scenes.find(
 		scene => scene.state === "init" && scene.players.length === 1);
 	if (!newGame) {
 		newGame = new PongBackScene(engine);
-		console.log("Creating new pong game, id:", [newGame.id])
+		console.log("Creating new pong game, id:", [newGame.id]);
+		side = "left";
 	}
 	else {
 		newGame.enablePongPhysics();
+		side = "right";
 	}
 	newUser.gameId = newGame.id;
 	newGame.players.push(newUser);
@@ -77,8 +97,35 @@ function processInitGameRequest(engine: PongBackEngine, users: User[], socket: W
 
 	const response: InitGameSuccess = {
 		type: "InitGameSuccess",
+		playersSide: side,
 		gameState: "running",
 		gameId: newGame.id
 	}
 	socket.send(JSON.stringify(response));
+}
+
+
+function clampPaddleX(x: number): number {
+	return Math.max(PADDLE_MIN_Z, Math.min(PADDLE_MAX_Z, x));
+}
+
+function animatePaddleToX(mesh: Mesh, targetX: number, duration: number = 200): void {
+	const animation = new Animation(
+		"paddleMove",
+		"position.z",
+		FPS,
+		Animation.ANIMATIONTYPE_FLOAT,
+		Animation.ANIMATIONLOOPMODE_CONSTANT
+	);
+
+	const x = clampPaddleX(targetX);
+
+	const keys = [
+		{ frame: 0, value: mesh.position.z },
+		{ frame: FPS * (duration / 1000), value: x }
+	];
+
+	animation.setKeys(keys);
+	mesh.animations = [animation];
+	mesh.getScene().beginAnimation(mesh, 0, keys[keys.length - 1].frame, false);
 }

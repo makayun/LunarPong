@@ -34,6 +34,8 @@ export type User = {
 	blocked?: Set<GUID>
 };
 
+export type PlayerSide = "left" | "right";
+
 export interface Game {
 	id: GUID;
 	state: GameState;
@@ -56,8 +58,8 @@ export type GameType =
 
 export type PlayerInput = {
 	type: "PlayerInput",
-	userId: GUID,
-	gameId?: GUID,
+	gameId: GUID,
+	side: PlayerSide,
 	direction: -1 | 0 | 1
 };
 
@@ -76,6 +78,7 @@ export type InitGameRequest = {
 
 export type InitGameSuccess = {
 	type: "InitGameSuccess",
+	playersSide: "left" | "right",
 	gameState: GameState,
 	gameId: GUID
 }
