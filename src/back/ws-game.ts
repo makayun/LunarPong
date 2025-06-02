@@ -22,6 +22,8 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 				case "InitGameRequest":
 					processInitGameRequest(engine, users, socket, msg as InitGameRequest);
 					break;
+				case "PlayerInput":
+					process
 				default:
 					console.error(`Bad WS message: ${msg}`);
 					// socket.send(`Bad WS message: ${msg}`);
