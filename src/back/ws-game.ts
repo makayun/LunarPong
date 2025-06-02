@@ -24,11 +24,11 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 					break;
 				default:
 					console.error(`Bad WS message: ${msg}`);
-					socket.send(`Bad WS message: ${msg}`);
+					// socket.send(`Bad WS message: ${msg}`);
 				}
 			}
 			catch (e) {
-				socket.terminate();
+				// socket.terminate();
 				console.error(e, message);
 			}
 		});

@@ -52,14 +52,13 @@ export type GameType =
 	| "remote"
 	| "AI";
 
-
 //!!! EVERY WEBSOCKET MESSAGE TYPE MUST CONTAIN A 'type' FIELD !!!
 
 export type PlayerInput = {
 	type: "PlayerInput",
-	user: User,
-	game: Game,
-	key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'
+	userId: GUID,
+	gameId?: GUID,
+	direction: -1 | 0 | 1
 };
 
 export type MeshPositions = {

@@ -1,17 +1,48 @@
 import { Engine }				from "@babylonjs/core/Engines/engine";
 import { PongFrontScene }		from "../scenes/PongFrontScene";
-import { paddleMovement }		from "./paddleMovements";
+// import { paddleMovement }		from "./paddleMovements";
 import { getOrCreateClientId }	from "../helpers/helpers";
-import type { MeshesDict, MeshPositions, User, WSMessage }	from "../defines/types";
+import type { MeshesDict, MeshPositions, PlayerInput, User, WSMessage }	from "../defines/types";
 
 export const babylonInit = async (): Promise<void> => {
-	const player: User = { id: getOrCreateClientId() };
 	const socket: WebSocket = new WebSocket("ws://localhost:12800/ws-game");
+	const player: User = { id: getOrCreateClientId() };
 
 	const startButton = document.getElementById("startButton") as HTMLButtonElement;
 	const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 	const engine: Engine = new Engine(canvas, true);
 	const pongScene: PongFrontScene = new PongFrontScene(engine);
+	let meshPositions: MeshPositions = {
+		type: "MeshPositions",
+		ball: pongScene.pongMeshes.ball.position,
+		paddleLeft: pongScene.pongMeshes.paddleLeft.position,
+		paddleRight: pongScene.pongMeshes.paddleRight.position
+	};
+	let input: PlayerInput = {
+		type: "PlayerInput",
+		userId: player.id,
+		direction: 0
+	}
+
+	window.onkeydown = (ev) => {
+		switch (ev.key) {
+			case 'w': case 'ArrowUp':
+				input.direction = -1;
+				break;
+			case 's': case 'ArrowDown':
+				input.direction = 1;
+				break;
+		}
+	}
+
+	window.onkeyup = (ev) => {
+		if (ev.key === 'w' || ev.key === 's' || ev.key === 'ArrowUp' || ev.key === 'ArrowDown') {
+			input.direction = 0;
+		}
+	}
+
+	pongScene.registerBeforeRender(() => applyMeshPositions(pongScene.pongMeshes, meshPositions));
+	// pongScene.registerAfterRender(() => sendPlayerInput(input, socket));
 
 
 	startButton.addEventListener("click", () => {
@@ -29,15 +60,15 @@ export const babylonInit = async (): Promise<void> => {
 				case "InitGameSuccess":
 					player.gameId = message.gameId;
 					pongScene.state = message.gameState;
+					input.gameId = message.gameId;
 					break;
 				case "MeshPositions":
-					console.log("Mesh postions received:", message.ball);
-					pongScene.registerBeforeRender(() => applyMeshPositions(pongScene.pongMeshes, message));
+					meshPositions = message;
 					break;
 			}
 		} catch (error) {
 			console.error("Wrong WS message:", error);
-			socket.send("Invalid WS message: " + JSON.stringify(error));
+			// socket.send("Invalid WS message: " + JSON.stringify(error));
 		}
 	};
 
@@ -45,7 +76,8 @@ export const babylonInit = async (): Promise<void> => {
 	engine.runRenderLoop(function () {
 		if (pongScene.state !== "init") {
 			pongScene.render();
-			paddleMovement(pongScene, pongScene.pongMeshes);
+			sendPlayerInput(input, socket);
+			// paddleMovement(pongScene, pongScene.pongMeshes);
 		}
 	});
 
@@ -60,6 +92,10 @@ export const babylonInit = async (): Promise<void> => {
 };
 
 babylonInit().then(() => {});
+
+function sendPlayerInput(input: PlayerInput, socket: WebSocket) {
+	socket.send(JSON.stringify(input));
+}
 
 function applyMeshPositions (meshes: MeshesDict, newPositions: MeshPositions) : void {
 	meshes.ball.position = newPositions.ball;
