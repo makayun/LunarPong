@@ -1,11 +1,10 @@
 import { Engine }				from "@babylonjs/core/Engines/engine";
 import { PongFrontScene }		from "../scenes/PongFrontScene";
-// import { paddleMovement }		from "./paddleMovements";
 import { getOrCreateClientId }	from "../helpers/helpers";
 import type { MeshesDict, MeshPositions, GUID, PlayerSide, User, WSMessage, PlayerInput }	from "../defines/types";
 
 export const babylonInit = async (): Promise<void> => {
-	const socket: WebSocket = new WebSocket("ws://localhost:12800/ws-game");
+	const socket = new WebSocket(`ws://${window.location.host}/ws-game`);
 	const player: User = { id: getOrCreateClientId() };
 	let side: PlayerSide;
 
@@ -55,7 +54,6 @@ export const babylonInit = async (): Promise<void> => {
 		if (pongScene.state !== "init") {
 			pongScene.render();
 			sendPlayerInput(player.gameId as GUID, side, socket);
-			// paddleMovement(pongScene, pongScene.pongMeshes);
 		}
 	});
 

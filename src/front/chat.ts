@@ -4,7 +4,7 @@ import type { GUID } from "../defines/types";
 const input = document.getElementById('input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
-const socket = new WebSocket('ws://localhost:12800/ws-chat');
+const socket = new WebSocket(`ws://${window.location.host}/ws-chat`);
 
 const user = {
   id: getOrCreateClientId(),
