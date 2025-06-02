@@ -9,8 +9,7 @@ import { PongBaseScene }	from "./PongBaseScene";
 import { generateGuid }		from "../helpers/helpers";
 import type { User, Game, GUID } from "../defines/types";
 import { WebSocket } from "@fastify/websocket";
-
-const ammoReadyPromise = Ammo();
+import { Mesh } from "@babylonjs/core";
 
 export class PongBackEngine extends NullEngine {
 	override scenes: PongBackScene[] = [];
@@ -33,28 +32,49 @@ export class PongBackEngine extends NullEngine {
 }
 
 export class PongBackScene extends PongBaseScene implements Game {
-	preTasks = [ammoReadyPromise];
-
 	public id: GUID = generateGuid();
 	public players: User[] = [];
 
 	async enablePongPhysics(): Promise<void> {
-		const ammo = await ammoReadyPromise;
+		const ammo = await Ammo();
 		const physics = new AmmoJSPlugin(true, ammo);
 		this.enablePhysics(new Vector3(0, -9.81, 0), physics);
 
 		this.pongMeshes.ball.physicsImpostor = new PhysicsImpostor(
 			this.pongMeshes.ball,
 			PhysicsImpostor.SphereImpostor,
-			{ mass: 2, restitution: 0.8 },
+			{ mass: 2, restitution: 1 },
 			this
 		);
 
-		this.pongMeshes.ground.physicsImpostor = new PhysicsImpostor(
-			this.pongMeshes.ground,
-			PhysicsImpostor.BoxImpostor,
-			{ mass: 0, restitution: 0.6 },
-			this
-		);
+		this.createBoxImpostor(this.pongMeshes.ground);
+		this.createBoxImpostor(this.pongMeshes.edgeBottom);
+		this.createBoxImpostor(this.pongMeshes.edgeTop);
+		this.createBoxImpostor(this.pongMeshes.edgeLeft);
+		this.createBoxImpostor(this.pongMeshes.edgeRight);
+
+		// this.createCapsuleImpostor(this.pongMeshes.paddleLeft);
+		// this.createCapsuleImpostor(this.pongMeshes.paddleRight);
+
+		this.pongMeshes.ball.physicsImpostor.applyForce(new Vector3(1000, 0, 0), this.pongMeshes.ball.absolutePosition);
 	}
+
+	private createBoxImpostor(inMesh: Mesh) : void {
+		inMesh.physicsImpostor = new PhysicsImpostor(
+			inMesh,
+			PhysicsImpostor.BoxImpostor,
+			{ mass: 0, restitution: 1 },
+			this
+		)
+	}
+
+	// private createCapsuleImpostor(inMesh: Mesh) : void {
+	// 	inMesh.physicsImpostor = new PhysicsImpostor(
+	// 		inMesh,
+	// 		PhysicsImpostor.CapsuleImpostor,
+	// 		{ mass: 0, restitution: 1 },
+	// 		this
+	// 	)
+	// }
 }
+
