@@ -1,5 +1,5 @@
 import { getOrCreateClientId, getOrCreateNickname } from "../helpers/helpers";
-// import type { GUID } from "../defines/types";
+import type { GUID } from "../defines/types";
 
 const input = document.getElementById('input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
@@ -20,26 +20,35 @@ socket.addEventListener('message', (event) => {
   console.log('Received:', event.data);
   try {
     const data = JSON.parse(event.data);
+    if (data.type === 'nick-confirm') {
+      if (data.nick !== user.nick) {
+        user.nick = data.nick;
+        sessionStorage.setItem('pong-nickname', data.nick);
+        addMessage(`[System] Your nickname was changed to ${data.nick} because the previous one was taken.`);
+      }
+    }
     switch (data.type) {
       case 'message': {
         let direction = 'all';
         if (data.to?.nick === user.nick) {
           direction = 'you';
         } else if (data.to?.nick) {
-          direction = data.to.nick;
+          direction = userMap.get(data.to.id as GUID) || data.to.id;
         }
-        addMessage(`[${data.from} -> ${direction}] ${data.content}`);
+        const fromNick = userMap.get(data.from as GUID) || data.from;
+        addMessage(`[${fromNick} -> ${direction}] ${data.content}`);
         break;
       }
       case 'system':
         addMessage(`[System] ${data.content}`);
         break;
       case 'userlist':
-        updateUserList(data.users); // now: [{ id, nick }]
+        updateUserList(data.users);
         break;
       case 'invite':
-        addMessage(`[Invite] ${data.from} invited you to play ${data.game}`);
-        break;
+        const fromNick = userMap.get(data.from as GUID) || data.from;
+        addMessage(`[Invite] ⚡ ${fromNick} invited you to play ${data.game}`);
+      break;
     }
   } catch {
     addMessage(event.data);
@@ -64,7 +73,9 @@ input.addEventListener('keydown', (e: KeyboardEvent) => {
         };
       }
       socket.send(JSON.stringify(payload));
-      const direction = recipient.value === 'all' ? 'all' : recipient.value;
+      const nick = recipient.value === 'all' ? 'all' : userMap.get(recipient.value as GUID);
+      const direction = nick || recipient.value;
+      console.log('Sending to:', { id: recipient.value, nick });
       addMessage(`[You -> ${direction}] ${text}`);
       input.value = '';
     }
@@ -72,15 +83,19 @@ input.addEventListener('keydown', (e: KeyboardEvent) => {
 });
 
 function addMessage(msg: string) {
-  messages.textContent += msg + '\n';
+  const div = document.createElement('div');
+  div.className = 'message';
+  div.textContent = msg;
+  messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
 }
 
-let userMap = new Map<string, string>(); // id -> nick
+let userMap = new Map<GUID, string>();
 
-function updateUserList(users: { id: string; nick: string }[]) {
+function updateUserList(users: { id: GUID; nick: string }[]) {
+  console.log('Received users:', users);
   userMap.clear();
-  recipient.innerHTML = '<option value="all">Broadcast</option>';
+  recipient.innerHTML = '<option value="all">All Players</option>';
   users.forEach((u) => {
     userMap.set(u.id, u.nick);
     if (u.nick !== user.nick) {
@@ -90,28 +105,78 @@ function updateUserList(users: { id: string; nick: string }[]) {
       recipient.appendChild(option);
     }
   });
+  console.log('userMap after update:', Array.from(userMap.entries()));
 }
 
 export function blockUser() {
   const target = recipient.value;
   if (target !== 'all') {
     socket.send(JSON.stringify({ type: 'block', user: { id: target } }));
-    addMessage(`[System] Blocked user ${target}`);
+    const targetNick = userMap.get(target as GUID) || target;
+    addMessage(`[System] 👿 Blocked user ${targetNick}`);
   }
 }
 
 export function inviteUser() {
-  const target = recipient.value;
+  const recipientElement = document.getElementById('recipient') as HTMLSelectElement | null;
+  if (!recipientElement) {
+    console.error('Recipient element not found');
+    return;
+  }
+  const target = recipientElement.value;
   if (target !== 'all') {
     socket.send(JSON.stringify({ type: 'invite', to: { id: target }, game: 'pong' }));
-    addMessage(`[System] Invited user ${target} to play pong`);
+    const targetNick = userMap.get(target as GUID) || target;
+    addMessage(`[System] Invited ${targetNick} to play pong`);
   }
 }
 
 export function viewProfile() {
   const target = recipient.value;
   if (target !== 'all') {
-    alert(`Open profile of user ${target}`);
+    const playerNick = userMap.get(target as GUID) || target;
+
+    socket.send(JSON.stringify({
+      type: 'profile',
+      user: { id: target }
+    }));
+
+    const profileHandler = (event: MessageEvent) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'profile' && data.user.id === target) {
+          socket.removeEventListener('message', profileHandler);
+
+          const profileHTML = `
+            <div class="player-profile" style="
+              background:rgb(32, 28, 28);
+              border: 2px solid #6a0dad;
+              border-radius: 10px;
+              padding: 6px 8px;
+              color:rgb(168, 230, 230);
+              margin: 2px 0;
+              line-height: 1.0;
+            ">
+              <h3 style="color:rgb(200, 245, 117); margin: 0 0 6px 0;">🎮 ${playerNick}</h3>
+              <p style="margin: 2px 0;">⭐ Rating: ${data.rating || 'N/A'}</p>
+              <p style="margin: 2px 0;">🏆 Wins: ${data.wins || 0}</p>
+              <p style="margin: 2px 0;">🔥 Streak: ${data.streak || 0}</p>
+            </div>
+          `;
+
+          // const existingProfile = document.getElementById('player-profile');
+          // if (existingProfile) {
+          //   existingProfile.remove();
+          // }
+          const profileDiv = document.createElement('div');
+          profileDiv.id = 'player-profile';
+          profileDiv.innerHTML = profileHTML;
+          messages.appendChild(profileDiv);
+        }
+      } catch {}
+    };
+
+    socket.addEventListener('message', profileHandler);
   }
 }
 
