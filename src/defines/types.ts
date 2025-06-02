@@ -36,6 +36,8 @@ export type User = {
 	blocked?: Set<GUID>
 };
 
+export type PlayerSide = "left" | "right";
+
 export interface Game {
 	id: GUID;
 	state: GameState;
@@ -54,14 +56,13 @@ export type GameType =
 	| "remote"
 	| "AI";
 
-
 //!!! EVERY WEBSOCKET MESSAGE TYPE MUST CONTAIN A 'type' FIELD !!!
 
 export type PlayerInput = {
 	type: "PlayerInput",
-	user: User,
-	game: Game,
-	key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'
+	gameId: GUID,
+	side: PlayerSide,
+	direction: -1 | 0 | 1
 };
 
 export type MeshPositions = {
@@ -79,6 +80,7 @@ export type InitGameRequest = {
 
 export type InitGameSuccess = {
 	type: "InitGameSuccess",
+	playersSide: "left" | "right",
 	gameState: GameState,
 	gameId: GUID
 }

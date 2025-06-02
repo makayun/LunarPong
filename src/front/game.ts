@@ -1,17 +1,26 @@
 import { Engine }				from "@babylonjs/core/Engines/engine";
 import { PongFrontScene }		from "../scenes/PongFrontScene";
-import { paddleMovement }		from "./paddleMovements";
 import { getOrCreateClientId }	from "../helpers/helpers";
-import type { MeshesDict, MeshPositions, User, WSMessage }	from "../defines/types";
+import type { MeshesDict, MeshPositions, GUID, PlayerSide, User, WSMessage, PlayerInput }	from "../defines/types";
 
 export const babylonInit = async (): Promise<void> => {
+	const socket = new WebSocket(`ws://${window.location.host}/ws-game`);
 	const player: User = { id: getOrCreateClientId() };
-	const socket: WebSocket = new WebSocket("ws://localhost:12800/ws-game");
+	let side: PlayerSide;
 
 	const startButton = document.getElementById("startButton") as HTMLButtonElement;
 	const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 	const engine: Engine = new Engine(canvas, true);
 	const pongScene: PongFrontScene = new PongFrontScene(engine);
+	let meshPositions: MeshPositions = {
+		type: "MeshPositions",
+		ball: pongScene.pongMeshes.ball.position,
+		paddleLeft: pongScene.pongMeshes.paddleLeft.position,
+		paddleRight: pongScene.pongMeshes.paddleRight.position
+	};
+
+	pongScene.registerBeforeRender(() => applyMeshPositions(pongScene.pongMeshes, meshPositions));
+	// pongScene.registerAfterRender(() => sendPlayerInput(input, socket));
 
 
 	startButton.addEventListener("click", () => {
@@ -29,23 +38,22 @@ export const babylonInit = async (): Promise<void> => {
 				case "InitGameSuccess":
 					player.gameId = message.gameId;
 					pongScene.state = message.gameState;
+					side = message.playersSide;
 					break;
 				case "MeshPositions":
-					console.log("Mesh postions received:", message.ball);
-					pongScene.registerBeforeRender(() => applyMeshPositions(pongScene.pongMeshes, message));
+					meshPositions = message;
 					break;
 			}
 		} catch (error) {
 			console.error("Wrong WS message:", error);
-			socket.send("Invalid WS message: " + JSON.stringify(error));
+			// socket.send("Invalid WS message: " + JSON.stringify(error));
 		}
 	};
-
 
 	engine.runRenderLoop(function () {
 		if (pongScene.state !== "init") {
 			pongScene.render();
-			paddleMovement(pongScene, pongScene.pongMeshes);
+			sendPlayerInput(player.gameId as GUID, side, socket);
 		}
 	});
 
@@ -60,6 +68,30 @@ export const babylonInit = async (): Promise<void> => {
 };
 
 babylonInit().then(() => {});
+
+function sendPlayerInput(inGameId: GUID, inSide: PlayerSide, socket: WebSocket) {
+	window.onkeydown = (ev) => {
+		if (ev.repeat) return;
+
+		let inputMessage: PlayerInput = {
+			type: "PlayerInput",
+			gameId: inGameId,
+			side: inSide,
+			direction: 0
+		}
+
+		switch (ev.key) {
+			case 'w':
+				inputMessage.direction = 1;
+				socket.send(JSON.stringify(inputMessage));
+				break;
+			case 's':
+				inputMessage.direction = -1;
+				socket.send(JSON.stringify(inputMessage));
+				break;
+		};
+	}
+}
 
 function applyMeshPositions (meshes: MeshesDict, newPositions: MeshPositions) : void {
 	meshes.ball.position = newPositions.ball;
