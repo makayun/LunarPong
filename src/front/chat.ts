@@ -47,7 +47,7 @@ socket.addEventListener('message', (event) => {
         break;
       case 'invite':
         const fromNick = userMap.get(data.from as GUID) || data.from;
-        addMessage(`[Invite] 🔧 ${fromNick} invited you to play ${data.game}`);
+        addMessage(`[Invite] ${fromNick} invited you to play ${data.game} 🥎`);
       break;
     }
   } catch {
