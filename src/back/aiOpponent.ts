@@ -1,5 +1,6 @@
 import type { MeshPositions, PlayerInput, User, Game, Vector3, GUID } from "../defines/types";
 import { Vector3 as BabylonVector3 } from "@babylonjs/core/Maths/math.vector";
+import { generateGuid } from '../helpers/helpers';
 
 interface AIOpponentConfig {
   paddleSpeed: number; // Скорость движения ракетки (единиц в секунду)
@@ -17,7 +18,7 @@ export class AIOpponent {
 
   constructor(game: Game, paddleSide: "left" | "right") {
     this.user = {
-      id: `AI_${Math.random().toString(36).slice(2)}` as GUID,
+      id: `AI_${generateGuid()}` as GUID,
       gameId: game.id,
     };
     this.game = game;
