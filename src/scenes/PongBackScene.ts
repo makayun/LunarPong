@@ -1,22 +1,56 @@
-import { Vector3 }			from "@babylonjs/core/Maths/math.vector";
+import fs					from "node:fs";
+import path					from "node:path";
 import { NullEngine }		from "@babylonjs/core/Engines/nullEngine";
+import { Vector3 }			from "@babylonjs/core/Maths/math.vector";
+import { HavokPlugin }		from "@babylonjs/core/Physics/v2";
+import HavokPhysics 		from "@babylonjs/havok";
+import { PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core/Physics";
 import "@babylonjs/core/Physics/physicsEngineComponent"
+import type { WebSocket } from "@fastify/websocket";
 
 import { PongBaseScene }	from "./PongBaseScene";
 import { generateGuid }		from "../helpers/helpers";
 import type { User, Game, GUID } from "../defines/types";
-import { WebSocket } from "@fastify/websocket";
 
-import { HavokPlugin, PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core";
-import HavokPhysics from "@babylonjs/havok";
-
-import fs								from "node:fs";
-import path								from "node:path";
 
 const appDir: string = fs.realpathSync(process.cwd());
 const havokPath = path.join(appDir, 'node_modules/@babylonjs/havok/lib/esm/HavokPhysics.wasm');
 const havokWasmBuffer = fs.readFileSync(havokPath);
 const havokWasm = havokWasmBuffer.buffer.slice(havokWasmBuffer.byteOffset, havokWasmBuffer.byteOffset + havokWasmBuffer.byteLength);
+
+
+export class PongBackScene extends PongBaseScene implements Game {
+	public id: GUID = generateGuid();
+	public players: User[] = [];
+
+	async enablePongPhysics(): Promise<void> {
+		const havok = await HavokPhysics({wasmBinary: havokWasm});
+		const physics = new HavokPlugin(true, havok);
+		this.enablePhysics(new Vector3(0, -9.81, 0), physics);
+
+		const ballBody = new PhysicsAggregate(this.pongMeshes.ball, PhysicsShapeType.SPHERE, { mass: 2, restitution: 1}, this).body;
+		new PhysicsAggregate(this.pongMeshes.ground, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
+		new PhysicsAggregate(this.pongMeshes.edgeBottom, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
+		new PhysicsAggregate(this.pongMeshes.edgeTop, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
+		new PhysicsAggregate(this.pongMeshes.edgeLeft, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
+		new PhysicsAggregate(this.pongMeshes.edgeRight, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
+
+		const paddleRightBody = new PhysicsAggregate(this.pongMeshes.paddleLeft, PhysicsShapeType.CAPSULE, { mass: 1, restitution: 1}, this).body;
+		new PhysicsAggregate(this.pongMeshes.paddleRight, PhysicsShapeType.CAPSULE, { mass: 1, restitution: 1}, this);
+
+		ballBody.applyForce(new Vector3(1000,0,0), this.pongMeshes.ball.absolutePosition);
+
+		ballBody.setCollisionCallbackEnabled(true);
+		let ballObserver = ballBody.getCollisionObservable();
+
+		ballObserver.add((collisionEvent) => {
+			if (collisionEvent.collider === paddleRightBody ||
+				collisionEvent.collidedAgainst === paddleRightBody) {
+					ballBody.applyForce(new Vector3(-1000, 0, 0), this.pongMeshes.ball.absolutePosition);
+				}
+		})
+	}
+}
 
 export class PongBackEngine extends NullEngine {
 	override scenes: PongBackScene[] = [];
@@ -37,54 +71,3 @@ export class PongBackEngine extends NullEngine {
 		})
 	}
 }
-
-export class PongBackScene extends PongBaseScene implements Game {
-	public id: GUID = generateGuid();
-	public players: User[] = [];
-
-	async enablePongPhysics(): Promise<void> {
-		const havok = await HavokPhysics({wasmBinary: havokWasm});
-		const physics = new HavokPlugin(true, havok);
-		this.enablePhysics(new Vector3(0, -9.81, 0), physics);
-
-		new PhysicsAggregate(this.pongMeshes.ball, PhysicsShapeType.SPHERE, { mass: 2, restitution: 1}, this);
-		new PhysicsAggregate(this.pongMeshes.ground, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
-
-		// this.pongMeshes.ball.physicsImpostor = new PhysicsImpostor(
-		// 	this.pongMeshes.ball,
-		// 	PhysicsImpostor.SphereImpostor,
-		// 	{ mass: 2, restitution: 1 },
-		// 	this
-		// );
-
-		// this.createBoxImpostor(this.pongMeshes.ground);
-		// this.createBoxImpostor(this.pongMeshes.edgeBottom);
-		// this.createBoxImpostor(this.pongMeshes.edgeTop);
-		// this.createBoxImpostor(this.pongMeshes.edgeLeft);
-		// this.createBoxImpostor(this.pongMeshes.edgeRight);
-
-		// this.createCapsuleImpostor(this.pongMeshes.paddleLeft);
-		// this.createCapsuleImpostor(this.pongMeshes.paddleRight);
-
-		// this.pongMeshes.ball.physicsImpostor.applyForce(new Vector3(1000, 0, 0), this.pongMeshes.ball.absolutePosition);
-	}
-
-	// private createBoxImpostor(inMesh: Mesh) : void {
-	// 	inMesh.physicsImpostor = new PhysicsImpostor(
-	// 		inMesh,
-	// 		PhysicsImpostor.BoxImpostor,
-	// 		{ mass: 0, restitution: 1 },
-	// 		this
-	// 	)
-	// }
-
-	// private createCapsuleImpostor(inMesh: Mesh) : void {
-	// 	inMesh.physicsImpostor = new PhysicsImpostor(
-	// 		inMesh,
-	// 		PhysicsImpostor.CapsuleImpostor,
-	// 		{ mass: 0, restitution: 1 },
-	// 		this
-	// 	)
-	// }
-}
-
