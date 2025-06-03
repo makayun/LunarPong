@@ -140,6 +140,11 @@
 </head>
 <body>
   <div class="container">
+    <div style="position: absolute; top: 10px; left: 10px; z-index: 100;">
+      <button onclick="setLanguage('en')">🇬🇧</button>
+      <button onclick="setLanguage('cz')">🇨🇿</button>
+      <button onclick="setLanguage('es')">🇪🇸</button>
+    </div>
     <div class="left">
       <div class="game-container">
         <h1 class="text-2xl font-bold text-black mb-4">Fucking Pong</h1>
@@ -162,5 +167,57 @@
   </div>
   <%= chat %>
   <%= game %>
+<script>
+  const translations = {
+    en: {
+      title: "Fucking Pong",
+      play: "Play!",
+      allPlayers: "All Players",
+      block: "Block",
+      invite: "Invite",
+      profile: "Profile",
+      placeholder: "Type here..."
+    },
+    cz: {
+      title: "Zasraný Pong",
+      play: "Hrát!",
+      allPlayers: "Hráči",
+      block: "Blokovat",
+      invite: "Pozvat",
+      profile: "Profil",
+      placeholder: "Piš sem..."
+    },
+    es: {
+      title: "Pong Jodido",
+      play: "¡Jugar!",
+      allPlayers: "Jugadores",
+      block: "Bloquear",
+      invite: "Invitar",
+      profile: "Perfil",
+      placeholder: "Escribe aquí..."
+    }
+  };
+
+  let currentLang = 'en';
+
+  function setLanguage(lang) {
+    currentLang = lang;
+    const t = translations[lang];
+
+    document.querySelector("h1").textContent = t.title;
+    document.getElementById("startButton").textContent = t.play;
+    document.getElementById("recipient").options[0].text = t.allPlayers;
+    document.querySelector(".controls button:nth-child(2)").textContent = t.block;
+    document.querySelector(".controls button:nth-child(3)").textContent = t.invite;
+    document.querySelector(".controls button:nth-child(4)").textContent = t.profile;
+    document.getElementById("input").placeholder = t.placeholder;
+  }
+
+  // установить язык при загрузке страницы
+  window.addEventListener("DOMContentLoaded", () => {
+    setLanguage(currentLang);
+  });
+</script>
+
 </body>
 </html>
