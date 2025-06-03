@@ -35,20 +35,20 @@ export class PongBackScene extends PongBaseScene implements Game {
 		new PhysicsAggregate(this.pongMeshes.edgeLeft, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
 		new PhysicsAggregate(this.pongMeshes.edgeRight, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
 
-		const paddleRightBody = new PhysicsAggregate(this.pongMeshes.paddleLeft, PhysicsShapeType.CAPSULE, { mass: 1, restitution: 1}, this).body;
-		new PhysicsAggregate(this.pongMeshes.paddleRight, PhysicsShapeType.CAPSULE, { mass: 1, restitution: 1}, this);
+		new PhysicsAggregate(this.pongMeshes.paddleLeft, PhysicsShapeType.CAPSULE, { mass: 0, restitution: 1 }, this).body;
+		new PhysicsAggregate(this.pongMeshes.paddleRight, PhysicsShapeType.CAPSULE, { mass: 0, restitution: 1 }, this);
 
 		ballBody.applyForce(new Vector3(1000,0,0), this.pongMeshes.ball.absolutePosition);
 
-		ballBody.setCollisionCallbackEnabled(true);
-		let ballObserver = ballBody.getCollisionObservable();
+		// ballBody.setCollisionCallbackEnabled(true);
+		// let ballObserver = ballBody.getCollisionObservable();
 
-		ballObserver.add((collisionEvent) => {
-			if (collisionEvent.collider === paddleRightBody ||
-				collisionEvent.collidedAgainst === paddleRightBody) {
-					ballBody.applyForce(new Vector3(-1000, 0, 0), this.pongMeshes.ball.absolutePosition);
-				}
-		})
+		// ballObserver.add((collisionEvent) => {
+		// 	if (collisionEvent.collider === paddleRightBody ||
+		// 		collisionEvent.collidedAgainst === paddleRightBody) {
+		// 			ballBody.applyForce(new Vector3(-1000, 0, 0), this.pongMeshes.ball.absolutePosition);
+		// 		}
+		// })
 	}
 }
 
