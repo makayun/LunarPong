@@ -11,14 +11,14 @@ import type { User, Game, GUID } from "../defines/types";
 import { WebSocket } from "@fastify/websocket";
 // import { Mesh } from "@babylonjs/core";
 
-import { HavokPlugin } from "@babylonjs/core";
+import { HavokPlugin, PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core";
 import HavokPhysics from "@babylonjs/havok";
 
 import fs								from "node:fs";
 import path								from "node:path";
 
-const appDir: string = fs.realpathSync(process.cwd());
 
+const appDir: string = fs.realpathSync(process.cwd());
 const havokPath = path.join(appDir, 'node_modules/@babylonjs/havok/lib/esm/HavokPhysics.wasm');
 const havokWasmBuffer = fs.readFileSync(havokPath);
 const havokWasm = havokWasmBuffer.buffer.slice(havokWasmBuffer.byteOffset, havokWasmBuffer.byteOffset + havokWasmBuffer.byteLength);
@@ -53,6 +53,11 @@ export class PongBackScene extends PongBaseScene implements Game {
 		const havok = await HavokPhysics({wasmBinary: havokWasm});
 		const physics = new HavokPlugin(true, havok);
 		this.enablePhysics(new Vector3(0, -9.81, 0), physics);
+
+		// new BABYLON.PhysicsAggregate(sphere, BABYLON.PhysicsShapeType.SPHERE, { mass: 1, friction: 0.2, restitution: 0.3 }, scene);
+
+		new PhysicsAggregate(this.pongMeshes.ball, PhysicsShapeType.SPHERE, { mass: 2, restitution: 1}, this);
+		new PhysicsAggregate(this.pongMeshes.ground, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
 
 		// this.pongMeshes.ball.physicsImpostor = new PhysicsImpostor(
 		// 	this.pongMeshes.ball,
