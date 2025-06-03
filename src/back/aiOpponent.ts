@@ -100,134 +100,75 @@ export class AIOpponent {
     }
     return null;
   }
+    /* Предсказываем, где мяч пересечет линию ракетки */
 
-  /* Предсказание позиции мяча */
-private predictBallPosition(positions: MeshPositions): number {
+  private predictBallPosition(positions: MeshPositions): number {
   const ball = positions.ball;
   const paddleX =
     this.config.paddleSide === "right"
       ? positions.paddleRight.x
       : positions.paddleLeft.x;
 
-  if (
-    (this.config.paddleSide === "right" && this.ballVelocity.x <= 0) ||
-    (this.config.paddleSide === "left" && this.ballVelocity.x >= 0)
-  ) {
-    // Мяч движется в другую сторону — возвращаем текущую позицию ракетки
-    return this.config.paddleSide === "right"
-      ? positions.paddleRight.y
-      : positions.paddleLeft.y;
-  }
-
-  const distanceToPaddle = Math.abs(paddleX - ball.x);
-  const timeToPaddle =
-    this.ballVelocity.x !== 0
-      ? distanceToPaddle / Math.abs(this.ballVelocity.x)
-      : Infinity;
-
-  if (timeToPaddle === Infinity || timeToPaddle <= 1) {
-    return ball.y;
-  }
-
-  // Теперь предсказываем Y с отражениями
-  let predictedY = ball.y;
-  let velocityY = this.ballVelocity.y;
-  let remainingTime = timeToPaddle;
-
-  const upperBound = GROUND_HEIGHT / 2 - EDGE_HEIGHT;
-  const lowerBound = -GROUND_HEIGHT / 2 + EDGE_HEIGHT;
-
-  while (remainingTime > 0) {
-    if (velocityY === 0) {
-      // Мяч движется горизонтально без изменения Y
-      predictedY += velocityY * remainingTime;
-      break;
-    }
-
-    if (velocityY > 0) {
-      // Время до верхней границы
-      const timeToUpperBound = (upperBound - predictedY) / velocityY;
-      if (timeToUpperBound > remainingTime) {
-        predictedY += velocityY * remainingTime;
-        break;
-      } else {
-        // Отражение от верхней границы
-        predictedY = upperBound;
-        velocityY = -velocityY;
-        remainingTime -= timeToUpperBound;
-      }
-    } else {
-      // Время до нижней границы
-      const timeToLowerBound = (lowerBound - predictedY) / velocityY;
-      if (timeToLowerBound > remainingTime) {
-        predictedY += velocityY * remainingTime;
-        break;
-      } else {
-        // Отражение от нижней границы
-        predictedY = lowerBound;
-        velocityY = -velocityY;
-        remainingTime -= timeToLowerBound;
-      }
-    }
-  }
-
-  // Ограничиваем итоговую позицию в пределах ракетки
-  if (predictedY > PADDLE_MAX_Z) predictedY = PADDLE_MAX_Z;
-  if (predictedY < PADDLE_MIN_Z) predictedY = PADDLE_MIN_Z;
-
-  return predictedY;
-}
-}
-//   private predictBallPosition(positions: MeshPositions): number {
-//   const ball = positions.ball;
-//   const paddleX =
-//     this.config.paddleSide === "right"
-//       ? positions.paddleRight.x
-//       : positions.paddleLeft.x;
-
-//   console.log(`[${this.lastUpdate}] Ball position: x=${ball.x}, y=${ball.y}`);
-//   console.log(`[${this.lastUpdate}] Paddle X: ${paddleX}, Velocity X: ${this.ballVelocity.x}`);
+  console.log(`[${this.lastUpdate}] Ball position: x=${ball.x}, y=${ball.y}`);
+  console.log(`[${this.lastUpdate}] Paddle X: ${paddleX}, Velocity X: ${this.ballVelocity.x}`);
   
-//   /* Если мяч движется в сторону AI */
-//   if (
-//     (this.config.paddleSide === "right" && this.ballVelocity.x > 0) ||
-//     (this.config.paddleSide === "left" && this.ballVelocity.x < 0)
-//   ) {
-//     const distanceToPaddle = Math.abs(paddleX - ball.x);
-//     const timeToPaddle =
-//       this.ballVelocity.x !== 0
-//         ? distanceToPaddle / Math.abs(this.ballVelocity.x)
-//         : Infinity;
-//     console.log(`[${this.lastUpdate}] Time to paddle: ${timeToPaddle}`);
+  /* Если мяч движется в сторону AI */
+  if (
+    (this.config.paddleSide === "right" && this.ballVelocity.x > 0) ||
+    (this.config.paddleSide === "left" && this.ballVelocity.x < 0)
+  ) {
+    const distanceToPaddle = Math.abs(paddleX - ball.x);
+    const timeToPaddle =
+      this.ballVelocity.x !== 0
+        ? distanceToPaddle / Math.abs(this.ballVelocity.x)
+        : Infinity;
+    console.log(`[${this.lastUpdate}] Time to paddle: ${timeToPaddle}`);
 
-//     if (timeToPaddle === Infinity || timeToPaddle <= 1) {
-//       console.log(
-//         `[${this.lastUpdate}] Ball close or infinite time, using current ball Y: ${ball.y}`
-//       );
-//       return ball.y;
-//     }
+    if (timeToPaddle === Infinity || timeToPaddle <= 1) {
+      console.log(
+        `[${this.lastUpdate}] Ball close or infinite time, using current ball Y: ${ball.y}`
+      );
+      return ball.y;
+    }
 
-//     let predictedY = ball.y + this.ballVelocity.y * timeToPaddle;
+    /* Расчёт Y с учётом возможных отражений от верхнего и нижнего края */
+    const upperBound = GROUND_HEIGHT / 2 - EDGE_HEIGHT;
+    const lowerBound = -GROUND_HEIGHT / 2 + EDGE_HEIGHT;
 
-//     // ограничиваем в пределах поля
-//     if (predictedY > PADDLE_MAX_Z) predictedY = PADDLE_MAX_Z;
-//     if (predictedY < PADDLE_MIN_Z) predictedY = PADDLE_MIN_Z;
 
-//     console.log(`[${this.lastUpdate}] Predicted Y (clamped): ${predictedY}`);
-//     return predictedY;
-//   }
+    let predictedY = ball.y + this.ballVelocity.y * timeToPaddle;
 
-//   console.log(`[${this.lastUpdate}] Ball moving away, returning paddle Y`);
-//   return this.config.paddleSide === "right"
-//     ? positions.paddleRight.y
-//     : positions.paddleLeft.y;
-// }
+        /* логика отражения от границ */
+    const fieldHeight = upperBound - lowerBound;
+    const offset = predictedY - lowerBound;
 
-//   usePowerUp(): PlayerInput | null {
-//     return null; // 💥💥💥Заглушка для power-up
-//   }
+    const bounces = Math.floor(offset / fieldHeight);
+    const remainder = offset % fieldHeight;
 
-//   getUser(): User {
-//     return this.user;
-//   }
-// }
+    if (bounces % 2 === 0) {
+      predictedY = lowerBound + remainder;
+    } else {
+      predictedY = upperBound - remainder;
+    }
+    /* ограничиваем в пределах поля */
+    if (predictedY > PADDLE_MAX_Z) predictedY = PADDLE_MAX_Z;
+    if (predictedY < PADDLE_MIN_Z) predictedY = PADDLE_MIN_Z;
+
+    console.log(`[${this.lastUpdate}] Predicted Y (clamped): ${predictedY}`);
+    return predictedY;
+  }
+
+  console.log(`[${this.lastUpdate}] Ball moving away, returning paddle Y`);
+  return this.config.paddleSide === "right"
+    ? positions.paddleRight.y
+    : positions.paddleLeft.y;
+}
+
+  usePowerUp(): PlayerInput | null {
+    return null; // 💥💥💥Заглушка для power-up
+  }
+
+  getUser(): User {
+    return this.user;
+  }
+}
