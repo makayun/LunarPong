@@ -1,4 +1,4 @@
-import { AmmoJSPlugin }		from "@babylonjs/core/Physics/Plugins/ammoJSPlugin";
+import { AmmoJSPlugin }		from "@babylonjs/core/Physics";
 import { PhysicsImpostor }	from "@babylonjs/core/Physics/physicsImpostor";
 import { Vector3 }			from "@babylonjs/core/Maths/math.vector";
 import { NullEngine }		from "@babylonjs/core/Engines/nullEngine";
