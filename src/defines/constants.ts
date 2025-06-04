@@ -11,7 +11,7 @@ export const PADDLE_MIN_Z = -GROUND_HEIGHT / 2 + PADDLE_RADIUS * 2 + EDGE_HEIGHT
 export const PADDLE_MAX_Z = GROUND_HEIGHT / 2 - PADDLE_RADIUS * 2 - EDGE_HEIGHT;
 
 export const FPS = 60;
-export const STEP = 2;
+export const PADDLE_STEP = 3;
 
 export const UP = -1;
 export const STOP = 0;
