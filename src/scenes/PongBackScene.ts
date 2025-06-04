@@ -25,7 +25,7 @@ export class PongBackScene extends PongBaseScene implements Game {
 	async enablePongPhysics(): Promise<void> {
 		const havok = await HavokPhysics({wasmBinary: havokWasm});
 		const physics = new HavokPlugin(true, havok);
-		physics.setVelocityLimits(30, 30);
+		physics.setVelocityLimits(20, 20);
 		this.enablePhysics(new Vector3(0, -9.81, 0), physics);
 
 		const scalingVec = new Vector3(1, 20, 1);
@@ -62,7 +62,7 @@ export class PongBackScene extends PongBaseScene implements Game {
 
 			if (collidedAgainst === edgeTopBody || collidedAgainst === edgeBottomBody) {
 				newDir.z = -point.z * 1.5;
-				newDir.x = velocity.x;
+				newDir.x = velocity.x - point.x;
 			}
 			else {
 				newDir.z = velocity.z;

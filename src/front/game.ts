@@ -71,7 +71,7 @@ babylonInit().then(() => {});
 
 function sendPlayerInput(inGameId: GUID, inSide: PlayerSide, socket: WebSocket) {
 	window.onkeydown = (ev) => {
-		if (ev.repeat) return;
+		// if (ev.repeat) return;
 
 		let inputMessage: PlayerInput = {
 			type: "PlayerInput",
