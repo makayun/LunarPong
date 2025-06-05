@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- <link href="index.css" rel="stylesheet"> -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="output.css" rel="stylesheet"/>
   <title>Pong and Chat</title>
   <style>
     body {
@@ -76,6 +78,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      border-radius: 5px;
     }
     #pongCanvas {
       background-color: black;
@@ -85,18 +88,6 @@
       color: #0f0;
       font-size: 18px;
       margin-top: 10px;
-    }
-    #startButton {
-      margin-top: 10px;
-      padding: 8px 16px;
-      background-color: #444;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #startButton:hover {
-      background-color: #555;
     }
     .leaderboard-container {
       max-height: 200px;
@@ -136,6 +127,24 @@
       border-radius: 6px;
       white-space: pre-wrap;
     }
+    .bg-violet-500 {
+      background-color: #0ea5e9;
+      padding: 10px;
+      margin: 30px 0 0 0;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .hover\:bg-violet-600:hover {
+      padding: 10px;
+      margin: 30px 0 0 0;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #0369a1;
+    }
   </style>
 </head>
 <body>
@@ -149,7 +158,9 @@
       <div class="game-container">
         <h1 class="text-2xl font-bold text-black mb-4">Fucking Pong</h1>
         <canvas id="pongCanvas" width="500%" height="500%"></canvas>
-        <button id="startButton">Play!</button>
+        <button id="startButton" class="bg-violet-500 hover:bg-violet-600">
+        Play
+        </button>
       </div>
     </div>
     <div class="chat">
