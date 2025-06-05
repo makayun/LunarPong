@@ -5,7 +5,7 @@ import HtmlWebpackPlugin	from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import type webpack			from "webpack";
 
-import { assetLoader, scssLoader, tsLoader }	from "./webpack.buildHelpers"
+import { assetLoader, cssLoader, scssLoader, tsLoader }	from "./webpack.buildHelpers"
 import type { BuildMode, BuildPaths }			from "./webpack.buildHelpers";
 
 const appDir = fs.realpathSync(process.cwd());
@@ -24,12 +24,16 @@ export default (env: { mode: BuildMode }) => {
 		output: path.resolve(appDir, frontDir),
 		public: path.resolve(appDir, pubDir),
 		html: path.resolve(appDir, pubDir, "index.html"),
+		css: path.resolve(appDir, pubDir, "index.css"),
 		favicon: path.resolve(appDir, pubDir, "favicon.ico")
 	}
 
 	const config: webpack.Configuration = {
 		mode: env.mode ?? "development",
-		entry: appPaths.entry,
+		entry:
+		{
+			...appPaths.entry,
+		},
 		output: {
 			path: appPaths.output,
 			filename: "js/[name].[contenthash].js",
@@ -38,7 +42,7 @@ export default (env: { mode: BuildMode }) => {
 		},
 		devtool: isDev ? "inline-source-map" : false,
 		resolve: { extensions: [ ".tsx", ".ts", ".js"] },
-		module: { rules: [ scssLoader(isDev), tsLoader, assetLoader ] },
+		module: { rules: [ scssLoader(isDev), tsLoader, assetLoader, cssLoader ] },
 		plugins: buildFrontPlugins(appPaths, isDev)
 	};
 

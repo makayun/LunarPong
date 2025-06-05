@@ -8,6 +8,7 @@ export type BuildPaths = {
 	output:		string,
 	public?:	string,
 	html?:		string,
+	css?:		string,
 	favicon?:	string
 };
 
@@ -20,6 +21,14 @@ export const tsLoader: RuleSetRule = {
 	test: /\.tsx?$/,
 	use: "ts-loader",
 	exclude: [ /node_modules/ ]
+}
+
+export const cssLoader : RuleSetRule = {
+	test: /\.css?$/,
+	use: [
+		
+	]
+	
 }
 
 export const assetLoader: RuleSetRule = {
