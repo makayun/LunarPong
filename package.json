@@ -7,7 +7,7 @@
     "build:front": "vite build",
     "build:back": "esbuild src/back/server.ts --bundle --platform=node --outfile=dist/back/server.js --external:fastify --external:@fastify/*",
     "build": "npm run build:front && npm run build:back",
-    "start": "node dist/back/server.js"
+    "start": "node ."
   },
   "keywords": [],
   "author": "",
