@@ -2,11 +2,12 @@
   "name": "fuckingpong",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/back/server.js",
+  "main": "dist/back/back/server.js",
   "scripts": {
-    "build": "npm install -D vite && npx vite build",
-    "build:prod": "npx webpack --env mode=production",
-    "start": "npx vite"
+    "build:front": "vite build",
+    "build:back": "esbuild src/back/server.ts --bundle --platform=node --outfile=dist/back/server.js --external:fastify --external:@fastify/*",
+    "build": "npm run build:front && npm run build:back",
+    "start": "node dist/back/server.js"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +29,7 @@
     "@types/node": "^22.15.18",
     "@types/ws": "^8.18.1",
     "css-loader": "^7.1.2",
+    "esbuild": "^0.25.5",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
     "postcss": "^8.5.4",

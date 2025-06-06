@@ -1,19 +1,21 @@
 import { defineConfig } from 'vite'
 import image from '@rollup/plugin-image'
-import { createHtmlPlugin } from 'vite-plugin-html'
 
 export default defineConfig({
+  root: '.',
+  publicDir: 'public',
+  build: {
+    outDir: 'dist/front',
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        game: 'src/front/game.ts',
+        chat: 'src/front/chat.ts'
+      }
+    }
+  },
   plugins: [
-      image(),
-      createHtmlPlugin({
-      entry: 'index.html',
-      template: 'public/index.html',
-      inject: {
-        data: {
-          title: 'index',
-          injectScript: `<script src="./inject.js"></script>`,
-        }
-    }})
+    image()
   ]
 })
 
