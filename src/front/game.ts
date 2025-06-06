@@ -1,6 +1,7 @@
 import { Engine }				from "@babylonjs/core/Engines/engine";
 import { PongFrontScene }		from "../scenes/PongFrontScene";
 import { getOrCreateClientId }	from "../helpers/helpers";
+import '../styles/index.css';
 import type { MeshesDict, MeshPositions, GUID, PlayerSide, User, WSMessage, PlayerInput }	from "../defines/types";
 
 export const babylonInit = async (): Promise<void> => {

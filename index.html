@@ -145,10 +145,10 @@
       background-color: #0369a1;
     } */
   </style>
+  
 </head>
 <body>
-  <script type="module" src="../src/front/game.ts"></script>
-  <script type="module" src="../src/front/chat.ts"></script>
+  
   <div class="container">
     <div style="position: absolute; top: 10px; left: 10px; z-index: 100;">
       <button onclick="setLanguage('en')">🇬🇧</button>
@@ -177,8 +177,10 @@
       <input type="text" id="input" class="input" placeholder="Type here..." />
     </div>
   </div>
-  <%= chat %>
-  <%= game %>
+  <script type="module" src="./src/front/chat.ts"></script>
+  <script type="module" src="./src/front/game.ts"></script>
+  <!-- <%= chat %>
+  <%= game %> -->
 
 <script>
   const translations = {
