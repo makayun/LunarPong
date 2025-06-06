@@ -1,0 +1,54 @@
+services:
+  node:
+    build:
+      context: node/
+      dockerfile: Dockerfile
+    container_name: node
+    depends_on:
+    ports:
+      - "80:8080"
+      - "443:8443"
+    volumes:
+      - fp_data:/var/fp_data/
+    restart: always
+    networks:
+      - front-tier
+
+  # sqlite:
+  #   build:
+  #     context: sqlite/
+  #     dockerfile: Dockerfile
+  #   container_name: sqlite
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "3306:3306"
+  #   volumes:
+  #     - db-data:/var/lib/mysql
+  #   restart: always
+  #   networks:
+  #     - front-tier
+
+  # bonus_ksorokol_node_js:
+  #   build:
+  #     context: bonus_part/node_js/
+  #     dockerfile: Dockerfile
+  #   container_name: bonus_ksorokol_node_js
+  #   ports:
+  #     - "8000:8000"
+  #   restart: always
+  #   networks:
+  #     - front-tier
+
+##### RESOURCES #####
+
+volumes:
+  db-fp_data:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}//GitHub/FreakingPong
+
+networks:
+  front-tier: {}
+  back-tier: {}
