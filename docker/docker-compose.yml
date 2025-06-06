@@ -1,53 +1,42 @@
 services:
-  node:
+
+  node_sqlite:
     build:
-      context: node/
+      context: node_sqlite/
       dockerfile: Dockerfile
-    container_name: node
-    depends_on:
-    ports:
-      - "80:8080"
-      - "443:8443"
+    container_name: node_sqlite
+    environment:
+      - NODE_ENV=developmen
+      # - NODE_ENV=production
     volumes:
       - fp_data:/var/fp_data/
+      - sqlite_data:/var/sqlite_data/
     restart: always
+    expose:
+      - "8081"
+      - "12800"
+    ports:
+      - "8001:8001"
+      - "12800:12800"
+    user: "node"
+    working_dir: /var/fp_data/
+    # command: "npm start"
+    # command: "npm install && npm run build && node start"
+    command: "sleep infinity"
     networks:
       - front-tier
 
-  # sqlite:
-  #   build:
-  #     context: sqlite/
-  #     dockerfile: Dockerfile
-  #   container_name: sqlite
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - "3306:3306"
-  #   volumes:
-  #     - db-data:/var/lib/mysql
-  #   restart: always
-  #   networks:
-  #     - front-tier
-
-  # bonus_ksorokol_node_js:
-  #   build:
-  #     context: bonus_part/node_js/
-  #     dockerfile: Dockerfile
-  #   container_name: bonus_ksorokol_node_js
-  #   ports:
-  #     - "8000:8000"
-  #   restart: always
-  #   networks:
-  #     - front-tier
-
-##### RESOURCES #####
-
 volumes:
-  db-fp_data:
+  fp_data:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}//GitHub/FreakingPong
+      device: /home/${USER}/GitHub/FreakingPong
+  sqlite_data:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/GitHub/FreakingPong/data/sqlite
 
 networks:
   front-tier: {}

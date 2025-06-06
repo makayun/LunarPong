@@ -1,4 +1,4 @@
-FROM node
+FROM alpine:latast
 COPY ssh_host_ed25519_key.pub /etc/ssh/
 COPY --chmod=0600 ssh_host_ed25519_key /etc/ssh/
 RUN echo 'TERM=xterm-256color' >> /etc/environment && \
