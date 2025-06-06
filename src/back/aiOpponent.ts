@@ -1,7 +1,7 @@
 import {
   GROUND_HEIGHT,
   EDGE_HEIGHT,
-  STEP,
+  PADDLE_STEP,
   PADDLE_MIN_Z,
   PADDLE_MAX_Z,
   UP,
@@ -34,7 +34,7 @@ export class AIOpponent {
     };
     this.game = game;
     this.config = {
-      paddleSpeed: STEP,
+      paddleSpeed: PADDLE_STEP,
       updateInterval: 1000,
       paddleSide,
     };
@@ -111,7 +111,7 @@ export class AIOpponent {
 
   console.log(`[${this.lastUpdate}] Ball position: x=${ball.x}, y=${ball.y}`);
   console.log(`[${this.lastUpdate}] Paddle X: ${paddleX}, Velocity X: ${this.ballVelocity.x}`);
-  
+
   /* Если мяч движется в сторону AI */
   if (
     (this.config.paddleSide === "right" && this.ballVelocity.x > 0) ||

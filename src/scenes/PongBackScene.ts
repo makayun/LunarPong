@@ -5,13 +5,12 @@ import { Vector3 }			from "@babylonjs/core/Maths/math.vector";
 import { HavokPlugin }		from "@babylonjs/core/Physics/v2";
 import HavokPhysics 		from "@babylonjs/havok";
 import { PhysicsAggregate, PhysicsShapeType } from "@babylonjs/core/Physics";
-import "@babylonjs/core/Physics/physicsEngineComponent"
 import type { WebSocket } from "@fastify/websocket";
+import "@babylonjs/core/Physics/physicsEngineComponent"
 
 import { PongBaseScene }	from "./PongBaseScene";
 import { generateGuid }		from "../helpers/helpers";
 import type { User, Game, GUID } from "../defines/types";
-
 
 const appDir: string = fs.realpathSync(process.cwd());
 const havokPath = path.join(appDir, 'node_modules/@babylonjs/havok/lib/esm/HavokPhysics.wasm');
@@ -26,29 +25,52 @@ export class PongBackScene extends PongBaseScene implements Game {
 	async enablePongPhysics(): Promise<void> {
 		const havok = await HavokPhysics({wasmBinary: havokWasm});
 		const physics = new HavokPlugin(true, havok);
+		physics.setVelocityLimits(20, 20);
 		this.enablePhysics(new Vector3(0, -9.81, 0), physics);
 
-		const ballBody = new PhysicsAggregate(this.pongMeshes.ball, PhysicsShapeType.SPHERE, { mass: 2, restitution: 1}, this).body;
-		new PhysicsAggregate(this.pongMeshes.ground, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
-		new PhysicsAggregate(this.pongMeshes.edgeBottom, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
-		new PhysicsAggregate(this.pongMeshes.edgeTop, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
+		const scalingVec = new Vector3(1, 20, 1);
+		this.pongMeshes.ground.scaling = scalingVec;
+		this.pongMeshes.paddleLeft.scaling = scalingVec;
+		this.pongMeshes.paddleRight.scaling = scalingVec;
+		this.pongMeshes.edgeTop.scaling = scalingVec;
+		this.pongMeshes.edgeBottom.scaling = scalingVec;
+		this.pongMeshes.edgeLeft.scaling = scalingVec;
+		this.pongMeshes.edgeRight.scaling = scalingVec;
+
+		const ballBody = new PhysicsAggregate(this.pongMeshes.ball, PhysicsShapeType.SPHERE, { mass: 5, restitution: 1}, this).body;
+		const groundBody = new PhysicsAggregate(this.pongMeshes.ground, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this).body;
+		const edgeBottomBody = new PhysicsAggregate(this.pongMeshes.edgeBottom, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this).body;
+		const edgeTopBody = new PhysicsAggregate(this.pongMeshes.edgeTop, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this).body;
 		new PhysicsAggregate(this.pongMeshes.edgeLeft, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
 		new PhysicsAggregate(this.pongMeshes.edgeRight, PhysicsShapeType.BOX, { mass: 0, restitution: 1}, this);
 
-		new PhysicsAggregate(this.pongMeshes.paddleLeft, PhysicsShapeType.CAPSULE, { mass: 0, restitution: 1 }, this).body;
+		new PhysicsAggregate(this.pongMeshes.paddleLeft, PhysicsShapeType.CAPSULE, { mass: 0, restitution: 1 }, this);
 		new PhysicsAggregate(this.pongMeshes.paddleRight, PhysicsShapeType.CAPSULE, { mass: 0, restitution: 1 }, this);
 
-		ballBody.applyForce(new Vector3(1000,0,0), this.pongMeshes.ball.absolutePosition);
+		ballBody.applyImpulse(new Vector3(50,0,-10), this.pongMeshes.ball.absolutePosition);
 
-		// ballBody.setCollisionCallbackEnabled(true);
-		// let ballObserver = ballBody.getCollisionObservable();
+		ballBody.setCollisionCallbackEnabled(true);
+		let ballObserver = ballBody.getCollisionObservable();
 
-		// ballObserver.add((collisionEvent) => {
-		// 	if (collisionEvent.collider === paddleRightBody ||
-		// 		collisionEvent.collidedAgainst === paddleRightBody) {
-		// 			ballBody.applyForce(new Vector3(-1000, 0, 0), this.pongMeshes.ball.absolutePosition);
-		// 		}
-		// })
+		ballObserver.add((collisionEvent) => {
+			const { collidedAgainst, point } = collisionEvent;
+			if (collidedAgainst === groundBody || !point)
+				return;
+
+			const velocity = ballBody.getLinearVelocity();
+			let newDir = new Vector3(0, 1, 0);
+
+			if (collidedAgainst === edgeTopBody || collidedAgainst === edgeBottomBody) {
+				newDir.z = -point.z * 1.5;
+				newDir.x = velocity.x - point.x;
+			}
+			else {
+				newDir.z = velocity.z;
+				newDir.x = -point.x * 1.5;
+			}
+
+			ballBody.applyImpulse(newDir, this.pongMeshes.ball.absolutePosition);
+		});
 	}
 }
 

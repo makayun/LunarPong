@@ -4,7 +4,7 @@ import type { WebSocket }		from "@fastify/websocket";
 
 import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
-import { STEP }				from "../defines/constants";
+import { PADDLE_STEP }				from "../defines/constants";
 import { animatePaddleToX } from "./paddleMovement";
 import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide } from "../defines/types";
 
@@ -29,7 +29,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 					if (scene) {
 						const paddle = msg.side === "left" ? scene.pongMeshes.paddleLeft : scene.pongMeshes.paddleRight;
 						scene.stopAnimation(paddle);
-						animatePaddleToX(paddle, paddle.position.z + STEP * msg.direction);
+						animatePaddleToX(paddle, paddle.position.z + PADDLE_STEP * msg.direction);
 					}
 					break;
 				default:
