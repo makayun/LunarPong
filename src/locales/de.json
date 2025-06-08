@@ -1,0 +1,4 @@
+{
+  "hello": "Hallo, {{name}}!",
+  "login_name": "Anmeldename"
+}

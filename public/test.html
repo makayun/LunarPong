@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>i18next HTTP Backend Example</title>
+  <script src="https://unpkg.com/i18next@23.11.2/dist/umd/i18next.min.js"></script>
+  <script src="https://unpkg.com/i18next-http-backend@1.4.1/i18nextHttpBackend.min.js"></script>
+</head>
+<body>
+  <button onclick="changeLang('en')">English</button>
+  <button onclick="changeLang('ru')">Русский</button>
+
+  <h1 id="welcome"></h1>
+
+  <script>
+    i18next
+      .use(i18nextHttpBackend)
+      .init({
+        lng: 'en',
+        fallbackLng: 'en',
+        backend: {
+          loadPath: '/locales/{{lng}}.json'
+        }
+      }, function(err, t) {
+        if (err) return console.error(err);
+        updateContent();
+      });
+
+    function updateContent() {
+      document.getElementById('welcome').textContent = i18next.t('welcome', { name: 'Alex' });
+    }
+
+    function changeLang(lng) {
+      i18next.changeLanguage(lng, updateContent);
+    }
+  </script>
+</body>
+</html>

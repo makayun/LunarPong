@@ -19,7 +19,12 @@
     "@fastify/websocket": "^11.0.2",
     "close-with-grace": "^2.2.0",
     "fastify": "^5.3.3",
-    "pino-pretty": "^13.0.0"
+    "pino-pretty": "^13.0.0",
+	"i18next": "^25.2.1",
+	"i18next-fs-backend": "^2.6.0",
+	"i18next-http-backend": "^3.0.2",
+	"i18next-browser-languagedetector": "^8.1.0",
+	"sqlite": "^5.1.1"
   },
   "devDependencies": {
     "@types/node": "^22.15.18",

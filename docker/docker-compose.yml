@@ -1,31 +1,4 @@
 services:
-
-  # node_sqlite:
-  #   build:
-  #     context: node_sqlite/
-  #     dockerfile: Dockerfile
-  #   container_name: node_sqlite
-  #   environment:
-  #     - NODE_ENV=developmen
-  #     # - NODE_ENV=production
-  #   volumes:
-  #     - fp_data:/var/fp_data/
-  #     - sqlite_data:/var/sqlite_data/
-  #   restart: always
-  #   expose:
-  #   #   - "8081"
-  #     - "12800"
-  #   ports:
-  #   #   - "8001:8001"
-  #     - "12800:12800"
-  #   user: "node"
-  #   working_dir: /var/fp_data/
-  #   # command: "npm start"
-  #   # command: "npm install && npm run build && node start"
-  #   # command: "sleep infinity"
-  #   networks:
-  #     - front-tier
-
   node_sqlite:
     build:
       context: node_sqlite/
