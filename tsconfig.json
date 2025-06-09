@@ -34,7 +34,10 @@
     "dist",
     "back",
     "front",
-    "tmp"
+    "tmp",
+	"docker",
+	"nvm",
+	"data"
   ],
   "include": [
     "src/**/*.ts"

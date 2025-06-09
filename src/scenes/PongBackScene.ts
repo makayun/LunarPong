@@ -93,3 +93,24 @@ export class PongBackEngine extends NullEngine {
 		})
 	}
 }
+
+import type { MeshPositions } from "../defines/types";
+
+export function startRenderLoop(engine: PongBackEngine) {
+	engine.runRenderLoop(() => {
+		engine.scenes.forEach(scene => scene.render());
+
+		engine.scenes.forEach(scene => {
+			const posMessage: MeshPositions = {
+				type: "MeshPositions",
+				ball: scene.pongMeshes.ball.position,
+				paddleLeft: scene.pongMeshes.paddleLeft.position,
+				paddleRight: scene.pongMeshes.paddleRight.position
+			};
+
+			scene.players.forEach(player => {
+				player.gameSocket?.send(JSON.stringify(posMessage));
+			});
+		});
+	});
+}

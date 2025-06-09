@@ -4,3 +4,4 @@ node_modules
 /front/
 .DS_Store
 tmp
+docs
