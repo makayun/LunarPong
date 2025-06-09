@@ -5,7 +5,8 @@ import { fastifyStatic }				from "@fastify/static";
 import websocket						from "@fastify/websocket";
 import closeWithGrace					from "close-with-grace";
 import type { FastifyInstance }			from "fastify/fastify";
-import type { FastifyServerOptions }	from "fastify";
+// import https                            from 'https';
+// import type { FastifyServerOptions }	from "fastify";
 import type { FastifyListenOptions }	from "fastify";
 
 import { wsGamePlugin }			from "./ws-game";
@@ -15,23 +16,35 @@ import { startRenderLoop }		from "../scenes/PongBackScene";
 import type { User }			from "../defines/types";
 // import type { MeshPositions } from "../defines/types";
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 async function main() {
 	const users: User[] = [];
 	const appDir: string = fs.realpathSync(process.cwd());
 	const frontDir: string = "front";
+	const certPath = path.resolve(appDir, 'data/cert');
 
-	const serverOpts: FastifyServerOptions = {
-		logger: process.stdout.isTTY
-			? { transport: { target: "pino-pretty" } }
-			: { level: "info" },
-	};
+	// const serverOpts: FastifyServerOptions = {
+	// 	logger: process.stdout.isTTY
+	// 		? { transport: { target: "pino-pretty" } }
+	// 		: { level: "info" },
+	// };
 
 	const listenOpts: FastifyListenOptions = {
 		port: 12800,
 		host: "0.0.0.0"
 	};
 
-	const server: FastifyInstance = fastify(serverOpts);
+	const server: FastifyInstance = fastify({
+		logger: process.stdout.isTTY
+			? { transport: { target: "pino-pretty" } }
+			: { level: "info" },
+		https: {
+			key: fs.readFileSync(path.join(certPath, 'key.pem')),
+			cert: fs.readFileSync(path.join(certPath, 'cert.pem')),
+		}
+	});
 
 	const engine = new PongBackEngine();
 

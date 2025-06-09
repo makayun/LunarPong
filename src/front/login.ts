@@ -1,3 +1,17 @@
+document.querySelectorAll(".login-btn").forEach(button => {
+	button.addEventListener("click", () => {
+		console.log("[login] Login button clicked:");
+		// const target = e.currentTarget as HTMLElement;
+		const login_name = document.getElementById('login_name') as HTMLInputElement;
+		const login_password = document.getElementById('login_password') as HTMLInputElement;
+		if (login_name.value && login_password.value) {
+			console.log("[login] password hash: ", login_password.value);
+		}
+		else
+			console.log("[login] login name or password empty");
+	});
+});
+
 // const sqlite = require('node:sqlite');
 
 // import i18n from "node:i18n"
