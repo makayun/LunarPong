@@ -1,4 +1,8 @@
 {
   "hello": "Ahoj, {{name}}!",
-  "login_name": "Přihlašovací jméno"
+  "login": {
+	"title": "Vítejte!",
+	"placeholder": "Přihlašovací jméno",
+	"button": "Přihlášení"
+  }
 }

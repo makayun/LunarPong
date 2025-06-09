@@ -1,4 +1,8 @@
 {
   "hello": "Hello, {{name}}!",
-  "login_name": "Login Name"
+  "login": {
+	"title": "Welcome!",
+	"placeholder": "Login Name",
+	"button": "Login"
+  }
 }

@@ -1,0 +1,8 @@
+{
+  "hello": "¡Hola, {{name}}!",
+  "login": {
+    "title": "¡Bienvenido!",
+    "placeholder": "Nombre de usuario",
+    "button": "Iniciar sesión"
+  }
+}

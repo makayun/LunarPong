@@ -14,25 +14,32 @@
 // });
 // export default i18n;
 
-import i18next from 'i18next';
-import Backend from 'i18next-http-backend';
-import LanguageDetector from 'i18next-browser-languagedetector';
+// import i18next from 'i18next';
+// import Backend from 'i18next-http-backend';
+// import LanguageDetector from 'i18next-browser-languagedetector';
 
-i18next
-  .use(Backend)
-  .use(LanguageDetector)
-  .init({
-    fallbackLng: 'en',
-    backend: {
-      loadPath: '/locales/{{lng}}.json', // например, /public/locales/en.json
-    },
-  })
-  .then(() => {
-    console.log(i18next.t('hello', { name: 'Alex' }));
-  });
+const div_container = document.getElementById('div_container') as HTMLDivElement;
+div_container.style.display = 'none'; // "flex"
+// const div_game = document.getElementById('div_game') as HTMLDivElement;
+// div_game.style.display = 'none';
+// const div_chat = document.getElementById('div_chat') as HTMLDivElement;
+// div_chat.style.display = 'none'; // 'block';
 
-(window as any).changeLang = (lng: string) => {
-  i18next.changeLanguage(lng).then(() => {
-    console.log(i18next.t('hello', { name: 'Alex' }));
-  });
-};
+// i18next
+//   .use(Backend)
+//   .use(LanguageDetector)
+//   .init({
+//     fallbackLng: 'en',
+//     backend: {
+//       loadPath: '/locales/{{lng}}.json', // например, /public/locales/en.json
+//     },
+//   })
+//   .then(() => {
+//     console.log(i18next.t('hello', { name: 'Alex' }));
+//   });
+
+// (window as any).changeLang = (lng: string) => {
+//   i18next.changeLanguage(lng).then(() => {
+//     console.log(i18next.t('hello', { name: 'Alex' }));
+//   });
+// };

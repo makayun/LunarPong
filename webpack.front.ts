@@ -2,6 +2,7 @@ import fs					from "node:fs";
 import path					from "node:path";
 import { ProgressPlugin }	from "webpack";
 import HtmlWebpackPlugin	from "html-webpack-plugin";
+import CopyPlugin           from 'copy-webpack-plugin';
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import type webpack			from "webpack";
 
@@ -12,12 +13,15 @@ const appDir = fs.realpathSync(process.cwd());
 const srcDir = "src";
 const frontDir = "front";
 const pubDir = "public";
+const localesDir = "locales";
 
 export default (env: { mode: BuildMode }) => {
 	const isDev: boolean = env.mode === "development";
 
 	const appPaths: BuildPaths = {
 		entry: {
+			"i18next": path.resolve(appDir, srcDir, frontDir, "i18next.ts"),
+			"login": path.resolve(appDir, srcDir, frontDir, "login.ts"),
 			"game": path.resolve(appDir, srcDir, frontDir, "game.ts"),
 			"chat": path.resolve(appDir, srcDir, frontDir, "chat.ts")
 		},
@@ -64,12 +68,22 @@ export function buildFrontPlugins(paths: BuildPaths, isDev: boolean) : webpack.C
 
 					return (script);
 				}
+				const i18next: string = buildScript("i18next");
+				const login: string = buildScript("login");
 				const game: string = buildScript("game");
 				const chat: string = buildScript("chat");
 
-				return { game, chat };
+				return { i18next, login, game, chat };
 			},
-		})
+		}),
+		new CopyPlugin({
+		patterns: [
+			{
+				from: path.resolve(appDir, srcDir, localesDir),
+				to: 'locales'
+			}
+		],
+	})
 	];
 
 	if (isDev) {

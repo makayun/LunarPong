@@ -1,0 +1,8 @@
+{
+  "hello": "你好，{{name}}！",
+  "login": {
+    "title": "欢迎！",
+    "placeholder": "用户名",
+    "button": "登录"
+  }
+}
