@@ -16,6 +16,7 @@ import { startRenderLoop }		from "../scenes/PongBackScene";
 import type { User }			from "../defines/types";
 // import type { MeshPositions } from "../defines/types";
 
+import authRoutes from '../auth/auth.routes';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -53,6 +54,10 @@ async function main() {
 	await server.register(wsGamePlugin, { engine, users });
 	await server.register(wsChatPlugin, { users });             // 💬 плагин чата
 
+	server.register(authRoutes);
+	// server.get('/api/protected', { preHandler: authHook }, async (request, reply) => {
+	// 	return { message: `Hello, ${(request.user as any).username}` };
+	// });
 	await server.listen(listenOpts);
 
 	startRenderLoop(engine);

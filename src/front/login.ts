@@ -1,14 +1,44 @@
 document.querySelectorAll(".login-btn").forEach(button => {
-	button.addEventListener("click", () => {
+	button.addEventListener("click", async () => {
 		console.log("[login] Login button clicked:");
-		// const target = e.currentTarget as HTMLElement;
+
 		const login_name = document.getElementById('login_name') as HTMLInputElement;
 		const login_password = document.getElementById('login_password') as HTMLInputElement;
-		if (login_name.value && login_password.value) {
-			console.log("[login] password hash: ", login_password.value);
-		}
-		else
+
+		if (!login_name.value || !login_password.value) {
 			console.log("[login] login name or password empty");
+			return;
+		}
+
+		try {
+			const baseUrl = window.location.origin; 
+			const response = await fetch(`${baseUrl}/api/login`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					username: login_name.value,
+					password: login_password.value
+				})
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				console.error("[login] Login failed:", errorData.error);
+				return;
+			}
+
+			const data = await response.json();
+			console.log("[login] Login successful, accessToken:", data.accessToken);
+			console.log("[login] Login successful, refreshToken:", data.refreshToken);
+
+			// 💾 Сохраняем токены (в localStorage или sessionStorage)
+			localStorage.setItem("accessToken", data.accessToken);
+			localStorage.setItem("refreshToken", data.refreshToken);
+		} catch (err) {
+			console.error("[login] Network error:", err);
+		}
 	});
 });
 
