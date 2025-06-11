@@ -113,22 +113,6 @@
       border: 1px solid #4a5568;
       padding: 8px;
     }
-    .player-profile {
-      background: rgb(32, 28, 28);
-      border: 2px solid #6a0dad;
-      border-radius: 10px;
-      padding: 6px 8px;
-      color: rgb(168, 230, 230);
-      margin: 2px 0;
-      line-height: 1.0;
-    }
-    .player-profile h3 {
-      color: rgb(200, 245, 117);
-      margin: 0 0 6px 0;
-    }
-    .player-profile p {
-      margin: 2px 0;
-    }
     .message {
       padding: 1px 4px;
       margin-bottom: 0;
@@ -140,11 +124,6 @@
 </head>
 <body>
   <div class="container">
-    <div style="position: absolute; top: 10px; left: 10px; z-index: 100;">
-      <button onclick="setLanguage('en')">🇬🇧</button>
-      <button onclick="setLanguage('cz')">🇨🇿</button>
-      <button onclick="setLanguage('es')">🇪🇸</button>
-    </div>
     <div class="left">
       <div class="game-container">
         <h1 class="text-2xl font-bold text-black mb-4">Fucking Pong</h1>
@@ -167,57 +146,5 @@
   </div>
   <%= chat %>
   <%= game %>
-<script>
-  const translations = {
-    en: {
-      title: "Fucking Pong",
-      play: "Play!",
-      allPlayers: "All Players",
-      block: "Block",
-      invite: "Invite",
-      profile: "Profile",
-      placeholder: "Type here..."
-    },
-    cz: {
-      title: "Zasraný Pong",
-      play: "Hrát!",
-      allPlayers: "Hráči",
-      block: "Blokovat",
-      invite: "Pozvat",
-      profile: "Profil",
-      placeholder: "Piš sem..."
-    },
-    es: {
-      title: "Pong Jodido",
-      play: "¡Jugar!",
-      allPlayers: "Jugadores",
-      block: "Bloquear",
-      invite: "Invitar",
-      profile: "Perfil",
-      placeholder: "Escribe aquí..."
-    }
-  };
-
-  let currentLang = 'en';
-
-  function setLanguage(lang) {
-    currentLang = lang;
-    const t = translations[lang];
-
-    document.querySelector("h1").textContent = t.title;
-    document.getElementById("startButton").textContent = t.play;
-    document.getElementById("recipient").options[0].text = t.allPlayers;
-    document.querySelector(".controls button:nth-child(2)").textContent = t.block;
-    document.querySelector(".controls button:nth-child(3)").textContent = t.invite;
-    document.querySelector(".controls button:nth-child(4)").textContent = t.profile;
-    document.getElementById("input").placeholder = t.placeholder;
-  }
-
-  // установить язык при загрузке страницы
-  window.addEventListener("DOMContentLoaded", () => {
-    setLanguage(currentLang);
-  });
-</script>
-
 </body>
 </html>

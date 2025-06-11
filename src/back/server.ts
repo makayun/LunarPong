@@ -42,6 +42,7 @@ async function main() {
 	await server.listen(listenOpts);
 
 	engine.runRenderLoop(() => {
+		// manage input
 		engine.scenes.forEach(scene => scene.render());
 		engine.scenes.forEach(scene => {
 			const posMessage: MeshPositions = {

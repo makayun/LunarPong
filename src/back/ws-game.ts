@@ -1,12 +1,10 @@
 import type { FastifyInstance }	from "fastify";
-import type { FastifyRequest }	from "fastify";
 import type { WebSocket }		from "@fastify/websocket";
+import type { FastifyRequest }	from "fastify";
 
 import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
-import { PADDLE_STEP }				from "../defines/constants";
-import { animatePaddleToX } from "./paddleMovement";
-import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide } from "../defines/types";
+import type { InitGameRequest, WSMessage, User, InitGameSuccess } from "../defines/types";
 
 export interface WsGamePluginOptions { engine: PongBackEngine; users: User[] };
 
@@ -24,21 +22,13 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 				case "InitGameRequest":
 					processInitGameRequest(engine, users, socket, msg as InitGameRequest);
 					break;
-				case "PlayerInput":
-					let scene = engine.scenes.find(scene => scene.id === msg.gameId);
-					if (scene) {
-						const paddle = msg.side === "left" ? scene.pongMeshes.paddleLeft : scene.pongMeshes.paddleRight;
-						scene.stopAnimation(paddle);
-						animatePaddleToX(paddle, paddle.position.z + PADDLE_STEP * msg.direction);
-					}
-					break;
 				default:
 					console.error(`Bad WS message: ${msg}`);
-					// socket.send(`Bad WS message: ${msg}`);
+					socket.send(`Bad WS message: ${msg}`);
 				}
 			}
 			catch (e) {
-				// socket.terminate();
+				socket.terminate();
 				console.error(e, message);
 			}
 		});
@@ -66,18 +56,15 @@ function processInitGameRequest(engine: PongBackEngine, users: User[], socket: W
 	)
 
 	const newUser: User = { id: msg.user.id, gameSocket: socket };
-	let side: PlayerSide;
 
 	let newGame = engine.scenes.find(
 		scene => scene.state === "init" && scene.players.length === 1);
 	if (!newGame) {
 		newGame = new PongBackScene(engine);
-		console.log("Creating new pong game, id:", [newGame.id]);
-		side = "left";
+		console.log("Creating new pong game, id:", [newGame.id])
 	}
 	else {
 		newGame.enablePongPhysics();
-		side = "right";
 	}
 	newUser.gameId = newGame.id;
 	newGame.players.push(newUser);
@@ -88,11 +75,8 @@ function processInitGameRequest(engine: PongBackEngine, users: User[], socket: W
 
 	const response: InitGameSuccess = {
 		type: "InitGameSuccess",
-		playersSide: side,
 		gameState: "running",
 		gameId: newGame.id
 	}
 	socket.send(JSON.stringify(response));
 }
-
-

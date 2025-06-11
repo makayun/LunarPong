@@ -1,8 +1,6 @@
 import type { Mesh } from "@babylonjs/core/Meshes/mesh";
-import type { Vector3 as BabylonVector3 } from "@babylonjs/core/Maths/math.vector";
+import type { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import type { WebSocket } from "@fastify/websocket";
-
-export type Vector3 = BabylonVector3;
 
 export type MeshName =
 	| "ground"
@@ -36,8 +34,6 @@ export type User = {
 	blocked?: Set<GUID>
 };
 
-export type PlayerSide = "left" | "right";
-
 export interface Game {
 	id: GUID;
 	state: GameState;
@@ -56,13 +52,14 @@ export type GameType =
 	| "remote"
 	| "AI";
 
+
 //!!! EVERY WEBSOCKET MESSAGE TYPE MUST CONTAIN A 'type' FIELD !!!
 
 export type PlayerInput = {
 	type: "PlayerInput",
-	gameId: GUID,
-	side: PlayerSide,
-	direction: -1 | 0 | 1
+	user: User,
+	game: Game,
+	key: 'w' | 's' | 'ArrowUp' | 'ArrowDown'
 };
 
 export type MeshPositions = {
@@ -80,7 +77,6 @@ export type InitGameRequest = {
 
 export type InitGameSuccess = {
 	type: "InitGameSuccess",
-	playersSide: "left" | "right",
 	gameState: GameState,
 	gameId: GUID
 }
