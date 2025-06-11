@@ -65,6 +65,7 @@ async function main() {
 	server.register(protectedRoutes, { prefix: '/api/protected' });
 	await server.listen(listenOpts);
 
+
 	startRenderLoop(engine);
 	// engine.runRenderLoop(() => {
 	// 	engine.scenes.forEach(scene => scene.render());
@@ -80,6 +81,7 @@ async function main() {
 	// 		)
 	// 	})
 	// });
+
 
 	closeWithGrace(async ({ signal, err }) => {
 		if (err) {

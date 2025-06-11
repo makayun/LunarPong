@@ -1,8 +1,12 @@
 import type { Mesh } from "@babylonjs/core/Meshes/mesh";
-import type { Vector3 as BabylonVector3 } from "@babylonjs/core/Maths/math.vector";
-import type { WebSocket } from "@fastify/websocket";
+import type { Vector3 } from "@babylonjs/core/Maths/math.vector";
+import type { WebSocket  } from "@fastify/websocket";
 
-export type Vector3 = BabylonVector3;
+
+export type GameType =
+	| "Local game"
+	| "Remote game"
+	| "Versus AI";
 
 export type MeshName =
 	| "ground"
@@ -51,11 +55,6 @@ export type GameState =
 	| "reset"
 	| "over";
 
-export type GameType =
-	| "local"
-	| "remote"
-	| "AI";
-
 //!!! EVERY WEBSOCKET MESSAGE TYPE MUST CONTAIN A 'type' FIELD !!!
 
 export type PlayerInput = {
@@ -75,14 +74,16 @@ export type MeshPositions = {
 
 export type InitGameRequest = {
 	type: "InitGameRequest",
+	gameType: GameType,
 	user: User
 };
 
 export type InitGameSuccess = {
 	type: "InitGameSuccess",
-	playersSide: "left" | "right",
+	gameType: GameType,
+	gameId: GUID,
 	gameState: GameState,
-	gameId: GUID
+	playerSide: "left" | "right",
 }
 
 export type ChatMessage =
@@ -96,9 +97,8 @@ export type ChatMessage =
   | { type: 'profile', user: User };
 
 export type WSMessage =
-	| InitGameRequest
-	| InitGameSuccess
 	| PlayerInput
 	| MeshPositions
-	| ChatMessage;
-``
+	| ChatMessage
+	| InitGameRequest
+	| InitGameSuccess;

@@ -28,11 +28,13 @@ import type {
 export class PongBaseScene extends Scene {
 	public camera: ArcRotateCamera;
 	public pongMeshes: MeshesDict;
+	public score: [number, number];
 	public state: GameState;
 
 	constructor (inEngine: AbstractEngine) {
 		super(inEngine);
 		this.state = "init";
+		this.score = [ 0, 0 ];
 
 		this.pongMeshes = {
 			ground: this.pongGround(),

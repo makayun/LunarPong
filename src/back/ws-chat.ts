@@ -124,7 +124,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
 
           case 'profile': {
             if (!currentUser) return;
-  
+
             const requestedUser = users.get(msg.user.id);
             if (!requestedUser) {
               socket.send(JSON.stringify({
@@ -135,7 +135,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
               return;
             }
 
-            // 💥💥💥Здесь должны быть реальные данные! 
+            // 💥💥💥Здесь должны быть реальные данные!
             socket.send(JSON.stringify({
               type: 'profile',
               user: {
@@ -165,5 +165,3 @@ export async function wsChatPlugin(server: FastifyInstance) {
     });
   });
 }
-
-

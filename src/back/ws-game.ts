@@ -6,12 +6,14 @@ import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
 import { PADDLE_STEP }				from "../defines/constants";
 import { animatePaddleToX } from "./paddleMovement";
-import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide } from "../defines/types";
+import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType, GUID } from "../defines/types";
+import { AIOpponent } from "./aiOpponent";
+import { error } from "node:console";
 
 export interface WsGamePluginOptions { engine: PongBackEngine; users: User[] };
 
 export async function wsGamePlugin(server: FastifyInstance, options: WsGamePluginOptions) {
-	const { engine, users } = options;
+	const { engine } = options;
 
 	server.get("/ws-game", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
 		console.log("WebSocket game client connected");
@@ -22,7 +24,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 
 				switch (msg.type) {
 				case "InitGameRequest":
-					processInitGameRequest(engine, users, socket, msg as InitGameRequest);
+					processInitGameRequest(engine, socket, msg as InitGameRequest);
 					break;
 				case "PlayerInput":
 					let scene = engine.scenes.find(scene => scene.id === msg.gameId);
@@ -51,7 +53,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 	});
 }
 
-function processInitGameRequest(engine: PongBackEngine, users: User[], socket: WebSocket, msg: InitGameRequest): void {
+async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: InitGameRequest): Promise<void> {
 	console.log("Initializing game for player:", [msg.user.id]);
 
 	engine.scenes.forEach(
@@ -65,34 +67,73 @@ function processInitGameRequest(engine: PongBackEngine, users: User[], socket: W
 		)
 	)
 
-	const newUser: User = { id: msg.user.id, gameSocket: socket };
-	let side: PlayerSide;
-
-	let newGame = engine.scenes.find(
-		scene => scene.state === "init" && scene.players.length === 1);
-	if (!newGame) {
-		newGame = new PongBackScene(engine);
-		console.log("Creating new pong game, id:", [newGame.id]);
-		side = "left";
+	switch (msg.gameType) {
+		case "Local game":
+			return await createLocalGame(engine, msg.user, socket);
+		case "Remote game":
+			return await createRemoteGame(engine, msg.user, socket);
+		case "Versus AI":
+			return await createAiGame(engine, msg.user, socket);
 	}
-	else {
-		newGame.enablePongPhysics();
-		side = "right";
-	}
-	newUser.gameId = newGame.id;
-	newGame.players.push(newUser);
-	users.push(newUser);
-
-	console.log("Game:", [newGame.id], ", number of players:", newGame.players.length);
-	console.log("Player IDs in this scene:", newGame.players.map(player => player.id));
-
-	const response: InitGameSuccess = {
-		type: "InitGameSuccess",
-		playersSide: side,
-		gameState: "running",
-		gameId: newGame.id
-	}
-	socket.send(JSON.stringify(response));
 }
 
+async function createLocalGame(engine: PongBackEngine, player: User, socket: WebSocket) : Promise<void> {
+	const game = new PongBackScene(engine);
+	addPlayerToGame(game, player, socket);
+	await game.enablePongPhysics();
+	sendInitGameSuccess("Local game", game.id, assignSide(game), socket);
+}
 
+async function createRemoteGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
+	let game = engine.scenes.find(scene => scene.players.length === 1 && scene.state === "init");
+	if (game) {
+		addPlayerToGame(game, newPlayer, socket);
+		await game.enablePongPhysics();
+	}
+	else {
+		game = new PongBackScene(engine);
+		addPlayerToGame(game, newPlayer, socket);
+	}
+	sendInitGameSuccess("Remote game", game.id, assignSide(game), socket);
+}
+
+async function createAiGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
+	const game = new PongBackScene(engine);
+	addPlayerToGame(game, newPlayer, socket);
+	addAiOpponent(game);
+	await game.enablePongPhysics();
+	sendInitGameSuccess("Versus AI", game.id, "left", socket);
+}
+
+function addPlayerToGame(game: PongBackScene, newPlayer: User, socket: WebSocket) : void {
+	if (!game.players.find(player => player.id === newPlayer.id)) {
+		newPlayer.gameSocket = socket;
+		game.players.push(newPlayer);
+	}
+}
+
+function assignSide(game: PongBackScene) : PlayerSide {
+	if (game.players.length === 1)
+		return "left";
+	else if (game.players.length === 2)
+		return "right";
+	else
+		throw error("Invalid number of players!");
+}
+
+function addAiOpponent(game: PongBackScene) : void {
+	if (!game.aiOpponent)
+		game.aiOpponent = new AIOpponent(game, "right");
+}
+
+function sendInitGameSuccess(inGameType: GameType, inGameId: GUID, inPlayerSide: PlayerSide, socket: WebSocket) {
+	const response : InitGameSuccess = {
+		type: "InitGameSuccess",
+		gameType: inGameType,
+		gameId: inGameId,
+		gameState: "init",
+		playerSide: inPlayerSide
+	}
+
+	socket.send(JSON.stringify(response));
+}
