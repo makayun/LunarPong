@@ -4,7 +4,7 @@
   "description": "",
   "main": "back/server.js",
   "scripts": {
-    "build": "npx webpack --env mode=development",
+    "build": "npx @tailwindcss/cli -i ./src/styles/styles.css -o ./src/styles/output.css && npx webpack --env mode=development",
     "build:prod": "npx webpack --env mode=production",
     "start": "node ."
   },
@@ -23,10 +23,14 @@
     "pino-pretty": "^13.0.0"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.1.8",
     "@types/node": "^22.15.18",
     "@types/ws": "^8.18.1",
+    "css-loader": "^7.1.2",
     "html-webpack-plugin": "^5.6.3",
     "mini-css-extract-plugin": "^2.9.2",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^4.1.8",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
