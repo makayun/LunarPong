@@ -28,11 +28,13 @@ import type {
 export class PongBaseScene extends Scene {
 	public camera: ArcRotateCamera;
 	public pongMeshes: MeshesDict;
+	public score: [number, number];
 	public state: GameState;
 
 	constructor (inEngine: AbstractEngine) {
 		super(inEngine);
 		this.state = "init";
+		this.score = [ 0, 0 ];
 
 		this.pongMeshes = {
 			ground: this.pongGround(),
@@ -45,7 +47,7 @@ export class PongBaseScene extends Scene {
 			edgeBottom: this.pongEdge("edgeBottom")
 		}
 
-		this.pongMeshes.ball.position.y = 5;
+		this.pongMeshes.ball.position.y = 3;
 		this.pongMeshes.paddleLeft.position.set(-PADDLE_POS_X, 0.3, 0);
 		this.pongMeshes.paddleRight.position.set(PADDLE_POS_X, 0.3, 0);
 		this.pongMeshes.edgeTop.position.z = -TB_EDGES_POS_Z;
