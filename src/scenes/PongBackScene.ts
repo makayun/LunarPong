@@ -11,6 +11,7 @@ import "@babylonjs/core/Physics/physicsEngineComponent"
 import { PongBaseScene }	from "./PongBaseScene";
 import { generateGuid }		from "../helpers/helpers";
 import type { User, Game, GUID } from "../defines/types";
+import { AIOpponent } from "../back/aiOpponent";
 
 const appDir: string = fs.realpathSync(process.cwd());
 const havokPath = path.join(appDir, 'node_modules/@babylonjs/havok/lib/esm/HavokPhysics.wasm');
@@ -21,6 +22,8 @@ const havokWasm = havokWasmBuffer.buffer.slice(havokWasmBuffer.byteOffset, havok
 export class PongBackScene extends PongBaseScene implements Game {
 	public id: GUID = generateGuid();
 	public players: User[] = [];
+	public startTime = new Date();
+	public aiOpponent?: AIOpponent;
 
 	async enablePongPhysics(): Promise<void> {
 		const havok = await HavokPhysics({wasmBinary: havokWasm});
@@ -28,8 +31,9 @@ export class PongBackScene extends PongBaseScene implements Game {
 		physics.setVelocityLimits(20, 20);
 		this.enablePhysics(new Vector3(0, -9.81, 0), physics);
 
+
 		const scalingVec = new Vector3(1, 20, 1);
-		this.pongMeshes.ground.scaling = scalingVec;
+		// this.pongMeshes.ground.scaling = scalingVec;
 		this.pongMeshes.paddleLeft.scaling = scalingVec;
 		this.pongMeshes.paddleRight.scaling = scalingVec;
 		this.pongMeshes.edgeTop.scaling = scalingVec;
@@ -68,6 +72,8 @@ export class PongBackScene extends PongBaseScene implements Game {
 				newDir.z = velocity.z;
 				newDir.x = -point.x * 1.5;
 			}
+
+			this.score
 
 			ballBody.applyImpulse(newDir, this.pongMeshes.ball.absolutePosition);
 		});

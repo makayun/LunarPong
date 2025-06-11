@@ -42,14 +42,15 @@ async function main() {
 	await server.listen(listenOpts);
 
 	engine.runRenderLoop(() => {
-		engine.scenes.forEach(scene => scene.render());
 		engine.scenes.forEach(scene => {
+			scene.render();
 			const posMessage: MeshPositions = {
 				type: "MeshPositions",
 				ball: scene.pongMeshes.ball.position,
 				paddleLeft: scene.pongMeshes.paddleLeft.position,
 				paddleRight: scene.pongMeshes.paddleRight.position
 			};
+			// scene.aiOpponent?.update(posMessage, );
 			scene.players.forEach(player =>
 				player.gameSocket?.send(JSON.stringify(posMessage))
 			)
