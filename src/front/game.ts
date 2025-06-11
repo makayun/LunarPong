@@ -10,40 +10,59 @@ const socket = new WebSocket(`ws://${window.location.host}/ws-game`);
 const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 const engine: Engine = new Engine(canvas, true);
 
-export async function createButtons(canvas: HTMLCanvasElement) {
-	const localGameBtn = createOneButton("Local game");
-	const remoteGameBtn = createOneButton("Remote game");
-	const aiGameBtn = createOneButton("Versus AI");
-
-
-	function createOneButton(inText: GameType) : HTMLButtonElement {
-		const button = document.createElement("button");
-		button.textContent = inText;
-		button.id = inText;
-		canvas.appendChild(button);
-
-		button.addEventListener("click", () => {
-			hideGameButtons();
+["Local game", "Remote game", "Versus AI"].forEach(type => {
+	const btn = document.getElementById(type) as HTMLButtonElement;
+	if (btn) {
+		btn.addEventListener("click", () => {
 			const initGameMsg: InitGameRequest = {
 				type: "InitGameRequest",
-				gameType: button.textContent as GameType,
+				gameType: type as GameType,
 				user: player
 			};
 			socket.send(JSON.stringify(initGameMsg));
+
+			// Optional: hide buttons
+			btn.disabled = true;
+			btn.hidden = true;
 		});
-
-		return button;
 	}
+});
 
-	function hideGameButtons() {
-		localGameBtn.disabled = true;
-		localGameBtn.hidden = true;
-		remoteGameBtn.disabled = true;
-		remoteGameBtn.hidden = true;
-		aiGameBtn.disabled = true;
-		aiGameBtn.hidden = true;
-	}
-}
+
+// export async function createButtons(canvas: HTMLCanvasElement) {
+// 	const localGameBtn = createOneButton("Local game");
+// 	const remoteGameBtn = createOneButton("Remote game");
+// 	const aiGameBtn = createOneButton("Versus AI");
+
+
+// 	function createOneButton(inText: GameType) : HTMLButtonElement {
+// 		const button = document.createElement("button");
+// 		button.textContent = inText;
+// 		button.id = inText;
+// 		canvas.appendChild(button);
+
+// 		button.addEventListener("click", () => {
+// 			hideGameButtons();
+// 			const initGameMsg: InitGameRequest = {
+// 				type: "InitGameRequest",
+// 				gameType: button.textContent as GameType,
+// 				user: player
+// 			};
+// 			socket.send(JSON.stringify(initGameMsg));
+// 		});
+
+// 		return button;
+// 	}
+
+// 	function hideGameButtons() {
+// 		localGameBtn.disabled = true;
+// 		localGameBtn.hidden = true;
+// 		remoteGameBtn.disabled = true;
+// 		remoteGameBtn.hidden = true;
+// 		aiGameBtn.disabled = true;
+// 		aiGameBtn.hidden = true;
+// 	}
+// }
 
 socket.onmessage = function(event: MessageEvent) {
 	const msg = JSON.parse(event.data);
@@ -80,9 +99,9 @@ async function babylonInit(opts: InitGameSuccess) : Promise<void> {
 		}
 	};
 
-	pongScene.executeWhenReady(() => {
-		engine.runRenderLoop(() => pongScene.render());
-	});
+	// pongScene.executeWhenReady(() => {
+		// engine.runRenderLoop(() => pongScene.render());
+	// });
 
 
 	window.addEventListener("resize", function () {
@@ -111,3 +130,9 @@ function applyMeshPositions (meshes: MeshesDict, newPositions: MeshPositions) : 
 	meshes.paddleLeft.position = newPositions.paddleLeft;
 	meshes.paddleRight.position = newPositions.paddleRight;
 }
+
+engine.runRenderLoop(() => {
+	engine.scenes.forEach(scene =>
+		scene.render()
+	)
+})
