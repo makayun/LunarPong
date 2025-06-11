@@ -103,6 +103,13 @@ async function babylonInit(opts: InitGameSuccess) : Promise<void> {
 		// engine.runRenderLoop(() => pongScene.render());
 	// });
 
+	// engine.runRenderLoop(function () {
+	// 	if (pongScene.state !== "init") {
+	// 		pongScene.render();
+	// 		pongScene.sendPlayerInput(socket);
+	// 	}
+	// });
+
 
 	window.addEventListener("resize", function () {
 		engine.resize();

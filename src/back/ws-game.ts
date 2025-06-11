@@ -79,7 +79,7 @@ async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket,
 
 async function createLocalGame(engine: PongBackEngine, player: User, socket: WebSocket) : Promise<void> {
 	const game = new PongBackScene(engine);
-	addPlayerToGame(game, player);
+	addPlayerToGame(game, player, socket);
 	await game.enablePongPhysics();
 	sendInitGameSuccess("Local game", game.id, assignSide(game), socket);
 }
@@ -87,27 +87,29 @@ async function createLocalGame(engine: PongBackEngine, player: User, socket: Web
 async function createRemoteGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
 	let game = engine.scenes.find(scene => scene.players.length === 1 && scene.state === "init");
 	if (game) {
-		addPlayerToGame(game, newPlayer);
+		addPlayerToGame(game, newPlayer, socket);
 		await game.enablePongPhysics();
 	}
 	else {
 		game = new PongBackScene(engine);
-		addPlayerToGame(game, newPlayer);
+		addPlayerToGame(game, newPlayer, socket);
 	}
 	sendInitGameSuccess("Remote game", game.id, assignSide(game), socket);
 }
 
 async function createAiGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
 	const game = new PongBackScene(engine);
-	addPlayerToGame(game, newPlayer);
+	addPlayerToGame(game, newPlayer, socket);
 	addAiOpponent(game);
 	await game.enablePongPhysics();
 	sendInitGameSuccess("Versus AI", game.id, "left", socket);
 }
 
-function addPlayerToGame(game: PongBackScene, newPlayer: User) : void {
-	if (!game.players.find(player => player.id === newPlayer.id))
+function addPlayerToGame(game: PongBackScene, newPlayer: User, socket: WebSocket) : void {
+	if (!game.players.find(player => player.id === newPlayer.id)) {
+		newPlayer.gameSocket = socket;
 		game.players.push(newPlayer);
+	}
 }
 
 function assignSide(game: PongBackScene) : PlayerSide {
