@@ -14,27 +14,65 @@ i18next
 		}
 	}, () => {
 		console.log("[i18n] Initialized with language:", i18next.language);
-		updateContent();
+		// updateContent();
+		updateI18nContent();
 	});
 
-function updateContent() {
-	console.log("[i18n] Updating content with language:", i18next.language);
+// function updateContent() {
+// 	document.querySelectorAll<HTMLElement>('[data-i18n]').forEach(el => {
+// 		const key = el.dataset.i18n!;
+// 		const translation = i18next.t(key);
 
-	const loginTitle = document.getElementById("login_title") as HTMLElement | null;
-	if (loginTitle) {
-		loginTitle.innerText = i18next.t("login.title");
-	}
+// 		if (el instanceof HTMLInputElement) {
+// 			el.placeholder = translation;
+// 		} else {
+// 			el.innerText = translation;
+// 		}
+// 	});
+// }
 
-	const loginNameInput = document.getElementById("login_name") as HTMLInputElement | null;
-	if (loginNameInput) {
-		loginNameInput.placeholder = i18next.t("login.placeholder");
-	}
+export function updateI18nContent() {
+	const elements = document.querySelectorAll<HTMLElement>("[data-i18n]");
 
-	const loginBtn = document.getElementById("login_button") as HTMLButtonElement | null;
-	if (loginBtn) {
-		loginBtn.innerText = i18next.t("login.button");
-	}
+	elements.forEach((el) => {
+		const key = el.dataset.i18n!;
+		let args = {};
+
+		if (el.dataset.i18nArgs) {
+			try {
+				args = JSON.parse(el.dataset.i18nArgs);
+			} catch (err) {
+				console.warn("[i18n] Failed to parse data-i18n-args for", el, err);
+			}
+		}
+
+		const translation = i18next.t(key, args);
+		if (el instanceof HTMLInputElement) {
+			el.placeholder = translation;
+		} else {
+			el.innerText = translation;
+		}
+	});
 }
+
+// function updateContent() {
+// 	console.log("[i18n] Updating content with language:", i18next.language);
+
+// 	const loginTitle = document.getElementById("login_title") as HTMLElement | null;
+// 	if (loginTitle) {
+// 		loginTitle.innerText = i18next.t("login.title");
+// 	}
+
+// 	const loginNameInput = document.getElementById("login_name") as HTMLInputElement | null;
+// 	if (loginNameInput) {
+// 		loginNameInput.placeholder = i18next.t("login.placeholder");
+// 	}
+
+// 	const loginBtn = document.getElementById("login_button") as HTMLButtonElement | null;
+// 	if (loginBtn) {
+// 		loginBtn.innerText = i18next.t("login.button");
+// 	}
+// }
 
 // function updateContent() {
 //   console.log("[i18n] Updating content with language:", i18next.language);
@@ -50,7 +88,7 @@ document.querySelectorAll(".lang-btn").forEach(button => {
 		if (lang) {
 			i18next.changeLanguage(lang).then(() => {
 				console.log("[i18n] Language changed to", lang);
-				updateContent();
+				updateI18nContent();
 			}).catch(err => {
 				console.error("[i18n] Error changing language:", err);
 			});

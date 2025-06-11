@@ -2,7 +2,13 @@
   "hello": "Привет, {{name}}!",
   "login": {
 	"title": "Добро пожаловать!",
-	"placeholder": "Имя для входа",
+	"name": "Имя для входа",
 	"button": "Вход"
+  },
+  "logged": {
+	"title": "Привет, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+	"button": "Выход"
   }
 }

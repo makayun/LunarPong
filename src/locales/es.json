@@ -2,7 +2,13 @@
   "hello": "¡Hola, {{name}}!",
   "login": {
     "title": "¡Bienvenido!",
-    "placeholder": "Nombre de usuario",
+    "name": "Nombre de usuario",
     "button": "Iniciar sesión"
+  },
+  "logged": {
+	"title": "¡Hola, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+	"button": "Desconectarse"
   }
 }

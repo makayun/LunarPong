@@ -37,10 +37,10 @@ i18next
     backend: {
       loadPath: path.join(__dirname, './locales/{{lng}}.json'),
     },
-  })
-  .then(() => {
-    console.log(i18next.t('hello', { name: 'Alex' }));
-    i18next.changeLanguage('ru').then(() => {
-      console.log(i18next.t('hello', { name: 'Alex' }));
-    });
   });
+//   .then(() => {
+//     console.log(i18next.t('hello', { name: 'Alex' }));
+//     i18next.changeLanguage('ru').then(() => {
+//       console.log(i18next.t('hello', { name: 'Alex' }));
+//     });
+//   });

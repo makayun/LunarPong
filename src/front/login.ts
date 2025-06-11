@@ -1,89 +1,82 @@
-document.querySelectorAll(".login-btn").forEach(button => {
-	button.addEventListener("click", async () => {
-		console.log("[login] Login button clicked:");
+import { setDivLogin, setDivLogged } from "./div_login"
+// import { User, GUID } from "../defines/types"
 
-		const login_name = document.getElementById('login_name') as HTMLInputElement;
-		const login_password = document.getElementById('login_password') as HTMLInputElement;
+export const div_main = document.getElementById('div_main') as HTMLDivElement;
+const baseUrl = window.location.origin;
 
-		if (!login_name.value || !login_password.value) {
-			console.log("[login] login name or password empty");
-			return;
-		}
+// const user: User = {id: generateGuid(), id_: -1};
+// const guid: GUID = (
+// 		Math.random().toString(36).substring(2, 15) +
+// 		Math.random().toString(36).substring(2, 15)
+// 	) as GUID;
 
+// const user: User = {id: guid, id_: -1};
+
+checkLogin();
+
+export async function checkLogin() {
+	if (!await refreshToken()) {
+		setDivLogin(div_main);
+		return;
+	}
+	const accessToken =  localStorage.getItem("accessToken");
+	if (accessToken) {
 		try {
-			const baseUrl = window.location.origin; 
-			const response = await fetch(`${baseUrl}/api/login`, {
+			// const json = JSON.stringify({ accessToken: accessToken });
+			const response = await fetch(`${baseUrl}/api/protected/profile`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + accessToken
+				}
+			});
+			if (!response.ok) {
+				const errorData = await response.json();
+				console.error("[login] Login check failed:", errorData.error);
+				setDivLogin(div_main);
+				return;
+			}
+			const data = await response.json();
+			// user.id_ = data.id;
+			// user.nick = data.username;
+			setDivLogged(div_main, data);
+			return;
+			// data.user.username + " was loggined! (id: " + data.user.id + ")";
+		}  catch (err) {
+			console.error("[login] Network error:", err);
+		}
+	}
+	setDivLogin(div_main);
+}
+
+async function refreshToken() {
+	const refreshToken =  localStorage.getItem("refreshToken");
+	if (refreshToken) {
+		try {
+			const response = await fetch(`${baseUrl}/api/refresh`, {
 				method: "POST",
 				headers: {
-					"Content-Type": "application/json"
+					"Content-Type": "application/json",
 				},
 				body: JSON.stringify({
-					username: login_name.value,
-					password: login_password.value
+					refreshToken: refreshToken
 				})
 			});
-
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.error("[login] Login failed:", errorData.error);
-				return;
+				return false;
 			}
-
 			const data = await response.json();
-			console.log("[login] Login successful, accessToken:", data.accessToken);
-			console.log("[login] Login successful, refreshToken:", data.refreshToken);
-
-			// 💾 Сохраняем токены (в localStorage или sessionStorage)
+			console.log("[login] Refresh accessToken:", data.accessToken);
 			localStorage.setItem("accessToken", data.accessToken);
-			localStorage.setItem("refreshToken", data.refreshToken);
-		} catch (err) {
+		}  catch (err) {
 			console.error("[login] Network error:", err);
+			return false;
 		}
-	});
-});
-
-// const sqlite = require('node:sqlite');
-
-// import i18n from "node:i18n"
-// import path from 'node:path';
-// i18n.configure({
-//   locales: ['en', ''],
-//   defaultLocale: 'en',
-//   queryParameter: 'lang',
-//   directory: path.join('./', 'locales'),
-//   api: {
-//     '__': 'translate',
-//     '__n': 'translateN'
-//   },
-// });
-// export default i18n;
-
-// import i18next from 'i18next';
-// import Backend from 'i18next-http-backend';
-// import LanguageDetector from 'i18next-browser-languagedetector';
+	}
+	return true;
+}
 
 const div_container = document.getElementById('div_container') as HTMLDivElement;
 div_container.style.display = 'none'; // "flex"
-// const div_game = document.getElementById('div_game') as HTMLDivElement;
-// div_game.style.display = 'none';
-// const div_chat = document.getElementById('div_chat') as HTMLDivElement;
-// div_chat.style.display = 'none'; // 'block';
-
-// i18next
-//   .use(Backend)
-//   .use(LanguageDetector)
-//   .init({
-//     fallbackLng: 'en',
-//     backend: {
-//       loadPath: '/locales/{{lng}}.json', // например, /public/locales/en.json
-//     },
-//   })
-//   .then(() => {
-//     console.log(i18next.t('hello', { name: 'Alex' }));
-//   });
-
-// (window as any).changeLang = (lng: string) => {
-//   i18next.changeLanguage(lng).then(() => {
-//     console.log(i18next.t('hello', { name: 'Alex' }));
-//   });
-// };

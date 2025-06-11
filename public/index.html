@@ -21,7 +21,7 @@
       height: 100%;
       background-color: pink;
     }
-	.login {
+	.div_main {
 	  width: 100%;
       height: 100%;
 	  display: flex;
@@ -151,19 +151,16 @@
   </style>
 </head>
 <body>
-  <div class="login" id="div_login">
-	<div class="i18next" style="position: absolute; top: 10px; left: 10px; z-index: 100;">
-      <button class="lang-btn" data-lang="en">🇬🇧</button>
-      <button class="lang-btn" data-lang="cs">🇨🇿</button>
-      <button class="lang-btn" data-lang="ru">🇷🇺</button>
-	  <button class="lang-btn" data-lang="de">🇩🇪</button>
-	  <button class="lang-btn" data-lang="es">🇪🇸</button>
-	  <button class="lang-btn" data-lang="zh">🇨🇳</button>
-    </div>
-	  <h1 id="login_title"></h1>
-	  <p><input type="text" id="login_name" class="input"/></p>
-	  <p><input type="password" id="login_password" class="input"/></p>
-	  <button class="login-btn" id="login_button"></button>
+  <div class="i18next" style="position: absolute; top: 10px; left: 10px; z-index: 100;">
+    <button class="lang-btn" data-lang="en">🇬🇧</button>
+    <button class="lang-btn" data-lang="cs">🇨🇿</button>
+    <button class="lang-btn" data-lang="ru">🇷🇺</button>
+    <button class="lang-btn" data-lang="de">🇩🇪</button>
+    <button class="lang-btn" data-lang="es">🇪🇸</button>
+    <button class="lang-btn" data-lang="zh">🇨🇳</button>
+  </div>
+  <div class="div_main" id="div_main">
+    <!-- текущее содержимое \ current content -->
   </div>
   <div class="container" id="div_container">
     <!-- <div style="position: absolute; top: 10px; left: 10px; z-index: 100;">

@@ -1,37 +1,8 @@
-// import db from '../back/db';
-// import { FastifyReply, FastifyRequest } from 'fastify';
-// import { hashPassword, checkPassword, signToken } from './auth.utils';
-
-// export const register = async (req: FastifyRequest, reply: FastifyReply) => {
-// 	const { username, password } = req.body as any;
-
-// 	const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
-// 	if (stmt.get(username)) {
-// 		return reply.status(400).send({ error: 'User already exists' });
-// 	}
-
-// 	const hashed = hashPassword(password);
-// 	db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(username, hashed);
-
-// 	reply.send({ message: 'User registered' });
-// };
-
-// export const login = async (req: FastifyRequest, reply: FastifyReply) => {
-// 	const { username, password } = req.body as any;
-
-// 	const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
-// 	if (!user || !checkPassword(password, user.password)) {
-// 		return reply.status(401).send({ error: 'Invalid credentials' });
-// 	}
-
-// 	const token = signToken(username);
-// 	reply.send({ token });
-// };
-
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { hashPassword, checkPassword, signAccessToken, signRefreshToken} from './auth.utils';
-import db from '../back/db';
+import { hashPassword, checkPassword, signAccessToken, signRefreshToken, verifyToken} from './auth.utils';
+import { getDB } from '../back/db';
 import jwt from 'jsonwebtoken';
+
 
 interface AuthBody {
 	username: string;
@@ -54,16 +25,16 @@ export const login = async (
 	) => {
 		const { username, password } = request.body;
 
-		const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
-		const user = stmt.get(username) as User | undefined;
+		const user = await getDB().get('SELECT * FROM users WHERE username = ?', username) as User | undefined;
 
 		if (!user || !checkPassword(password, user.password)) {
 			return reply.status(401).send({ error: 'Invalid credentials' });
 		}
 
-		const accessToken = signAccessToken(username);
-		const refreshToken = signRefreshToken(username);
-		return reply.send ({ accessToken: accessToken, refreshToken: refreshToken });
+		const accessToken = signAccessToken(user.id, username);
+		const refreshToken = signRefreshToken(user.id, username);
+		const payload = verifyToken(accessToken);
+		return reply.send ({ accessToken: accessToken, refreshToken: refreshToken, user: payload });
 	};
 
 export const register = async (
@@ -72,13 +43,13 @@ export const register = async (
 	) => {
 		const { username, password } = request.body;
 
-		const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
-		if (stmt.get(username)) {
+		const user = await getDB().get('SELECT * FROM users WHERE username = ?', username) as User | undefined;
+		if (user !== undefined) {
 			return reply.status(400).send({ error: 'User already exists' });
 		}
 
 		const hashed = hashPassword(password);
-		db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(username, hashed);
+		await getDB().run('INSERT INTO users (username, password) VALUES (?, ?)', username, hashed);
 
 		return reply.send({ message: 'User registered' });
 	};
@@ -96,44 +67,9 @@ export const refresh  = async (
 			const payload = jwt.verify(refreshToken, process.env.JWT_SECRET!) as any;
 			// Тут можно проверить refreshToken в БД (опционально)
 
-			const newAccessToken = signAccessToken(payload.username);
-			return { accessToken: newAccessToken };
+			const newAccessToken = signAccessToken(payload.id, payload.username);
+			return reply.send({ accessToken: newAccessToken });
 		} catch {
 			return reply.status(401).send({ error: 'Invalid refresh token' });
 		}
 	};
-
-// import db from '../back/db';
-// import { FastifyReply, FastifyRequest } from 'fastify';
-// import { hashPassword, checkPassword, signToken } from './auth.utils';
-
-// interface AuthBody {
-// 	username: string;
-// 	password: string;
-// }
-
-// export const register = async (req: FastifyRequest<{ Body: AuthBody }>, reply: FastifyReply) => {
-// 	const { username, password } = req.body;
-
-// 	const stmt = db.prepare('SELECT * FROM users WHERE username = ?');
-// 	if (stmt.get(username)) {
-// 		return reply.status(400).send({ error: 'User already exists' });
-// 	}
-
-// 	const hashed = hashPassword(password);
-// 	db.prepare('INSERT INTO users (username, password) VALUES (?, ?)').run(username, hashed);
-
-// 	reply.send({ message: 'User registered' });
-// };
-
-// export const login = async (req: FastifyRequest<{ Body: AuthBody }>, reply: FastifyReply) => {
-// 	const { username, password } = req.body;
-
-// 	const user = db.prepare('SELECT * FROM users WHERE username = ?').get(username);
-// 	if (!user || !checkPassword(password, user.password)) {
-// 		return reply.status(401).send({ error: 'Invalid credentials' });
-// 	}
-
-// 	const token = signToken(username);
-// 	reply.send({ token });
-// };

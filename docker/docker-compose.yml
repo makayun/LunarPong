@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   node_sqlite:
     build:
@@ -22,6 +23,15 @@ services:
     # user: "node"
     working_dir: /var/fp_data/
     command: "/home/node/run.sh"
+    networks:
+      - front-tier
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
     networks:
       - front-tier
 

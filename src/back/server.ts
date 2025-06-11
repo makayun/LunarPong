@@ -16,8 +16,12 @@ import { startRenderLoop }		from "../scenes/PongBackScene";
 import type { User }			from "../defines/types";
 // import type { MeshPositions } from "../defines/types";
 
+import protectedRoutes from '../auth/protectedRoutes';
 import authRoutes from '../auth/auth.routes';
+import { initDB } from '../back/db';
+// import { initRedis } from './redis-client';
 import dotenv from 'dotenv';
+
 dotenv.config();
 
 async function main() {
@@ -25,6 +29,9 @@ async function main() {
 	const appDir: string = fs.realpathSync(process.cwd());
 	const frontDir: string = "front";
 	const certPath = path.resolve(appDir, 'data/cert');
+
+	await initDB();
+	// await initRedis(); // временно отключил, потом надо будет вернуть
 
 	// const serverOpts: FastifyServerOptions = {
 	// 	logger: process.stdout.isTTY
@@ -55,9 +62,7 @@ async function main() {
 	await server.register(wsChatPlugin, { users });             // 💬 плагин чата
 
 	server.register(authRoutes);
-	// server.get('/api/protected', { preHandler: authHook }, async (request, reply) => {
-	// 	return { message: `Hello, ${(request.user as any).username}` };
-	// });
+	server.register(protectedRoutes, { prefix: '/api/protected' });
 	await server.listen(listenOpts);
 
 	startRenderLoop(engine);
