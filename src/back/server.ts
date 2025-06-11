@@ -17,7 +17,7 @@ import type { MeshPositions } from "../defines/types";
 async function main() {
 	const users: User[] = [];
 	const appDir: string = fs.realpathSync(process.cwd());
-	const frontDir: string = "dist/front";
+	const frontDir: string = "front";
 
 	const serverOpts: FastifyServerOptions = {
 		logger: process.stdout.isTTY
@@ -34,7 +34,7 @@ async function main() {
 
 	const engine = new PongBackEngine();
 
-	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir)});
+	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 	server.register(websocket);
 	await server.register(wsGamePlugin, { engine, users });
 	await server.register(wsChatPlugin, { users });             // 💬 плагин чата
@@ -42,6 +42,7 @@ async function main() {
 	await server.listen(listenOpts);
 
 	engine.runRenderLoop(() => {
+		// manage input
 		engine.scenes.forEach(scene => scene.render());
 		engine.scenes.forEach(scene => {
 			const posMessage: MeshPositions = {

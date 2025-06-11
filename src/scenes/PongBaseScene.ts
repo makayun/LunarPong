@@ -45,7 +45,7 @@ export class PongBaseScene extends Scene {
 			edgeBottom: this.pongEdge("edgeBottom")
 		}
 
-		this.pongMeshes.ball.position.y = 1;
+		this.pongMeshes.ball.position.y = 5;
 		this.pongMeshes.paddleLeft.position.set(-PADDLE_POS_X, 0.3, 0);
 		this.pongMeshes.paddleRight.position.set(PADDLE_POS_X, 0.3, 0);
 		this.pongMeshes.edgeTop.position.z = -TB_EDGES_POS_Z;
