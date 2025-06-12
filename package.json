@@ -4,8 +4,9 @@
   "description": "",
   "main": "back/server.js",
   "scripts": {
-    "build": "npx @tailwindcss/cli -i ./src/styles/styles.css -o ./src/styles/output.css && npx webpack --env mode=development",
-    "build:prod": "npx webpack --env mode=production",
+    "build:styles": "npx @tailwindcss/cli -i ./src/styles/styles.css -o ./src/styles/output.css",
+    "build": "npm run build:styles && webpack --env mode=development",
+    "build:prod": "npm run build:styles && webpack --env mode=production",
     "start": "node ."
   },
   "keywords": [],
