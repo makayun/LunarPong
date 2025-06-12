@@ -13,6 +13,14 @@ const srcDir = "src";
 const frontDir = "front";
 const pubDir = "public";
 
+export const cssLoader = {
+  test: /\.css$/,
+  use: [
+    MiniCssExtractPlugin.loader,
+    'css-loader'
+  ]
+};
+
 export default (env: { mode: BuildMode }) => {
 	const isDev: boolean = env.mode === "development";
 
@@ -38,7 +46,7 @@ export default (env: { mode: BuildMode }) => {
 		},
 		devtool: isDev ? "inline-source-map" : false,
 		resolve: { extensions: [ ".tsx", ".ts", ".js"] },
-		module: { rules: [ scssLoader(isDev), tsLoader, assetLoader ] },
+		module: { rules: [ cssLoader, scssLoader(isDev), tsLoader, assetLoader ] },
 		plugins: buildFrontPlugins(appPaths, isDev)
 	};
 
@@ -51,7 +59,7 @@ export function buildFrontPlugins(paths: BuildPaths, isDev: boolean) : webpack.C
 		new HtmlWebpackPlugin({
 			template: paths.html,
 			favicon: paths.favicon,
-			inject: false,
+			inject: true,
 			templateParameters(compilation, assets) {
 				if (compilation.errors)
 					console.log(compilation.errors);
@@ -74,6 +82,10 @@ export function buildFrontPlugins(paths: BuildPaths, isDev: boolean) : webpack.C
 
 	if (isDev) {
 		plugins.push(new ProgressPlugin());
+		plugins.push(new MiniCssExtractPlugin({
+			filename: "css/[name].[contenthash:8].css",
+			chunkFilename: "css/[name].[contenthash:8].css"
+		}))
 	}
 
 	else {
