@@ -32,13 +32,13 @@ export function showDiv(id_div: string, show: boolean) {
 // }
 
 const  div_login: string = '<h1 id="login_title" data-i18n="login.title"></h1> \
-  <label for "name" data-i18n="login.label_name"> </label> <input type="text" id="name" data-i18n="login.name" class="input"/> <br> \
+  <label for "name" data-i18n="login.label_name"> </label> <input class="input" type="text" id="name" data-i18n="login.name" class="input"/> <br> \
   <label for "password" data-i18n="login.label_password"> </label> <input type="password" id="password" class="input"/> <br> \
-  <button class="login-btn" id="login_button" data-i18n="login.button"></button> <br> \
+  <button  id="login-btn" data-i18n="login.button" class="login-btn"></button> <br> \
   <p data-i18n="or"> <\p> \
-  <h1 id="logged_google">Здесь будет GOOGLE авторизация!</h1> \
+  <h1 class="register-button" id="logged_google">Здесь будет GOOGLE авторизация!</h1> \
   <p data-i18n="or"> <\p> \
-  <button class="register-btn" id="register_button" data-i18n="register.button"></button>';
+  <button  id="register-btn" data-i18n="register.button" class="register-button"></button>';
 
 export function setDivLogin(div: HTMLDivElement) {
   localStorage.removeItem("accessToken");
@@ -49,7 +49,7 @@ export function setDivLogin(div: HTMLDivElement) {
 }
 
 function initLoginHandlers() {
-	const loginBtn = document.querySelector(".login-btn");
+	const loginBtn = document.querySelector("login-btn");
 	if (loginBtn) {
 		loginBtn.addEventListener("click", async () => {
 			console.log("[login] Login button clicked:");
@@ -93,7 +93,7 @@ function initLoginHandlers() {
 			}
 		});
 	}
-	const registerBtn = document.querySelector(".register-btn");
+	const registerBtn = document.querySelector("#register-btn");
 	if (registerBtn) {
 		registerBtn.addEventListener("click", async () => {
 			console.log("[register] Register button clicked:");
@@ -102,8 +102,8 @@ function initLoginHandlers() {
 	)};
 }
 
-const  div_logged: string = '<h1 id="logged_title" data-i18n="logged.title"></h1> \
-  <h1 id="logged_2FA">Здесь будет 2FA авторизация!</h1> \
+const  div_logged: string = '<h1 class="logged_in" id="logged_title" data-i18n="logged.title"></h1> \
+  <h1 class="logged_in" id="logged_2FA">Здесь будет 2FA авторизация!</h1> \
   <button class="continue-btn" id="continue_button" data-i18n="continue"></button>';
 
 export function setDivLogged(div: HTMLDivElement, data: any) {
