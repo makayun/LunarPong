@@ -31,6 +31,11 @@ export type MeshesDict = {
 
 export type GUID = string & { __brand: "GUID" };
 
+export type User_f = {
+	id: number;
+	name?: string;
+};
+
 export type User = {
 	id: GUID,
 	gameId?: GUID,

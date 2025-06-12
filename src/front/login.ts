@@ -1,24 +1,16 @@
-import { setDivLogin, setDivLogged, showDiv } from "./div_login"
-// import { User, GUID } from "../defines/types"
+// import { setDivLogin, setDivLogged} from "./div_login"
+import { baseUrl, div_main_state, set_div_main } from "./history"
+import type { User_f } from "../defines/types";
 
-export const div_main = document.getElementById('div_main') as HTMLDivElement;
-const baseUrl = window.location.origin;
+export let user_f: User_f = {id: -1};
 
-// const user: User = {id: generateGuid(), id_: -1};
-// const guid: GUID = (
-// 		Math.random().toString(36).substring(2, 15) +
-// 		Math.random().toString(36).substring(2, 15)
-// 	) as GUID;
-
-// const user: User = {id: guid, id_: -1};
-
-showDiv("div_container", false);
-showDiv("div_logoff", false);
+sessionStorage.setItem("start", "yes");
 checkLogin();
 
 export async function checkLogin() {
 	if (!await refreshToken()) {
-		setDivLogin(div_main);
+		set_div_main(div_main_state.LOGIN);
+		// setDivLogin(div_main);
 		return;
 	}
 	const accessToken =  localStorage.getItem("accessToken");
@@ -35,20 +27,25 @@ export async function checkLogin() {
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.error("[login] Login check failed:", errorData.error);
-				setDivLogin(div_main);
+				set_div_main(div_main_state.LOGIN);
+				// setDivLogin(div_main);
 				return;
 			}
 			const data = await response.json();
+			user_f.id = data.id;
+			user_f.name = data.username;
 			// user.id_ = data.id;
 			// user.nick = data.username;
-			setDivLogged(div_main, data);
+			set_div_main(div_main_state.TWOFA);
+			// setDivLogged(div_main, data);
 			return;
 			// data.user.username + " was loggined! (id: " + data.user.id + ")";
 		}  catch (err) {
 			console.error("[login] Network error:", err);
 		}
 	}
-	setDivLogin(div_main);
+	set_div_main(div_main_state.LOGIN);
+	// setDivLogin(div_main);
 }
 
 async function refreshToken() {

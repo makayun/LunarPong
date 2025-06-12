@@ -13,7 +13,7 @@ interface RefreshTokenBody {
 	refreshToken: string;
 }
 
-interface User {
+interface getUser {
 	id: number;
 	username: string;
 	password: string;
@@ -25,7 +25,7 @@ export const login = async (
 	) => {
 		const { username, password } = request.body;
 
-		const user = await getDB().get('SELECT * FROM users WHERE username = ?', username) as User | undefined;
+		const user = await getDB().get('SELECT * FROM users WHERE username = ?', username) as getUser | undefined;
 
 		if (!user || !checkPassword(password, user.password)) {
 			return reply.status(401).send({ error: 'Invalid credentials' });
@@ -43,7 +43,7 @@ export const register = async (
 	) => {
 		const { username, password } = request.body;
 
-		const user = await getDB().get('SELECT * FROM users WHERE username = ?', username) as User | undefined;
+		const user = await getDB().get('SELECT * FROM users WHERE username = ?', username) as getUser | undefined;
 		if (user !== undefined) {
 			return reply.status(400).send({ error: 'User already exists' });
 		}

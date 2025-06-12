@@ -1,35 +1,6 @@
-import { updateI18nContent } from "./i18next"
-import { div_main } from "./login"
-
-export function showDiv(id_div: string, show: boolean) {
-	const div = document.getElementById(id_div) as HTMLDivElement;
-	if (div) {
-		if (show)
-			div.style.display = 'flex';
-		else
-			div.style.display = 'none';
-	}
-}
-
-// export function showDivLogoff(show: boolean) {
-// 	const div_logoff = document.getElementById('div_logoff') as HTMLDivElement;
-// 	if (div_logoff) {
-// 		if (show)
-// 			div_logoff.style.display = 'flex';
-// 		else
-// 			div_logoff.style.display = 'none';
-// 	}
-// }
-
-// export function showDivContainer(show: boolean) {
-// 	const div_container = document.getElementById('div_container') as HTMLDivElement;
-// 	if (div_container) {
-// 		if (show)
-// 			div_container.style.display = 'flex';
-// 		else
-// 			div_container.style.display = 'none';
-// 	}
-// }
+// import { updateI18nContent } from "./i18next"
+import { div_main_state, div_main, showDiv, set_div_main} from "./history"
+import { user_f } from "./login"
 
 const  div_login: string = '<h1 id="login_title" data-i18n="login.title"></h1> \
   <label for "name" data-i18n="login.label_name"> </label> <input type="text" id="name" data-i18n="login.name" class="input"/> <br> \
@@ -40,11 +11,11 @@ const  div_login: string = '<h1 id="login_title" data-i18n="login.title"></h1> \
   <p data-i18n="or"> <\p> \
   <button class="register-btn" id="register_button" data-i18n="register.button"></button>';
 
-export function setDivLogin(div: HTMLDivElement) {
+export function setDivLogin() {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
-  div.innerHTML = div_login;
-  updateI18nContent();
+  div_main.innerHTML = div_login;
+//   updateI18nContent();
   initLoginHandlers();
 }
 
@@ -87,7 +58,8 @@ function initLoginHandlers() {
 				// 💾 Сохраняем токены (в localStorage или sessionStorage)
 				localStorage.setItem("accessToken", data.accessToken);
 				localStorage.setItem("refreshToken", data.refreshToken);
-				setDivLogged(div_main, data);
+				set_div_main(div_main_state.TWOFA);
+				// setDivLogged();
 			} catch (err) {
 				console.error("[login] Network error:", err);
 			}
@@ -97,7 +69,8 @@ function initLoginHandlers() {
 	if (registerBtn) {
 		registerBtn.addEventListener("click", async () => {
 			console.log("[register] Register button clicked:");
-			setDivRegister(div_main);
+			set_div_main(div_main_state.REGISTER);
+			// setDivRegister(div_main);
 		}
 	)};
 }
@@ -106,14 +79,14 @@ const  div_logged: string = '<h1 id="logged_title" data-i18n="logged.title"></h1
   <h1 id="logged_2FA">Здесь будет 2FA авторизация!</h1> \
   <button class="continue-btn" id="continue_button" data-i18n="continue"></button>';
 
-export function setDivLogged(div: HTMLDivElement, data: any) {
-  div.innerHTML = div_logged;
+export function setDiv2FA() {
+  div_main.innerHTML = div_logged;
   const el = document.querySelector('[data-i18n="logged.title"]');
   if (el) {
-    el.setAttribute('data-i18n-args', JSON.stringify({ name: data.user.username, id: data.user.id }));
+    el.setAttribute('data-i18n-args', JSON.stringify({ name: user_f.name, id: user_f.id }));
   }
   showDiv("div_logoff", true);
-  updateI18nContent();
+//   updateI18nContent();
   initLoggedHandlers();
 }
 
@@ -125,7 +98,8 @@ function initLoggedHandlers() {
 			showDiv("div_logoff", false);
 			showDiv("div_container", false);
 			showDiv("div_main", true);
-			setDivLogin(div_main);
+			set_div_main(div_main_state.LOGIN);
+			// setDivLogin(div_main);
 		}
 	)};
 	const continueBtn = document.querySelector(".continue-btn");
@@ -146,9 +120,9 @@ export const  div_register: string = '<h1 id="register_title" data-i18n="registe
   <label for "email" data-i18n="register.label_email"> </label> <input type="email" id="email" class="input"/> <br> \
   <button class="register-btn" id="register_button" data-i18n="register.button"></button>';
 
-export function setDivRegister(div: HTMLDivElement) {
-  div.innerHTML = div_register;
-  updateI18nContent();
+export function setDivRegister() {
+  div_main.innerHTML = div_register;
+//   updateI18nContent();
   initRegisterHandlers();
 }
 
@@ -157,8 +131,6 @@ function initRegisterHandlers() {
 	if (continueBtn) {
 		continueBtn.addEventListener("click", async () => {
 			console.log("[register] Register button clicked:");
-			// showDiv("div_main", false);
-			// showDiv("div_container", true);
 		}
 	)};
 }
