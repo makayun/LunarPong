@@ -56,6 +56,14 @@ export function buildFrontPlugins(paths: BuildPaths, isDev: boolean) : webpack.C
 			template: paths.html,
 			favicon: paths.favicon,
 			inject: true
+		}),
+		new CopyPlugin({
+			patterns: [
+				{
+					from: path.resolve(appDir, srcDir, localesDir),
+					to: 'locales'
+				}
+			]
 		})
 	];
 
