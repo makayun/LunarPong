@@ -49,7 +49,7 @@ export function setDivLogin(div: HTMLDivElement) {
 }
 
 function initLoginHandlers() {
-	const loginBtn = document.querySelector("login-btn");
+	const loginBtn = document.querySelector("#login-btn");
 	if (loginBtn) {
 		loginBtn.addEventListener("click", async () => {
 			console.log("[login] Login button clicked:");
