@@ -1,8 +1,12 @@
 {
+  "or": "или",
   "hello": "Привет, {{name}}!",
   "login": {
 	"title": "Добро пожаловать!",
-	"name": "Имя для входа",
+	"label_name": "Имя пользователя",
+	"name": "Имя пользователя",
+	"label_password": "Пароль",
+	"password": "Пароль",
 	"button": "Вход"
   },
   "logged": {
@@ -10,5 +14,15 @@
   },
   "logoff": {
 	"button": "Выход"
-  }
+  },
+  "register": {
+	"title": "Регистрация",
+	"label_name": "Имя пользователя",
+	"name": "Имя пользователя",
+	"label_password1": "Пароль",
+	"label_password2": "Повтоор пароля",
+	"label_email": "Email",
+  	"button": "Регистрация"
+  },
+  "continue": "Продолжить"
 }

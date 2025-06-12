@@ -1,4 +1,4 @@
-import { setDivLogin, setDivLogged } from "./div_login"
+import { setDivLogin, setDivLogged, showDiv } from "./div_login"
 // import { User, GUID } from "../defines/types"
 
 export const div_main = document.getElementById('div_main') as HTMLDivElement;
@@ -12,6 +12,8 @@ const baseUrl = window.location.origin;
 
 // const user: User = {id: guid, id_: -1};
 
+showDiv("div_container", false);
+showDiv("div_logoff", false);
 checkLogin();
 
 export async function checkLogin() {
@@ -77,6 +79,3 @@ async function refreshToken() {
 	}
 	return true;
 }
-
-const div_container = document.getElementById('div_container') as HTMLDivElement;
-div_container.style.display = 'none'; // "flex"
