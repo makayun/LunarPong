@@ -28,7 +28,7 @@ async function main() {
 	const users: User[] = [];
 	const appDir: string = fs.realpathSync(process.cwd());
 	const frontDir: string = "front";
-	const certPath = path.resolve(appDir, 'data/cert');
+	// const certPath = path.resolve(appDir, 'data/cert'); // enable http fro tests (remove it!!!)
 
 	await initDB();
 	// await initRedis(); // временно отключил, потом надо будет вернуть
@@ -48,10 +48,12 @@ async function main() {
 		logger: process.stdout.isTTY
 			? { transport: { target: "pino-pretty" } }
 			: { level: "info" },
-		https: {
-			key: fs.readFileSync(path.join(certPath, 'key.pem')),
-			cert: fs.readFileSync(path.join(certPath, 'cert.pem')),
+		http: {
 		}
+		// https: {
+		// 	key: fs.readFileSync(path.join(certPath, 'key.pem')),
+		// 	cert: fs.readFileSync(path.join(certPath, 'cert.pem')),
+		// }
 	});
 
 	const engine = new PongBackEngine();
