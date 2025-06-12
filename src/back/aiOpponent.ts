@@ -9,8 +9,8 @@ import {
   STOP
 } from "../defines/constants";
 
-import type { MeshPositions, PlayerInput, User, Game, Vector3, GUID } from "../defines/types";
-import { Vector3 as BabylonVector3 } from "@babylonjs/core/Maths/math.vector";
+import type { MeshPositions, PlayerInput, User, Game, GUID } from "../defines/types";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { generateGuid } from '../helpers/helpers';
 
 interface AIOpponentConfig {
@@ -24,7 +24,7 @@ export class AIOpponent {
   private game: Game; // Текущая игра
   private config: AIOpponentConfig;
   private lastUpdate: number = 0; // Время последнего обновления
-  private ballVelocity: Vector3 = new BabylonVector3(0, 0, 0); // Скорость мяча
+  private ballVelocity: Vector3 = new Vector3(0, 0, 0); // Скорость мяча
   private lastBallPosition: Vector3 | null = null; // Последняя позиция мяча
 
   constructor(game: Game, paddleSide: "left" | "right") {
@@ -56,7 +56,7 @@ export class AIOpponent {
     } else {
       /* Для первого шага предполагаем, что мяч движется к AI */
       const paddleY = this.config.paddleSide === "right" ? positions.paddleRight.y : positions.paddleLeft.y;
-      this.ballVelocity = new BabylonVector3(
+      this.ballVelocity = new Vector3(
         this.config.paddleSide === "right" ? 5 : -5, // Скорость по X
         positions.ball.y - paddleY, // Скорость по Y основана на разнице
         0
