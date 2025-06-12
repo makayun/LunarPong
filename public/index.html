@@ -5,152 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pong and Chat</title>
   <style>
-	html, body {
-			height: 100%;
-			margin: 0;
-	}
-    /* body {
-      height: 100vh;
-      display: flex;
-      font-family: monospace;
-      background-color: pink;
-    } */
-    .container {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      background-color: pink;
-    }
-	.div_main {
-	  width: 100%;
-      height: 100%;
-	  display: flex;
-	  flex-direction: column;
-	  align-items: center;
-	  justify-content: center;
-	  background-color: rgb(177, 224, 243);	
-	}
-    .left {
-      background-color: pink;
-      flex: 3;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-    .chat {
-      min-width: 240px; /*chat*/
-      max-width: 400px; /*chat*/
-      padding: 10px;
-      gap: 10px;
-      background-color: pink;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      border-left: 2px solid #aaa;
-      box-sizing: border-box;
-      margin: 20px 20px 20px 0;
-    }
-    .messages, .input, .controls {
-      border-radius: 5px;
-    }
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px;
-      background-color: #111;
-      color: #0f0;
-      /* white-space: pre-wrap; */
-      /* word-break: break-word; */
-      overflow-wrap: break-word; /*cards*/
-      font-size: 14px;
-    }
-    .input {
-      padding: 8px;
-      border: none;
-      background: black;
-      color: lime;
-      font-family: monospace;
-      font-size: 14px;
-      outline: none;
-    }
-    .controls {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    select, button {
-      padding: 5px;
-      font-family: monospace;
-    }
-    /* Стили для игры из pong.html */
-    .game-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    #pongCanvas {
-      background-color: black;
-      border: 1px solid white;
-    }
-    #score {
-      color: #0f0;
-      font-size: 18px;
-      margin-top: 10px;
-    }
-    #startButton {
-      margin-top: 10px;
-      padding: 8px 16px;
-      background-color: #444;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    #startButton:hover {
-      background-color: #555;
-    }
-    .leaderboard-container {
-      max-height: 200px;
-      overflow-y: auto;
-      margin-top: 20px;
-      width: 600px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      color: #0f0;
-    }
-    th, td {
-      border: 1px solid #4a5568;
-      padding: 8px;
-    }
-    .player-profile {
-      background: rgb(32, 28, 28);
-      border: 2px solid #6a0dad;
-      border-radius: 10px;
-      padding: 6px 8px;
-      color: rgb(168, 230, 230);
-      margin: 2px 0;
-      line-height: 1.0;
-    }
-    .player-profile h3 {
-      color: rgb(200, 245, 117);
-      margin: 0 0 6px 0;
-    }
-    .player-profile p {
-      margin: 2px 0;
-    }
-    .message {
-      padding: 1px 4px;
-      margin-bottom: 0;
-      line-height: 1.2;
-      border-radius: 6px;
-      white-space: pre-wrap;
-    }
   </style>
 </head>
-<body>
+<body class="m-0 h-screen flex font-mono bg-cyan-400">
   <div class="i18next" style="position: absolute; top: 10px; left: 10px; z-index: 100;">
     <button class="lang-btn" data-lang="en">🇬🇧</button>
     <button class="lang-btn" data-lang="cs">🇨🇿</button>
@@ -165,91 +22,32 @@
   <div class="div_main" id="div_main">
     <!-- текущее содержимое \ current content -->
   </div>
-  <div class="container" id="div_container">
-    <!-- <div style="position: absolute; top: 10px; left: 10px; z-index: 100;">
-      <button onclick="setLanguage('en')">🇬🇧</button>
-      <button onclick="setLanguage('cz')">🇨🇿</button>
-      <button onclick="setLanguage('es')">🇪🇸</button>
-    </div> -->
-    <div class="left" id="div_game">
+  <div class="flex w-full h-full bg-cyan-400">
+    <div class="left">
       <div class="game-container">
         <h1 class="text-2xl font-bold text-black mb-4">Fucking Pong</h1>
         <div id="gameButtons" style="margin-bottom: 12px;">
-          <button id="Local game">Local game</button>
-          <button id="Remote game">Remote game</button>
-          <button id="Versus AI">Versus AI</button>
+
+          <button id="Local game" class="game-button">Local game</button>
+          <button id="Remote game" class="game-button">Remote game</button>
+          <button id="Versus AI" class="game-button">Versus AI</button>
         </div>
-        <canvas id="pongCanvas" width="700%" height="500%"></canvas>
+        <canvas id="pongCanvas" class="bg-black border border-white rounded" width="700%" height="500%"></canvas>
+
       </div>
     </div>
-    <div class="chat" id="div_chat">
+    <div class="chat">
       <div class="controls">
         <select id="recipient">
           <option value="all">All Players</option>
         </select>
-        <button onclick="blockUser()">Block</button>
-        <button onclick="inviteUser()">Invite</button>
-        <button onclick="viewProfile()">Profile</button>
+        <button class="bg-white text-black rounded hover:bg-pink-300" onclick="blockUser()">Block</button>
+        <button class="bg-white text-black border-none rounded hover:bg-pink-300" onclick="inviteUser()">Invite</button>
+        <button class="bg-white text-black border-none rounded hover:bg-pink-300" onclick="viewProfile()">Profile</button>
       </div>
-      <div class="messages" id="messages"></div>
-      <input type="text" id="input" class="input" placeholder="Type here..." />
+      <div class="flex-1 overflow-y-auto p-2 bg-black text-lime-400 break-words text-sm rounded" id="messages"></div>
+      <input type="text" id="input" class="p-2 border-none bg-black text-lime-400 font-mono text-sm outline-none rounded" placeholder="Type here..." />
     </div>
   </div>
-  <%= i18next %>
-  <%= login %>
-  <%= chat %>
-  <%= game %>
-<!-- <script>
-  const translations = {
-    en: {
-      title: "Fucking Pong",
-      play: "Play!",
-      allPlayers: "All Players",
-      block: "Block",
-      invite: "Invite",
-      profile: "Profile",
-      placeholder: "Type here..."
-    },
-    cz: {
-      title: "Zasraný Pong",
-      play: "Hrát!",
-      allPlayers: "Hráči",
-      block: "Blokovat",
-      invite: "Pozvat",
-      profile: "Profil",
-      placeholder: "Piš sem..."
-    },
-    es: {
-      title: "Pong Jodido",
-      play: "¡Jugar!",
-      allPlayers: "Jugadores",
-      block: "Bloquear",
-      invite: "Invitar",
-      profile: "Perfil",
-      placeholder: "Escribe aquí..."
-    }
-  };
-
-  let currentLang = 'en';
-
-  function setLanguage(lang) {
-    currentLang = lang;
-    const t = translations[lang];
-
-    document.querySelector("h1").textContent = t.title;
-    document.getElementById("startButton").textContent = t.play;
-    document.getElementById("recipient").options[0].text = t.allPlayers;
-    document.querySelector(".controls button:nth-child(2)").textContent = t.block;
-    document.querySelector(".controls button:nth-child(3)").textContent = t.invite;
-    document.querySelector(".controls button:nth-child(4)").textContent = t.profile;
-    document.getElementById("input").placeholder = t.placeholder;
-  }
-
-  // установить язык при загрузке страницы
-  window.addEventListener("DOMContentLoaded", () => {
-    setLanguage(currentLang);
-  });
-</script> -->
-
 </body>
 </html>

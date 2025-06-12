@@ -30,6 +30,14 @@ export const assetLoader: RuleSetRule = {
 	},
 }
 
+export const cssLoader = {
+  test: /\.css$/,
+  use: [
+    MiniCssExtractPlugin.loader,
+    'css-loader'
+  ]
+};
+
 export function scssLoader(isDev: boolean) : RuleSetRule {
 	const scssRule: RuleSetRule = {
 		test:  /\.s[ac]ss$/i,

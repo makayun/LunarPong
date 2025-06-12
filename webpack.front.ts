@@ -6,7 +6,7 @@ import CopyPlugin           from 'copy-webpack-plugin';
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import type webpack			from "webpack";
 
-import { assetLoader, scssLoader, tsLoader }	from "./webpack.buildHelpers"
+import { assetLoader, cssLoader, tsLoader }	from "./webpack.buildHelpers"
 import type { BuildMode, BuildPaths }			from "./webpack.buildHelpers";
 
 const appDir = fs.realpathSync(process.cwd());
@@ -42,7 +42,7 @@ export default (env: { mode: BuildMode }) => {
 		},
 		devtool: isDev ? "inline-source-map" : false,
 		resolve: { extensions: [ ".tsx", ".ts", ".js"] },
-		module: { rules: [ scssLoader(isDev), tsLoader, assetLoader ] },
+		module: { rules: [ cssLoader, tsLoader, assetLoader ] },
 		plugins: buildFrontPlugins(appPaths, isDev)
 	};
 
@@ -55,39 +55,16 @@ export function buildFrontPlugins(paths: BuildPaths, isDev: boolean) : webpack.C
 		new HtmlWebpackPlugin({
 			template: paths.html,
 			favicon: paths.favicon,
-			inject: false,
-			templateParameters(compilation, assets) {
-				if (compilation.errors)
-					console.log(compilation.errors);
-				function buildScript(scriptName: string) : string {
-					const script: string = assets.js.filter(file => file.includes(scriptName))
-						.map(file => `<script src="${file}"></script>`)
-						.join('\n');
-					if (!script)
-						console.error(`\x1b[31m[ERROR]\x1b[0m Maybe your ${scriptName} file has the wrong name!`);
-
-					return (script);
-				}
-				const i18next: string = buildScript("i18next");
-				const login: string = buildScript("login");
-				const game: string = buildScript("game");
-				const chat: string = buildScript("chat");
-
-				return { i18next, login, game, chat };
-			},
-		}),
-		new CopyPlugin({
-		patterns: [
-			{
-				from: path.resolve(appDir, srcDir, localesDir),
-				to: 'locales'
-			}
-		],
-	})
+			inject: true
+		})
 	];
 
 	if (isDev) {
 		plugins.push(new ProgressPlugin());
+		plugins.push(new MiniCssExtractPlugin({
+			filename: "css/[name].[contenthash:8].css",
+			chunkFilename: "css/[name].[contenthash:8].css"
+		}))
 	}
 
 	else {
