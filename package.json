@@ -4,7 +4,7 @@
   "description": "",
   "main": "back/server.js",
   "scripts": {
-    "build:styles": "npm install -D vite --save-dev && npx @tailwindcss/cli -i ./src/styles/styles.css -o ./src/styles/output.css",
+    "build:styles": "npx @tailwindcss/cli -i ./src/styles/styles.css -o ./src/styles/output.css",
     "build": "npm run build:styles && webpack --env mode=development",
     "build:prod": "npm run build:styles && webpack --env mode=production",
     "start": "node ."
@@ -23,7 +23,6 @@
     "close-with-grace": "^2.2.0",
     "copy-webpack-plugin": "^13.0.0",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0",
     "fastify": "^5.3.3",
     "i18next": "^25.2.1",
     "i18next-browser-languagedetector": "^8.1.0",
@@ -37,9 +36,7 @@
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.8",
-    "@types/bcryptjs": "^3.0.0",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.18",
     "@types/ws": "^8.18.1",
@@ -51,7 +48,6 @@
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
-    "vite": "^6.3.5",
     "webpack": "^5.99.8",
     "webpack-cli": "^6.0.1",
     "webpack-node-externals": "^3.0.0"

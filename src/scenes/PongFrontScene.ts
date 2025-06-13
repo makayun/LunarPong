@@ -14,7 +14,7 @@ import { GUID, InitGameSuccess, PlayerSide } from "../defines/types";
 // import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 // import { GridMaterial } from "@babylonjs/materials";
 // import { Color3 } from "@babylonjs/core/Maths";
-// import grassTextureUrl from "../../assets/grass.jpg";
+// const grassTextureUrl: string = "/assets/grass.jpg";
 
 export class PongFrontScene extends PongBaseScene {
 	public light1: HemisphericLight;
@@ -30,13 +30,13 @@ export class PongFrontScene extends PongBaseScene {
 		this.id = opts.gameId;
 		this.side = opts.playerSide;
 		this.socket = inSocket;
-		this.light1 = new HemisphericLight("light", new Vector3(0, 1, 0), this);
-		this.light1.intensity = 0.4;
 
-		this.light2 = new DirectionalLight("light2", new Vector3(-3, 5, 1), this);
-		this.light2.intensity = 0.3;
-		this.light2.position.y = -10;
-		this.light2.parent = this.pongMeshes.ball;
+		this.light1 = new HemisphericLight("light", new Vector3(0, 1, 0), this);
+		this.light1.intensity = 0.5;
+
+		this.light2 = new DirectionalLight("light2", Vector3.Zero(), this);
+		this.light2.position = new Vector3(10, 30, 10);
+		this.light2.intensity = 0.5;
 
 		this.shadows = new ShadowGenerator(512, this.light2);
 		this.shadows.useBlurExponentialShadowMap = true;
