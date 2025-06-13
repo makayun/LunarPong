@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+	"resolveJsonModule": true,                        /* Allows importing modules with a .json extension, which is a common practice in node projects. */
     "target": "ESNext",                               /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "module": "NodeNext",                             /* Specify what module code is generated. */
     "rootDir": "./src",                                  /* Specify the root folder within your source files. */
@@ -34,7 +35,10 @@
     "dist",
     "back",
     "front",
-    "tmp"
+    "tmp",
+	"docker",
+	"nvm",
+	"data"
   ],
   "include": [
     "src/**/*.ts"

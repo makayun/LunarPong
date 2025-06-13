@@ -1,0 +1,14 @@
+{
+  "hello": "¡Hola, {{name}}!",
+  "login": {
+    "title": "¡Bienvenido!",
+    "name": "Nombre de usuario",
+    "button": "Iniciar sesión"
+  },
+  "logged": {
+	"title": "¡Hola, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+	"button": "Desconectarse"
+  }
+}

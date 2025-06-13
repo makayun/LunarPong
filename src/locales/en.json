@@ -1,0 +1,28 @@
+{
+  "or": "or",
+  "hello": "Hello, {{name}}!",
+  "login": {
+	"title": "Welcome!",
+	"label_name": "User name",
+	"name": "User Name",
+	"label_password": "Password",
+	"password": "Password:",
+	"button": "Login"
+  },
+  "logged": {
+	"title": "Hello, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+	"button": "Logoff"
+  },
+  "register": {
+	"title": "Registration",
+	"label_name": "User name",
+	"name": "User Name",
+	"label_password1": "Password",
+	"label_password2": "Repeat Password",
+	"label_email": "Email",
+  	"button": "Register"
+  },
+  "continue": "Continue"
+}

@@ -1,0 +1,3 @@
+curl -k -X POST https://localhost:12800/api/register -H "Content-Type: application/json" -d '{"username": "admin", "password": "1234"}'
+
+curl -k -X POST https://localhost:12800/api/login -H "Content-Type: application/json" -d '{"username": "admin", "password": "1234"}'

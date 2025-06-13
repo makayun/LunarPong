@@ -1,0 +1,14 @@
+{
+  "hello": "你好，{{name}}！",
+  "login": {
+    "title": "欢迎！",
+    "name": "用户名",
+    "button": "登录"
+  },
+  "logged": {
+	"title": "你好, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+	"button": "註銷"
+  }
+}

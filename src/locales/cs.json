@@ -1,0 +1,14 @@
+{
+  "hello": "Ahoj, {{name}}!",
+  "login": {
+	"title": "Vítejte!",
+	"name": "Přihlašovací jméno",
+	"button": "Přihlášení"
+  },
+  "logged": {
+	"title": "Ahoj, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+	"button": "Odhlásit se"
+  }
+}

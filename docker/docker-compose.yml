@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  node_sqlite:
+    build:
+      context: node_sqlite/
+      dockerfile: Dockerfile
+    container_name: node_sqlite
+    environment:
+      - NODE_ENV=developmen
+      # - NODE_ENV=production
+    volumes:
+      - fp_data:/var/fp_data/
+      - sqlite_data:/var/sqlite_data/
+    # restart: always
+    expose:
+      - "8081"
+      - "22"
+      - "12800"
+    ports:
+      - "2201:22"
+      - "8001:8001"
+      - "12800:12800"
+    # user: "node"
+    working_dir: /var/fp_data/
+    command: "/home/node/run.sh"
+    networks:
+      - front-tier
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - front-tier
+
+volumes:
+  fp_data:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/GitHub/FreakingPong
+  sqlite_data:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/GitHub/FreakingPong/data/sqlite
+
+networks:
+  front-tier: {}
+  back-tier: {}

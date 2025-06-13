@@ -5,93 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pong and Chat</title>
   <style>
-    
   </style>
 </head>
-<body class="m-0 h-screen flex font-mono bg-cyan-400">
-  <div class="flex w-full h-full bg-cyan-400">
-    <div style="position: absolute; top: 10px; left: 10px; z-index: 100;">
-      <button onclick="setLanguage('en')">🇬🇧</button>
-      <button onclick="setLanguage('cz')">🇨🇿</button>
-      <button onclick="setLanguage('es')">🇪🇸</button>
-    </div>
-    <div class="bg-cyan-400 flex-[3] flex items-center justify-center flex-col">
-      <div class="flex flex-col items-center">
-        <h1 class="text-2xl font-bold text-black mb-4">Fucking Pong</h1>
-        <div id="gameButtons" style="margin-bottom: 12px;">
+<body class="body">
+  <div class="lang-flags">
+    <button class="lang-btn" data-lang="en">🇬🇧</button>
+    <button class="lang-btn" data-lang="cs">🇨🇿</button>
+    <button class="lang-btn" data-lang="ru">🇷🇺</button>
+    <button class="lang-btn" data-lang="de">🇩🇪</button>
+    <button class="lang-btn" data-lang="es">🇪🇸</button>
+    <button class="lang-btn" data-lang="zh">🇨🇳</button>
+  </div>
+  
+  <div class="div-logoff" id="div_logoff">
+	  <button class="logoff-btn" id="logoff_button" data-i18n="logoff.button"></button>
+  </div>
+  <div class="div_main" id="div_main">
+    <!-- текущее содержимое \ current content -->
+  </div>
+  <div class="game-div" id="div_container">
+    <div class="game-screen-div">
+        <h1 class="game-name">Fucking Pong</h1>
+        <div class="div-game-btns" id="gameButtons">
           <button id="Local game" class="game-button">Local game</button>
           <button id="Remote game" class="game-button">Remote game</button>
           <button id="Versus AI" class="game-button">Versus AI</button>
         </div>
-        <canvas id="pongCanvas" class="bg-black border border-white rounded" width="700%" height="500%"></canvas>
-      </div>
+        <canvas id="pongCanvas" class="graph-win" width="1000%" height="700%"></canvas>
     </div>
-    <div class="min-w-[240px] max-w-[400px] p-2 gap-2 bg-pink-300 flex-1 flex flex-col border-l-2 border-gray-400 box-border m-5 ml-0">
-      <div class="flex gap-2 mb-2 bg-black rounded">
-        <select class="p-1 font-mono bg-white text-black" id="recipient">
-          <option value="all" class="text-white border-none rounded cursor-pointer hover:bg-gray-800">All Players</option>
+    <div class="chat-main-div">
+      <div class="chat-head">
+        <select class="chat-select" id="recipient">
+          <option class="select-players" value="all">All Players</option>
         </select>
-        <button class="bg-white text-black rounded hover:bg-pink-300" onclick="blockUser()">Block</button>
-        <button class="bg-white text-black border-none rounded hover:bg-pink-300" onclick="inviteUser()">Invite</button>
-        <button class="bg-white text-black border-none rounded hover:bg-pink-300" onclick="viewProfile()">Profile</button>
+        <button class="chat-util-btn" onclick="blockUser()">Block</button>
+        <button class="chat-util-btn" onclick="inviteUser()">Invite</button>
+        <button class="chat-util-btn" onclick="viewProfile()">Profile</button>
       </div>
-      <div class="flex-1 overflow-y-auto p-2 bg-black text-lime-400 break-words text-sm rounded" id="messages"></div>
-      <input type="text" id="input" class="p-2 border-none bg-black text-lime-400 font-mono text-sm outline-none rounded" placeholder="Type here..." />
+      <div class="msg-field" id="messages"></div>
+      <input type="text" id="input" class="chat-input" placeholder="Type here..." />
     </div>
   </div>
-  <%= chat %>
-  <%= game %>
-<script>
-  const translations = {
-    en: {
-      title: "Fucking Pong",
-      play: "Play!",
-      allPlayers: "All Players",
-      block: "Block",
-      invite: "Invite",
-      profile: "Profile",
-      placeholder: "Type here..."
-    },
-    cz: {
-      title: "Zasraný Pong",
-      play: "Hrát!",
-      allPlayers: "Hráči",
-      block: "Blokovat",
-      invite: "Pozvat",
-      profile: "Profil",
-      placeholder: "Piš sem..."
-    },
-    es: {
-      title: "Pong Jodido",
-      play: "¡Jugar!",
-      allPlayers: "Jugadores",
-      block: "Bloquear",
-      invite: "Invitar",
-      profile: "Perfil",
-      placeholder: "Escribe aquí..."
-    }
-  };
-
-  let currentLang = 'en';
-
-  function setLanguage(lang) {
-    currentLang = lang;
-    const t = translations[lang];
-
-    document.querySelector("h1").textContent = t.title;
-    document.getElementById("startButton").textContent = t.play;
-    document.getElementById("recipient").options[0].text = t.allPlayers;
-    document.querySelector(".controls button:nth-child(2)").textContent = t.block;
-    document.querySelector(".controls button:nth-child(3)").textContent = t.invite;
-    document.querySelector(".controls button:nth-child(4)").textContent = t.profile;
-    document.getElementById("input").placeholder = t.placeholder;
-  }
-
-  // установить язык при загрузке страницы
-  window.addEventListener("DOMContentLoaded", () => {
-    setLanguage(currentLang);
-  });
-</script>
-
 </body>
 </html>

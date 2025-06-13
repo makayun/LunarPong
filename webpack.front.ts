@@ -2,30 +2,26 @@ import fs					from "node:fs";
 import path					from "node:path";
 import { ProgressPlugin }	from "webpack";
 import HtmlWebpackPlugin	from "html-webpack-plugin";
+import CopyPlugin           from 'copy-webpack-plugin';
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import type webpack			from "webpack";
 
-import { assetLoader, scssLoader, tsLoader }	from "./webpack.buildHelpers"
+import { assetLoader, cssLoader, tsLoader }	from "./webpack.buildHelpers"
 import type { BuildMode, BuildPaths }			from "./webpack.buildHelpers";
 
 const appDir = fs.realpathSync(process.cwd());
 const srcDir = "src";
 const frontDir = "front";
 const pubDir = "public";
-
-export const cssLoader = {
-  test: /\.css$/,
-  use: [
-    MiniCssExtractPlugin.loader,
-    'css-loader'
-  ]
-};
+const localesDir = "locales";
 
 export default (env: { mode: BuildMode }) => {
 	const isDev: boolean = env.mode === "development";
 
 	const appPaths: BuildPaths = {
 		entry: {
+			"i18next": path.resolve(appDir, srcDir, frontDir, "i18next.ts"),
+			"login": path.resolve(appDir, srcDir, frontDir, "login.ts"),
 			"game": path.resolve(appDir, srcDir, frontDir, "game.ts"),
 			"chat": path.resolve(appDir, srcDir, frontDir, "chat.ts")
 		},
@@ -46,7 +42,7 @@ export default (env: { mode: BuildMode }) => {
 		},
 		devtool: isDev ? "inline-source-map" : false,
 		resolve: { extensions: [ ".tsx", ".ts", ".js"] },
-		module: { rules: [ cssLoader, scssLoader(isDev), tsLoader, assetLoader ] },
+		module: { rules: [ cssLoader, tsLoader, assetLoader ] },
 		plugins: buildFrontPlugins(appPaths, isDev)
 	};
 
@@ -59,24 +55,15 @@ export function buildFrontPlugins(paths: BuildPaths, isDev: boolean) : webpack.C
 		new HtmlWebpackPlugin({
 			template: paths.html,
 			favicon: paths.favicon,
-			inject: true,
-			templateParameters(compilation, assets) {
-				if (compilation.errors)
-					console.log(compilation.errors);
-				function buildScript(scriptName: string) : string {
-					const script: string = assets.js.filter(file => file.includes(scriptName))
-						.map(file => `<script src="${file}"></script>`)
-						.join('\n');
-					if (!script)
-						console.error(`\x1b[31m[ERROR]\x1b[0m Maybe your ${scriptName} file has the wrong name!`);
-
-					return (script);
+			inject: true
+		}),
+		new CopyPlugin({
+			patterns: [
+				{
+					from: path.resolve(appDir, srcDir, localesDir),
+					to: 'locales'
 				}
-				const game: string = buildScript("game");
-				const chat: string = buildScript("chat");
-
-				return { game, chat };
-			},
+			]
 		})
 	];
 
