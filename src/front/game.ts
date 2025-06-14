@@ -25,7 +25,9 @@ const engine: Engine = new Engine(canvas, true);
 			socket.send(JSON.stringify(initGameMsg));
 
 			btn.disabled = true;
-			btn.hidden = true;
+			btn.classList.add("absolute","w-96");
+			// btn.hidden = true;
+			
 		});
 	}
 });

@@ -8,7 +8,7 @@
   </style>
 </head>
 <body class="body">
-  <div id="main">
+  <div id="main" class="div-main">
     <div class="lang-flags">
       <button class="lang-btn" data-lang="en">🇬🇧</button>
       <button class="lang-btn" data-lang="cs">🇨🇿</button>
@@ -26,7 +26,7 @@
     <div class="div_logoff hidden" id="div_logoff">
   	  <button class="logoff-btn" data-i18n="logoff.button"></button>
     </div>
-	<div class="div-login page-view hidden opacity-0 transition-opacity duration-300" data-view-id="login" >
+	  <div class="div-login page-view hidden opacity-0 transition-opacity duration-300" data-view-id="login" >
       <h1 data-i18n="login.title"></h1>
       <label for="name" data-i18n="login.label_name"> </label> <input class="input data_input" type="text" data-input-id="login_name" data-i18n="login.name" class="input"/> <br>
       <label for="password" data-i18n="login.label_password"> </label> <input class="input data_input" data-input-id="login_password" type="password"/> <br>
@@ -36,12 +36,12 @@
       <p data-i18n="or"></p>
       <button data-btn-id="login_register" data-i18n="register.button" class="register-button btn_click"></button>
     </div>
-    <div data-view-id="2fa" class="div-2fa page-view hidden opacity-0 transition-opacity duration-300">
+    <div data-view-id="2fa" class="div-2fa div-main page-view hidden opacity-0 transition-opacity duration-300">
   	  <h1 class="logged_in" data-i18n="logged.title"></h1>
       <h1 class="logged_in" >Здесь будет 2FA авторизация!</h1>
       <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="continue"></button>
     </div>
-    <div data-view-id="register" class="div-register page-view hidden opacity-0 transition-opacity duration-300">
+    <div data-view-id="register" class="div-main page-view hidden opacity-0 transition-opacity duration-300">
       <h1 data-i18n="register.title"></h1>
       <label for="name" data-i18n="register.label_name"> </label> <input type="text" data-i18n="register.name" class="input"/> <br>
       <label for="password1" data-i18n="register.label_password1"> </label> <input type="password" class="input"/> <br>

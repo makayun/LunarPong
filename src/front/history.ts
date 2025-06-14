@@ -55,7 +55,7 @@ export function set_view(state: ViewState) {
         const currentElement = document.querySelector<HTMLElement>(`.page-view[data-view-id="${current_state}"]`);
         if (currentElement) {
             currentElement.classList.add("hidden", "opacity-0");
-            currentElement.classList.remove("block", "opacity-100");
+            currentElement.classList.remove("flex", "opacity-100");
         }
     }
 
@@ -64,7 +64,7 @@ export function set_view(state: ViewState) {
     
     if (target) {
         target.classList.remove("hidden");
-        target.classList.add("block");
+        target.classList.add("flex");
         requestAnimationFrame(() => {
             target.classList.remove("opacity-0");
             target.classList.add("opacity-100");
