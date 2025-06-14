@@ -4,7 +4,7 @@
   "description": "",
   "main": "back/server.js",
   "scripts": {
-    "build:styles": "npm install -D vite --save-dev && npx @tailwindcss/cli -i ./src/styles/styles.css -o ./src/styles/output.css",
+    "build:styles": "npx @tailwindcss/cli -i ./src/styles/styles.css -o ./src/styles/output.css",
     "build": "npm run build:styles && webpack --env mode=development",
     "build:prod": "npm run build:styles && webpack --env mode=production",
     "start": "node ."
