@@ -24,7 +24,6 @@ const engine: Engine = new Engine(canvas, true);
 			};
 			socket.send(JSON.stringify(initGameMsg));
 
-			// Optional: hide buttons
 			btn.disabled = true;
 			btn.hidden = true;
 		});
@@ -102,17 +101,9 @@ async function babylonInit(opts: InitGameSuccess) : Promise<void> {
 		}
 	};
 
-	// pongScene.executeWhenReady(() => {
-		// engine.runRenderLoop(() => pongScene.render());
-	// });
-
-	// engine.runRenderLoop(function () {
-	// 	if (pongScene.state !== "init") {
-	// 		pongScene.render();
-	// 		pongScene.sendPlayerInput(socket);
-	// 	}
-	// });
-
+	pongScene.executeWhenReady(() => {
+		engine.runRenderLoop(() => pongScene.render());
+	});
 
 	window.addEventListener("resize", function () {
 		engine.resize();
@@ -140,9 +131,3 @@ function applyMeshPositions (meshes: MeshesDict, newPositions: MeshPositions) : 
 	meshes.paddleLeft.position = newPositions.paddleLeft;
 	meshes.paddleRight.position = newPositions.paddleRight;
 }
-
-engine.runRenderLoop(() => {
-	engine.scenes.forEach(scene =>
-		scene.render()
-	)
-})

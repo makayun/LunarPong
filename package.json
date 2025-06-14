@@ -23,7 +23,6 @@
     "close-with-grace": "^2.2.0",
     "copy-webpack-plugin": "^13.0.0",
     "dotenv": "^16.5.0",
-    "express": "^5.1.0",
     "fastify": "^5.3.3",
     "i18next": "^25.2.1",
     "i18next-browser-languagedetector": "^8.1.0",
@@ -37,9 +36,7 @@
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.8",
-    "@types/bcryptjs": "^3.0.0",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.18",
     "@types/ws": "^8.18.1",

@@ -95,7 +95,7 @@ export class PongBackScene extends PongBaseScene implements Game {
         else
           this.gameInternalState.scoreLeft++;
 
-		this.resetBall();
+	// this.resetBall();
 
         return;
     }

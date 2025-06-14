@@ -4,3 +4,6 @@ node_modules
 /front/
 .DS_Store
 tmp
+docs
+output.css
+src/styles/output.css
