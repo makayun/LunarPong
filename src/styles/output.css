@@ -176,6 +176,9 @@
   }
 }
 @layer utilities {
+  .relative {
+    position: relative;
+  }
   .block {
     display: block;
   }
@@ -193,10 +196,6 @@
   }
   .resize {
     resize: both;
-  }
-  .border {
-    border-style: var(--tw-border-style);
-    border-width: 1px;
   }
 }
 @layer components {
@@ -450,11 +449,6 @@
   syntax: "*";
   inherits: false;
 }
-@property --tw-border-style {
-  syntax: "*";
-  inherits: false;
-  initial-value: solid;
-}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
@@ -463,7 +457,6 @@
       --tw-rotate-z: initial;
       --tw-skew-x: initial;
       --tw-skew-y: initial;
-      --tw-border-style: solid;
     }
   }
 }
