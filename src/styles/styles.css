@@ -71,9 +71,15 @@
       }
     }
   }
-  .lang-flags{
+  .giv_lang{
     position: absolute;
     top: 10px;
+    left: 10px;
+    z-index: 100;
+  }
+  .div_logoff{
+    position: absolute;
+    bottom: 10px;
     left: 10px;
     z-index: 100;
   }

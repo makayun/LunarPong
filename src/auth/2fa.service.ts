@@ -13,3 +13,18 @@ export async function verify2FACode(email: string, inputCode: string): Promise<b
 	await getRedis().del(key); // удалим после успешного использования
 	return true;
 }
+
+// import { authenticator } from 'otplib';
+// import QRCode from 'qrcode';
+
+// async function generate2FA(username: string, issuer = 'MyApp') {
+// 	const secret = authenticator.generateSecret();
+
+// 	const otpauth = authenticator.keyuri(username, issuer, secret);
+// 	const qr = await QRCode.toDataURL(otpauth);
+
+// 	return {
+// 		secret,  // Save this securely to DB
+// 		qr,      // Show to user (e.g., <img src="qr">)
+// 	};
+// }

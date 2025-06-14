@@ -15,7 +15,6 @@ export async function checkLogin() {
 	const accessToken =  localStorage.getItem("accessToken");
 	if (accessToken) {
 		try {
-			// const json = JSON.stringify({ accessToken: accessToken });
 			const response = await fetch(`/api/protected/profile`, {
 				method: "GET",
 				headers: {
@@ -32,9 +31,7 @@ export async function checkLogin() {
 			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
-			sessionStorage.setItem("id", data.user.id);
-			sessionStorage.setItem("user", data.user.username);
-			navigateTo(ViewState.TWOFA);
+			navigateTo(ViewState.GAME);
 			return;
 		}  catch (err) {
 			console.error("[login] Network error:", err);
@@ -73,4 +70,76 @@ async function refreshToken() {
 		return false;	
 	}
 	return true;
+}
+
+export async function login() {
+	console.log("[login] Login button clicked:");
+	const name = document.querySelector<HTMLElement>(`.data_input[data-input-id="login_name"]`) as HTMLInputElement;
+	const password = document.querySelector<HTMLElement>(`.data_input[data-input-id="login_password"]`) as HTMLInputElement;
+	if (!name.value || !password.value) {
+		console.log("[login] login name or password empty");
+		return;
+	}
+	try {
+		const response = await fetch(`${window.location.origin}/api/login`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				username: name.value,
+				password: password.value
+			})
+		});
+		if (!response.ok) {
+			const errorData = await response.json();
+			console.error("[login] Login failed:", errorData.error);
+			return;
+		}
+		const data = await response.json();
+		user_f.id = data.user.id;
+		user_f.name = data.user.username;
+		console.log("[login] Login successful, User name = ", user_f.name);
+		console.log("[login] Login successful, User id =", user_f.id);
+		// 💾 Сохраняем токены (в localStorage или sessionStorage)
+		localStorage.setItem("twofaToken", data.twofaToken);
+		// localStorage.setItem("accessToken", data.accessToken);
+		// localStorage.setItem("refreshToken", data.refreshToken);
+		navigateTo(ViewState.TWOFA);
+	} catch (err) {
+		console.error("[login] Network error:", err);
+	}
+}
+
+export async function register() {
+	if (!await refreshToken()) {
+		navigateTo(ViewState.LOGIN);
+		return;
+	}
+	const accessToken =  localStorage.getItem("accessToken");
+	if (accessToken) {
+		try {
+			const response = await fetch(`/api/protected/profile`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + accessToken
+				}
+			});
+			if (!response.ok) {
+				const errorData = await response.json();
+				console.error("[login] Login check failed:", errorData.error);
+				navigateTo(ViewState.LOGIN);
+				return;
+			}
+			const data = await response.json();
+			user_f.id = data.user.id;
+			user_f.name = data.user.username;
+			navigateTo(ViewState.GAME);
+			return;
+		}  catch (err) {
+			console.error("[login] Network error:", err);
+		}
+	}
+	navigateTo(ViewState.LOGIN);
 }

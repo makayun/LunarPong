@@ -9,7 +9,7 @@
 </head>
 <body class="body">
   <div id="main">
-    <div class="lang-flags">
+    <div class="giv_lang">
       <button class="lang-btn" data-lang="en">🇬🇧</button>
       <button class="lang-btn" data-lang="cs">🇨🇿</button>
       <button class="lang-btn" data-lang="ru">🇷🇺</button>
@@ -23,8 +23,8 @@
 		<button onclick="navigateTo('TWOFA')" class="btn">2FA</button>
 		<button onclick="navigateTo('GAME')" class="btn">Game</button>
 	</nav> -->
-    <div class="div_logoff hidden" id="div_logoff">
-  	  <button class="logoff-btn" data-i18n="logoff.button"></button>
+    <div class="div_logoff hidden" data-view-id="logoff" id="div_logoff">
+  	  <button class="logoff-btn btn_click" data-btn-id="logoff" data-i18n="logoff.button"></button>
     </div>
 	<div class="div-login page-view hidden opacity-0 transition-opacity duration-300" data-view-id="login" >
       <h1 data-i18n="login.title"></h1>

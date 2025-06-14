@@ -1,19 +1,20 @@
 import { updateI18nContent } from "./i18next"
 import { setDivLogin, setDiv2fa, setDivRegister } from "./div_login"
+import { user_f } from "./login"
 
-showDiv("div_logoff", false);
+// showDiv("div_logoff", false);
 
-export const div_main = document.getElementById('div_main') as HTMLDivElement;
+// export const div_main = document.getElementById('div_main') as HTMLDivElement;
 
-export function showDiv(id_div: string, show: boolean) {
-	const div = document.getElementById(id_div) as HTMLDivElement;
-	if (div) {
-		if (show)
-			div.style.display = 'flex';
-		else
-			div.style.display = 'none';
-	}
-}
+// export function showDiv(id_div: string, show: boolean) {
+// 	const div = document.getElementById(id_div) as HTMLDivElement;
+// 	if (div) {
+// 		if (show)
+// 			div.style.display = 'flex';
+// 		else
+// 			div.style.display = 'none';
+// 	}
+// }
 
 // (window as any).navigateTo = navigateTo;
 // function navigateTo(stateKey: keyof typeof div_main_state) {
@@ -29,15 +30,15 @@ export function showDiv(id_div: string, show: boolean) {
 
 // Enum теперь содержит более чистые имена, соответствующие data-view-id
 export enum ViewState {
-    LOGIN = "login",
-    REGISTER = "register",
-    TWOFA = "2fa",
-    GAME = "game",
+	LOGIN = "login",
+	REGISTER = "register",
+	TWOFA = "2fa",
+	GAME = "game",
 }
 
 // Функция-предохранитель (Type Guard)
 function isViewState(state: string): state is ViewState {
-    return Object.values(ViewState).includes(state as ViewState);
+	return Object.values(ViewState).includes(state as ViewState);
 }
 
 let current_state: ViewState | null = null;
@@ -47,50 +48,70 @@ let current_state: ViewState | null = null;
  * @param state Имя контейнера для отображения (должно соответствовать ViewState).
  */
 export function set_view(state: ViewState) {
-    if (state === current_state) return; // Состояние не изменилось
-    console.log(`[view] Установка состояния: ${state}`);
+	if (state === current_state) return; // Состояние не изменилось
+	if (state != ViewState.LOGIN && state != ViewState.REGISTER && user_f.id == -1) {
+		return;
+	}
+	const logoffElement = document.querySelector<HTMLElement>(`.div_logoff[data-view-id="logoff"]`);
+	if (logoffElement) {
+		if (user_f.id != -1) {
+			console.log(`[view] Put the button logoff on`);
+			logoffElement.classList.remove("hidden");
+			logoffElement.classList.add("flex");
+			requestAnimationFrame(() => {
+				logoffElement.classList.remove("opacity-0");
+				logoffElement.classList.add("opacity-100");
+			});
+		} else {
+			console.log(`[view] Put the button logoff off`);
+			logoffElement.classList.add("hidden", "opacity-0");
+			logoffElement.classList.remove("flex", "opacity-100");
+		}
+	}
 
-    // Скрываем текущий активный view (если он есть)
-    if (current_state) {
-        const currentElement = document.querySelector<HTMLElement>(`.page-view[data-view-id="${current_state}"]`);
-        if (currentElement) {
-            currentElement.classList.add("hidden", "opacity-0");
-            currentElement.classList.remove("block", "opacity-100");
-        }
-    }
+	console.log(`[view] Установка состояния: ${state}`);
 
-    // Находим и отображаем целевой контейнер по data-атрибуту
-    const target = document.querySelector<HTMLElement>(`.page-view[data-view-id="${state}"]`);
-    
-    if (target) {
-        target.classList.remove("hidden");
-        target.classList.add("block");
-        requestAnimationFrame(() => {
-            target.classList.remove("opacity-0");
-            target.classList.add("opacity-100");
-        });
-    } else {
-        console.error(`[view] Целевой элемент с data-view-id="${state}" не найден.`);
-        navigateTo(ViewState.LOGIN); // Перенаправляем на страницу по умолчанию
-        return;
-    }
+	// Скрываем текущий активный view (если он есть)
+	if (current_state) {
+		const currentElement = document.querySelector<HTMLElement>(`.page-view[data-view-id="${current_state}"]`);
+		if (currentElement) {
+			currentElement.classList.add("hidden", "opacity-0");
+			currentElement.classList.remove("flex", "opacity-100");
+		}
+	}
 
-    current_state = state;
+	// Находим и отображаем целевой контейнер по data-атрибуту
+	const target = document.querySelector<HTMLElement>(`.page-view[data-view-id="${state}"]`);
+	
+	if (target) {
+		target.classList.remove("hidden");
+		target.classList.add("flex");
+		requestAnimationFrame(() => {
+			target.classList.remove("opacity-0");
+			target.classList.add("opacity-100");
+		});
+	} else {
+		console.error(`[view] Целевой элемент с data-view-id="${state}" не найден.`);
+		navigateTo(ViewState.LOGIN); // Перенаправляем на страницу по умолчанию
+		return;
+	}
 
-    // Вызов специфичных для состояния функций...
-    switch (state) {
-        case ViewState.LOGIN:
-            setDivLogin();
-            break;
-        case ViewState.TWOFA:
-            setDiv2fa();
-            break;
-        case ViewState.REGISTER:
-            setDivRegister();
-            break;
-        case ViewState.GAME:
-            break;
-    }
+	current_state = state;
+
+	// Вызов специфичных для состояния функций...
+	switch (state) {
+		case ViewState.LOGIN:
+			setDivLogin();
+			break;
+		case ViewState.TWOFA:
+			setDiv2fa();
+			break;
+		case ViewState.REGISTER:
+			setDivRegister();
+			break;
+		case ViewState.GAME:
+			break;
+	}
 	updateI18nContent();
 }
 
@@ -99,21 +120,21 @@ export function set_view(state: ViewState) {
  * @param state Целевое состояние.
  */
 export function navigateTo(state: ViewState) {
-    location.hash = state;
+	location.hash = state;
 }
 
 /**
  * Основная логика роутера. Срабатывает при смене хеша.
  */
 function handleHashChange() {
-    const hash = location.hash.replace("#", "");
-    
-    if (isViewState(hash)) {
-        set_view(hash);
-    } else {
-        // Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
-        navigateTo(ViewState.LOGIN);
-    }
+	const hash = location.hash.replace("#", "");
+	
+	if (isViewState(hash)) {
+		set_view(hash);
+	} else {
+		// Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
+		navigateTo(ViewState.LOGIN);
+	}
 }
 
 // --- Обработчики событий ---
@@ -122,7 +143,7 @@ window.addEventListener("DOMContentLoaded", handleHashChange);
 
 // // 1. Функция-предохранитель (Type Guard) для безопасной проверки строки
 // function isDivMainState(state: string): state is div_main_state {
-//     return Object.values(div_main_state).includes(state as div_main_state);
+//	 return Object.values(div_main_state).includes(state as div_main_state);
 // }
 
 // // 2. Глобальная переменная для отслеживания текущего состояния
@@ -135,55 +156,55 @@ window.addEventListener("DOMContentLoaded", handleHashChange);
 //  * @param state ID контейнера для отображения (должен соответствовать div_main_state).
 //  */
 // function set_div_main(state: div_main_state) {
-//     if (state === current_state) {
-//         console.log(`[view] Состояние ${state} уже активно.`);
-//         return; // Ничего не делаем, если состояние не изменилось
-//     }
-//     console.log(`[view] Установка состояния: ${state}`);
+//	 if (state === current_state) {
+//		 console.log(`[view] Состояние ${state} уже активно.`);
+//		 return; // Ничего не делаем, если состояние не изменилось
+//	 }
+//	 console.log(`[view] Установка состояния: ${state}`);
 
-//     // Скрываем все контейнеры (более эффективный способ)
-//     document.querySelectorAll<HTMLElement>('.page-view').forEach(el => {
-//         el.classList.remove("block");
-//         el.classList.add("hidden");
-//         el.classList.remove("opacity-100"); // Убираем видимость
-//         el.classList.add("opacity-0");
-//     });
+//	 // Скрываем все контейнеры (более эффективный способ)
+//	 document.querySelectorAll<HTMLElement>('.page-view').forEach(el => {
+//		 el.classList.remove("block");
+//		 el.classList.add("hidden");
+//		 el.classList.remove("opacity-100"); // Убираем видимость
+//		 el.classList.add("opacity-0");
+//	 });
 
-//     // Находим и отображаем целевой контейнер
-//     const target = document.getElementById(state);
-//     if (target) {
-//         target.classList.remove("hidden");
-//         target.classList.add("block");
-//         // CSS transition сделает анимацию плавного появления сам, без setTimeout.
-//         // Браузеру нужна крошечная задержка, чтобы "увидеть" смену display.
-//         requestAnimationFrame(() => {
-//             target.classList.remove("opacity-0");
-//             target.classList.add("opacity-100");
-//         });
-//     } else {
-//         console.error(`[view] Целевой элемент с ID "${state}" не найден.`);
-//         // Можно перенаправить на страницу по умолчанию, если целевая не найдена
-//         navigateTo(div_main_state.LOGIN);
-//         return;
-//     }
+//	 // Находим и отображаем целевой контейнер
+//	 const target = document.getElementById(state);
+//	 if (target) {
+//		 target.classList.remove("hidden");
+//		 target.classList.add("block");
+//		 // CSS transition сделает анимацию плавного появления сам, без setTimeout.
+//		 // Браузеру нужна крошечная задержка, чтобы "увидеть" смену display.
+//		 requestAnimationFrame(() => {
+//			 target.classList.remove("opacity-0");
+//			 target.classList.add("opacity-100");
+//		 });
+//	 } else {
+//		 console.error(`[view] Целевой элемент с ID "${state}" не найден.`);
+//		 // Можно перенаправить на страницу по умолчанию, если целевая не найдена
+//		 navigateTo(div_main_state.LOGIN);
+//		 return;
+//	 }
 
-//     current_state = state;
+//	 current_state = state;
 
-//     // Вызываем специфичные для состояния функции
-//     switch (state) {
-//         case div_main_state.LOGIN:
-//             setDivLogin();
-//             break;
-//         case div_main_state.TWOFA:
-//             setDiv2fa();
-//             break;
-//         case div_main_state.REGISTER:
-//             setDivRegister();
-//             break;
-//         case div_main_state.GAME:
-//             break;
-//     }
-//     updateI18nContent();
+//	 // Вызываем специфичные для состояния функции
+//	 switch (state) {
+//		 case div_main_state.LOGIN:
+//			 setDivLogin();
+//			 break;
+//		 case div_main_state.TWOFA:
+//			 setDiv2fa();
+//			 break;
+//		 case div_main_state.REGISTER:
+//			 setDivRegister();
+//			 break;
+//		 case div_main_state.GAME:
+//			 break;
+//	 }
+//	 updateI18nContent();
 // }
 
 // /**
@@ -191,24 +212,24 @@ window.addEventListener("DOMContentLoaded", handleHashChange);
 //  * @param state Целевое состояние.
 //  */
 // export function navigateTo(state: div_main_state) {
-//     // Обновляем хеш, что вызовет событие "hashchange"
-//     location.hash = state;
+//	 // Обновляем хеш, что вызовет событие "hashchange"
+//	 location.hash = state;
 // }
 
 // /**
 //  * Основная логика роутера. Срабатывает при смене хеша.
 //  */
 // function handleHashChange() {
-//     // Берем состояние ИСКЛЮЧИТЕЛЬНО из location.hash
-//     const hash = location.hash.replace("#", "");
-    
-//     // Проверяем, является ли хеш валидным состоянием. Если нет - редирект на LOGIN.
-//     if (isDivMainState(hash)) {
-//         set_div_main(hash);
-//     } else {
-//         // Если в URL некорректный хеш, перенаправляем на страницу по умолчанию.
-//         navigateTo(div_main_state.LOGIN);
-//     }
+//	 // Берем состояние ИСКЛЮЧИТЕЛЬНО из location.hash
+//	 const hash = location.hash.replace("#", "");
+	
+//	 // Проверяем, является ли хеш валидным состоянием. Если нет - редирект на LOGIN.
+//	 if (isDivMainState(hash)) {
+//		 set_div_main(hash);
+//	 } else {
+//		 // Если в URL некорректный хеш, перенаправляем на страницу по умолчанию.
+//		 navigateTo(div_main_state.LOGIN);
+//	 }
 // }
 
 // // --- Обработчики событий ---
@@ -218,9 +239,9 @@ window.addEventListener("DOMContentLoaded", handleHashChange);
 
 // // Инициализация при загрузке страницы
 // window.addEventListener("DOMContentLoaded", () => {
-//     // Сразу вызываем обработчик, чтобы отобразить начальное состояние
-//     // из URL или установить состояние по умолчанию.
-//     handleHashChange();
+//	 // Сразу вызываем обработчик, чтобы отобразить начальное состояние
+//	 // из URL или установить состояние по умолчанию.
+//	 handleHashChange();
 // });
 
 // Пример того, как теперь можно вызывать навигацию (без глобальной window)

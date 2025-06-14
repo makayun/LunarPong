@@ -32,7 +32,9 @@
     "pino-pretty": "^13.0.0",
     "redis": "^5.5.6",
     "sqlite": "^5.1.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+	"otplib": "^12.0.1",
+	"qrcode": "^1.5.4"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.8",
