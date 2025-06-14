@@ -1,31 +1,22 @@
-import { setDivLogin, setDivLogged, showDiv } from "./div_login"
-// import { User, GUID } from "../defines/types"
+// import { setDivLogin, setDivLogged} from "./div_login"
+import { ViewState, navigateTo} from "./history"
+import type { User_f } from "../defines/types";
 
-export const div_main = document.getElementById('div_main') as HTMLDivElement;
-const baseUrl = window.location.origin;
+export let user_f: User_f = {id: -1};
 
-// const user: User = {id: generateGuid(), id_: -1};
-// const guid: GUID = (
-// 		Math.random().toString(36).substring(2, 15) +
-// 		Math.random().toString(36).substring(2, 15)
-// 	) as GUID;
-
-// const user: User = {id: guid, id_: -1};
-
-showDiv("div_container", false);
-showDiv("div_logoff", false);
+// export const baseUrl = window.location.origin;
 checkLogin();
 
 export async function checkLogin() {
 	if (!await refreshToken()) {
-		setDivLogin(div_main);
+		navigateTo(ViewState.LOGIN);
 		return;
 	}
 	const accessToken =  localStorage.getItem("accessToken");
 	if (accessToken) {
 		try {
 			// const json = JSON.stringify({ accessToken: accessToken });
-			const response = await fetch(`${baseUrl}/api/protected/profile`, {
+			const response = await fetch(`/api/protected/profile`, {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
@@ -35,27 +26,29 @@ export async function checkLogin() {
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.error("[login] Login check failed:", errorData.error);
-				setDivLogin(div_main);
+				navigateTo(ViewState.LOGIN);
 				return;
 			}
 			const data = await response.json();
-			// user.id_ = data.id;
-			// user.nick = data.username;
-			setDivLogged(div_main, data);
+			user_f.id = data.user.id;
+			user_f.name = data.user.username;
+			sessionStorage.setItem("id", data.user.id);
+			sessionStorage.setItem("user", data.user.username);
+			navigateTo(ViewState.TWOFA);
 			return;
-			// data.user.username + " was loggined! (id: " + data.user.id + ")";
 		}  catch (err) {
 			console.error("[login] Network error:", err);
 		}
 	}
-	setDivLogin(div_main);
+	navigateTo(ViewState.LOGIN);
 }
 
 async function refreshToken() {
 	const refreshToken =  localStorage.getItem("refreshToken");
 	if (refreshToken) {
 		try {
-			const response = await fetch(`${baseUrl}/api/refresh`, {
+			//const response = await fetch(`${baseUrl}/api/refresh`, {
+			const response = await fetch(`/api/refresh`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -76,6 +69,8 @@ async function refreshToken() {
 			console.error("[login] Network error:", err);
 			return false;
 		}
+	} else {
+		return false;	
 	}
 	return true;
 }
