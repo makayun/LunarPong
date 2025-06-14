@@ -4,21 +4,19 @@ import type { User_f } from "../defines/types";
 
 export let user_f: User_f = {id: -1};
 
+// export const baseUrl = window.location.origin;
 checkLogin();
-export const baseUrl = window.location.origin;
 
 export async function checkLogin() {
 	if (!await refreshToken()) {
 		navigateTo(ViewState.LOGIN);
-		// set_div_main(div_main_state.LOGIN, true);
-		// setDivLogin(div_main);
 		return;
 	}
 	const accessToken =  localStorage.getItem("accessToken");
 	if (accessToken) {
 		try {
 			// const json = JSON.stringify({ accessToken: accessToken });
-			const response = await fetch(`${baseUrl}/api/protected/profile`, {
+			const response = await fetch(`/api/protected/profile`, {
 				method: "GET",
 				headers: {
 					"Content-Type": "application/json",
@@ -29,36 +27,28 @@ export async function checkLogin() {
 				const errorData = await response.json();
 				console.error("[login] Login check failed:", errorData.error);
 				navigateTo(ViewState.LOGIN);
-				// set_div_main(div_main_state.LOGIN, true);
-				// setDivLogin(div_main);
 				return;
 			}
 			const data = await response.json();
-			user_f.id = data.id;
-			user_f.name = data.username;
-			sessionStorage.setItem("id", data.id);
-			sessionStorage.setItem("user", data.username);
-			// user.id_ = data.id;
-			// user.nick = data.username;
+			user_f.id = data.user.id;
+			user_f.name = data.user.username;
+			sessionStorage.setItem("id", data.user.id);
+			sessionStorage.setItem("user", data.user.username);
 			navigateTo(ViewState.TWOFA);
-			// set_div_main(div_main_state.TWOFA, true);
-			// setDivLogged(div_main, data);
 			return;
-			// data.user.username + " was loggined! (id: " + data.user.id + ")";
 		}  catch (err) {
 			console.error("[login] Network error:", err);
 		}
 	}
 	navigateTo(ViewState.LOGIN);
-	// set_div_main(div_main_state.LOGIN, true);
-	// setDivLogin(div_main);
 }
 
 async function refreshToken() {
 	const refreshToken =  localStorage.getItem("refreshToken");
 	if (refreshToken) {
 		try {
-			const response = await fetch(`${baseUrl}/api/refresh`, {
+			//const response = await fetch(`${baseUrl}/api/refresh`, {
+			const response = await fetch(`/api/refresh`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -79,6 +69,8 @@ async function refreshToken() {
 			console.error("[login] Network error:", err);
 			return false;
 		}
+	} else {
+		return false;	
 	}
 	return true;
 }
