@@ -8,43 +8,70 @@
   </style>
 </head>
 <body class="body">
-  <div class="lang-flags">
-    <button class="lang-btn" data-lang="en">🇬🇧</button>
-    <button class="lang-btn" data-lang="cs">🇨🇿</button>
-    <button class="lang-btn" data-lang="ru">🇷🇺</button>
-    <button class="lang-btn" data-lang="de">🇩🇪</button>
-    <button class="lang-btn" data-lang="es">🇪🇸</button>
-    <button class="lang-btn" data-lang="zh">🇨🇳</button>
-  </div>
-  
-  <div class="div-logoff" id="div_logoff">
-	  <button class="logoff-btn" id="logoff_button" data-i18n="logoff.button"></button>
-  </div>
-  <div class="div_main" id="div_main">
-    <!-- текущее содержимое \ current content -->
-  </div>
-  <div class="game-div" id="div_container">
-    <div class="game-screen-div">
-        <h1 class="game-name">Fucking Pong</h1>
-        <div class="div-game-btns" id="gameButtons">
-          <button id="Local game" class="game-button">Local game</button>
-          <button id="Remote game" class="game-button">Remote game</button>
-          <button id="Versus AI" class="game-button">Versus AI</button>
-        </div>
-        <canvas id="pongCanvas" class="graph-win" width="1000%" height="700%"></canvas>
+  <div id="main">
+    <div class="lang-flags">
+      <button class="lang-btn" data-lang="en">🇬🇧</button>
+      <button class="lang-btn" data-lang="cs">🇨🇿</button>
+      <button class="lang-btn" data-lang="ru">🇷🇺</button>
+      <button class="lang-btn" data-lang="de">🇩🇪</button>
+      <button class="lang-btn" data-lang="es">🇪🇸</button>
+      <button class="lang-btn" data-lang="zh">🇨🇳</button>
     </div>
-    <div class="chat-main-div">
-      <div class="chat-head">
-        <select class="chat-select" id="recipient">
-          <option class="select-players" value="all">All Players</option>
-        </select>
-        <button class="chat-util-btn" onclick="blockUser()">Block</button>
-        <button class="chat-util-btn" onclick="inviteUser()">Invite</button>
-        <button class="chat-util-btn" onclick="viewProfile()">Profile</button>
+	<!-- <nav class="mb-4 space-x-2">
+		<button onclick="navigateTo('LOGIN')" class="btn">Login</button>
+		<button onclick="navigateTo('REGISTER')" class="btn">Register</button>
+		<button onclick="navigateTo('TWOFA')" class="btn">2FA</button>
+		<button onclick="navigateTo('GAME')" class="btn">Game</button>
+	</nav> -->
+    <div class="div_logoff hidden" id="div_logoff">
+  	  <button class="logoff-btn" data-i18n="logoff.button"></button>
+    </div>
+	<div class="div-login page-view hidden opacity-0 transition-opacity duration-300" data-view-id="login" >
+      <h1 data-i18n="login.title"></h1>
+      <label for="name" data-i18n="login.label_name"> </label> <input class="input data_input" type="text" data-input-id="login_name" data-i18n="login.name" class="input"/> <br>
+      <label for="password" data-i18n="login.label_password"> </label> <input class="input data_input" data-input-id="login_password" type="password"/> <br>
+      <button class="login-btn btn_click" data-btn-id="login"  data-i18n="login.button"></button> <br>
+      <p data-i18n="or"></p>
+      <h1 class="register-button" >Здесь будет GOOGLE авторизация!</h1>
+      <p data-i18n="or"></p>
+      <button data-btn-id="login_register" data-i18n="register.button" class="register-button btn_click"></button>
+    </div>
+    <div data-view-id="2fa" class="div-2fa page-view hidden opacity-0 transition-opacity duration-300">
+  	  <h1 class="logged_in" data-i18n="logged.title"></h1>
+      <h1 class="logged_in" >Здесь будет 2FA авторизация!</h1>
+      <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="continue"></button>
+    </div>
+    <div data-view-id="register" class="div-register page-view hidden opacity-0 transition-opacity duration-300">
+      <h1 data-i18n="register.title"></h1>
+      <label for="name" data-i18n="register.label_name"> </label> <input type="text" data-i18n="register.name" class="input"/> <br>
+      <label for="password1" data-i18n="register.label_password1"> </label> <input type="password" class="input"/> <br>
+      <label for="password2" data-i18n="register.label_password2"> </label> <input type="password" class="input"/> <br>
+      <label for="email" data-i18n="register.label_email"> </label> <input type="email" class="input"/> <br>
+      <button  data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
+    </div>
+    <div data-view-id="game" class="game-div page-view hidden opacity-0 transition-opacity duration-300" id="div_container">
+      <div class="game-screen-div">
+          <h1 class="game-name">Fucking Pong</h1>
+          <div class="div-game-btns" id="gameButtons">
+            <button id="Local game" class="game-button">Local game</button>
+            <button id="Remote game" class="game-button">Remote game</button>
+            <button id="Versus AI" class="game-button">Versus AI</button>
+          </div>
+          <canvas id="pongCanvas" class="graph-win" width="1000%" height="700%"></canvas>
       </div>
-      <div class="msg-field" id="messages"></div>
-      <input type="text" id="input" class="chat-input" placeholder="Type here..." />
+      <div class="chat-main-div">
+        <div class="chat-head">
+          <select class="chat-select" id="recipient">
+            <option class="select-players" value="all">All Players</option>
+          </select>
+          <button class="chat-util-btn" onclick="blockUser()">Block</button>
+          <button class="chat-util-btn" onclick="inviteUser()">Invite</button>
+          <button class="chat-util-btn" onclick="viewProfile()">Profile</button>
+        </div>
+        <div class="msg-field" id="messages"></div>
+        <input type="text" id="input" class="chat-input" placeholder="Type here..." />
+      </div>
     </div>
-  </div>
+  <div>
 </body>
 </html>

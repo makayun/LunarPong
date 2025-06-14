@@ -1,15 +1,16 @@
 // import { setDivLogin, setDivLogged} from "./div_login"
-import { baseUrl, div_main_state, set_div_main } from "./history"
+import { ViewState, navigateTo} from "./history"
 import type { User_f } from "../defines/types";
 
 export let user_f: User_f = {id: -1};
 
-sessionStorage.setItem("start", "yes");
 checkLogin();
+export const baseUrl = window.location.origin;
 
 export async function checkLogin() {
 	if (!await refreshToken()) {
-		set_div_main(div_main_state.LOGIN);
+		navigateTo(ViewState.LOGIN);
+		// set_div_main(div_main_state.LOGIN, true);
 		// setDivLogin(div_main);
 		return;
 	}
@@ -27,16 +28,20 @@ export async function checkLogin() {
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.error("[login] Login check failed:", errorData.error);
-				set_div_main(div_main_state.LOGIN);
+				navigateTo(ViewState.LOGIN);
+				// set_div_main(div_main_state.LOGIN, true);
 				// setDivLogin(div_main);
 				return;
 			}
 			const data = await response.json();
 			user_f.id = data.id;
 			user_f.name = data.username;
+			sessionStorage.setItem("id", data.id);
+			sessionStorage.setItem("user", data.username);
 			// user.id_ = data.id;
 			// user.nick = data.username;
-			set_div_main(div_main_state.TWOFA);
+			navigateTo(ViewState.TWOFA);
+			// set_div_main(div_main_state.TWOFA, true);
 			// setDivLogged(div_main, data);
 			return;
 			// data.user.username + " was loggined! (id: " + data.user.id + ")";
@@ -44,7 +49,8 @@ export async function checkLogin() {
 			console.error("[login] Network error:", err);
 		}
 	}
-	set_div_main(div_main_state.LOGIN);
+	navigateTo(ViewState.LOGIN);
+	// set_div_main(div_main_state.LOGIN, true);
 	// setDivLogin(div_main);
 }
 
