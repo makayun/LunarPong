@@ -55,7 +55,7 @@ export function set_view(state: ViewState) {
         const currentElement = document.querySelector<HTMLElement>(`.page-view[data-view-id="${current_state}"]`);
         if (currentElement) {
             currentElement.classList.add("hidden", "opacity-0");
-            currentElement.classList.remove("block", "opacity-100");
+            currentElement.classList.remove("flex", "opacity-100");
         }
     }
 
