@@ -61,10 +61,10 @@ export function set_view(state: ViewState) {
 
     // Находим и отображаем целевой контейнер по data-атрибуту
     const target = document.querySelector<HTMLElement>(`.page-view[data-view-id="${state}"]`);
-    
+
     if (target) {
         target.classList.remove("hidden");
-        target.classList.add("block");
+        target.classList.add("flex");
         requestAnimationFrame(() => {
             target.classList.remove("opacity-0");
             target.classList.add("opacity-100");
@@ -107,7 +107,7 @@ export function navigateTo(state: ViewState) {
  */
 function handleHashChange() {
     const hash = location.hash.replace("#", "");
-    
+
     if (isViewState(hash)) {
         set_view(hash);
     } else {
@@ -201,7 +201,7 @@ window.addEventListener("DOMContentLoaded", handleHashChange);
 // function handleHashChange() {
 //     // Берем состояние ИСКЛЮЧИТЕЛЬНО из location.hash
 //     const hash = location.hash.replace("#", "");
-    
+
 //     // Проверяем, является ли хеш валидным состоянием. Если нет - редирект на LOGIN.
 //     if (isDivMainState(hash)) {
 //         set_div_main(hash);
