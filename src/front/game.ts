@@ -25,9 +25,18 @@ const engine: Engine = new Engine(canvas, true);
 			socket.send(JSON.stringify(initGameMsg));
 
 			btn.disabled = true;
-			btn.classList.add("absolute","w-96");
+			btn.classList.add("relative","w-96","cursor-not-allowed");
 			// btn.hidden = true;
-			
+			["Local game", "Remote game", "Versus AI"].forEach(otherType => {
+                if (otherType !== type) {
+                    const otherBtn = document.getElementById(otherType) as HTMLButtonElement;
+                    if (otherBtn != btn) {
+                        otherBtn.disabled = true;
+						otherBtn.classList.remove("flex");
+                        otherBtn.classList.add("hidden","absolute");
+                    }
+                }
+            });
 		});
 	}
 });

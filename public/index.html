@@ -49,7 +49,7 @@
       <label for="email" data-i18n="register.label_email"> </label> <input type="email" class="input"/> <br>
       <button  data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
     </div>
-    <div data-view-id="game" class="game-div page-view hidden opacity-0 transition-opacity duration-300" id="div_container">
+    <div data-view-id="game" class="game-div page-view hidden " id="div_container">
       <div class="game-screen-div">
           <h1 class="game-name">Lunar Pong</h1>
           <div class="div-game-btns" id="gameButtons">
@@ -57,12 +57,12 @@
             <button id="Remote game" class="game-button">Remote game</button>
             <button id="Versus AI" class="game-button">Versus AI</button>
           </div>
-          <canvas id="pongCanvas" class="graph-win" width="1000%" height="700%"></canvas>
+          <canvas id="pongCanvas" class="graph-win " width="1000%" height="700%"></canvas>
       </div>
       <div class="chat-main-div">
         <div class="chat-head">
-          <select class="chat-select" id="recipient">
-            <option class="select-players" value="all">All Players</option>
+          <select class="chat-select bg-gray-50" id="recipient">
+            <option class="select-players " value="all">All Players</option>
           </select>
           <button class="chat-util-btn" onclick="blockUser()">Block</button>
           <button class="chat-util-btn" onclick="inviteUser()">Invite</button>
