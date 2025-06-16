@@ -91,6 +91,11 @@ export type InitGameSuccess = {
 	playerSide: "left" | "right",
 }
 
+export type ScoreUpdate = {
+	type: "ScoreUpdate";
+	score: [number, number];
+}
+
 export type ChatMessage =
   | { type: 'register', user: User }
   | { type: 'message', to: User, content: string }
@@ -106,4 +111,5 @@ export type WSMessage =
 	| MeshPositions
 	| ChatMessage
 	| InitGameRequest
-	| InitGameSuccess;
+	| InitGameSuccess
+	| ScoreUpdate

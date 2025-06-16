@@ -94,6 +94,9 @@ async function babylonInit(opts: InitGameSuccess) : Promise<void> {
 				case "MeshPositions":
 					meshPositions = message;
 					break;
+				case "ScoreUpdate":
+					pongScene.updateScore(message.score);
+					break;
 			}
 		} catch (error) {
 			console.error("Wrong WS message:", error);

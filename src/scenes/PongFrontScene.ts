@@ -5,6 +5,8 @@ import { ShadowGenerator }	from "@babylonjs/core/Lights/Shadows/shadowGenerator"
 import type { Engine }		from "@babylonjs/core/Engines/engine";
 import "@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent";
 
+import * as GUI from "@babylonjs/gui";
+
 import { PongBaseScene } from "./PongBaseScene";
 import { GUID, InitGameSuccess, PlayerSide } from "../defines/types";
 // import { ReflectionProbe } from "@babylonjs/core/Probes";
@@ -23,6 +25,10 @@ export class PongFrontScene extends PongBaseScene {
 	public id: GUID;
 	public side: PlayerSide;
 	public socket: WebSocket;
+
+	private advancedTexture = GUI.AdvancedDynamicTexture.CreateFullscreenUI("ui1", true, this);
+	public scoreLeft = createScoreBlock(this.advancedTexture, "left");
+	public scoreRight = createScoreBlock(this.advancedTexture, "right");
 
 	constructor (inEngine: Engine, opts: InitGameSuccess, inSocket: WebSocket) {
 		super(inEngine);
@@ -50,4 +56,36 @@ export class PongFrontScene extends PongBaseScene {
 	}
 
 	sendPlayerInput(_socket: WebSocket) {};
+
+	updateScore(newScore: [number, number]) {
+		this.score = newScore;
+
+		this.scoreLeft.text = this.score[0].toString();
+		this.scoreRight.text = this.score[1].toString();
+	}
 }
+
+
+function createScoreBlock(ui: GUI.AdvancedDynamicTexture, side: PlayerSide) : GUI.TextBlock {
+	const rectangle = new GUI.Rectangle("score" + side);
+	rectangle.width = 0.2;
+	rectangle.height = 0.2;
+	rectangle.cornerRadius = 20;
+	rectangle.thickness = 3;
+	rectangle.color = "rgb(57,61,71)";
+	rectangle.background = "rgb(77, 234, 255)";
+
+	rectangle.horizontalAlignment = side === "left"
+		? GUI.Control.HORIZONTAL_ALIGNMENT_LEFT
+		: GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+
+	rectangle.verticalAlignment = GUI.Control.VERTICAL_ALIGNMENT_TOP;
+
+	const scoreText = new GUI.TextBlock("scoreText" + side, "0");
+	rectangle.addControl(scoreText);
+
+	ui.addControl(rectangle);
+
+	return scoreText;
+}
+
