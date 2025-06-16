@@ -5,7 +5,7 @@ import '../styles/output.css';
 const input = document.getElementById('input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
-const socket = new WebSocket(`ws://${window.location.host}/ws-chat`);
+const socket = new WebSocket('ws://localhost:12800/ws-chat');
 
 const user = {
   id: getOrCreateClientId(),
@@ -48,7 +48,7 @@ socket.addEventListener('message', (event) => {
         break;
       case 'invite':
         const fromNick = userMap.get(data.from as GUID) || data.from;
-        addMessage(`[Invite] ${fromNick} invited you to play ${data.game} 👤🏓👤`);
+        addMessage(`[Invite] ⚡ ${fromNick} invited you to play ${data.game}`);
       break;
     }
   } catch {
@@ -149,19 +149,30 @@ export function viewProfile() {
           socket.removeEventListener('message', profileHandler);
 
           const profileHTML = `
-            <div class="player-profile">
-              <h3>🎮 ${playerNick}</h3>
-              <p>⭐ Rating: ${data.rating || 'N/A'}</p>
-              <p>🏆 Wins: ${data.wins || 0}</p>
-              <p>🔥 Streak: ${data.streak || 0}</p>
+            <div class="player-profile" style="
+              background:rgb(32, 28, 28);
+              border: 2px solid #6a0dad;
+              border-radius: 10px;
+              padding: 6px 8px;
+              color:rgb(168, 230, 230);
+              margin: 2px 0;
+              line-height: 1.0;
+            ">
+              <h3 style="color:rgb(200, 245, 117); margin: 0 0 6px 0;">🎮 ${playerNick}</h3>
+              <p style="margin: 2px 0;">⭐ Rating: ${data.rating || 'N/A'}</p>
+              <p style="margin: 2px 0;">🏆 Wins: ${data.wins || 0}</p>
+              <p style="margin: 2px 0;">🔥 Streak: ${data.streak || 0}</p>
             </div>
           `;
 
+          // const existingProfile = document.getElementById('player-profile');
+          // if (existingProfile) {
+          //   existingProfile.remove();
+          // }
           const profileDiv = document.createElement('div');
           profileDiv.id = 'player-profile';
           profileDiv.innerHTML = profileHTML;
           messages.appendChild(profileDiv);
-          messages.scrollTop = messages.scrollHeight;
         }
       } catch {}
     };

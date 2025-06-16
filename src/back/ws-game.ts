@@ -1,6 +1,6 @@
 import type { FastifyInstance }	from "fastify";
-import type { FastifyRequest }	from "fastify";
 import type { WebSocket }		from "@fastify/websocket";
+import type { FastifyRequest }	from "fastify";
 
 import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
@@ -36,11 +36,11 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 					break;
 				default:
 					console.error(`Bad WS message: ${msg}`);
-					// socket.send(`Bad WS message: ${msg}`);
+					socket.send(`Bad WS message: ${msg}`);
 				}
 			}
 			catch (e) {
-				// socket.terminate();
+				socket.terminate();
 				console.error(e, message);
 			}
 		});
