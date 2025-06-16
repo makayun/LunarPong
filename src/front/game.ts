@@ -103,16 +103,14 @@ async function babylonInit(opts: InitGameSuccess) : Promise<void> {
 
 			switch (message.type) {
 				case "MeshPositions":
-					console.log("Mesh postions received:", message.ball);
-					pongScene.registerBeforeRender(() => applyMeshPositions(pongScene.pongMeshes, message));
+					meshPositions = message;
 					break;
 			}
 		} catch (error) {
 			console.error("Wrong WS message:", error);
-			socket.send("Invalid WS message: " + JSON.stringify(error));
+			// socket.send("Invalid WS message: " + JSON.stringify(error));
 		}
 	};
-
 
 	pongScene.executeWhenReady(() => {
 		engine.runRenderLoop(() => pongScene.render());

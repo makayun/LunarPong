@@ -1,6 +1,5 @@
-import { AmmoJSPlugin }		from "@babylonjs/core/Physics/Plugins/ammoJSPlugin";
-import { PhysicsImpostor }	from "@babylonjs/core/Physics/physicsImpostor";
-import { Vector3 }			from "@babylonjs/core/Maths/math.vector";
+import fs					from "node:fs";
+import path					from "node:path";
 import { NullEngine }		from "@babylonjs/core/Engines/nullEngine";
 import { Vector3 }			from "@babylonjs/core/Maths/math.vector";
 import { HavokPlugin }		from "@babylonjs/core/Physics/v2";
