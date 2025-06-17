@@ -1,7 +1,11 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { hashPassword, checkPassword, sign2faToken, signAccessToken, signRefreshToken, verifyToken} from './auth.utils';
+// import { hashPassword, checkPassword, sign2faToken, signAccessToken, signRefreshToken, verifyToken} from './auth.utils';
+import { hashPassword, checkPassword, sign2faToken, signAccessToken, verifyToken} from './auth.utils';
 import { getDB } from '../back/db';
 import jwt from 'jsonwebtoken';
+
+import { authenticator } from 'otplib';
+import QRCode from 'qrcode';
 
 
 interface AuthBody {
@@ -18,10 +22,11 @@ interface RefreshTokenBody {
 	refreshToken: string;
 }
 
-interface getUser {
+export interface getUser {
 	id: number;
 	username: string;
 	password: string;
+	otp: string;
 }
 
 export const login = async (
@@ -33,6 +38,15 @@ export const login = async (
 	if (!user || !checkPassword(password, user.password)) {
 		return reply.status(401).send({ error: 'Invalid credentials' });
 	}
+
+	/*
+	const secret = authenticator.generateSecret(); //IQAQSETQBZFDKFZ2
+
+	const otpauth = authenticator.keyuri(username, "Pong", secret);
+	const qr = await QRCode.toDataURL(otpauth);
+		return reply.send ({ qr: qr });
+	*/
+
 	const twofaToken = sign2faToken(user.id, username);
 	// const refreshToken = signRefreshToken(user.id, username);
 	const payload = verifyToken(twofaToken);
@@ -49,7 +63,12 @@ export const register = async (
 		return reply.status(400).send({ error: 'User already exists' });
 	}
 	const hashed = hashPassword(password);
-	await getDB().run('INSERT INTO users (username, password) VALUES (?, ?)', username, hashed);
+	const secret = authenticator.generateSecret();
+	const otpauth = authenticator.keyuri(username, "Pong", secret);
+	const qr = await QRCode.toDataURL(otpauth);
+
+	await getDB().run('INSERT INTO users (username, password, otp) VALUES (?, ?, ?)', username, hashed, secret);
+	return reply.send ({ qr: qr});
 	return reply.send({ message: 'User registered' });
 };
 

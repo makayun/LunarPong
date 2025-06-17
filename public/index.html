@@ -37,9 +37,8 @@
       <button data-btn-id="login_register" data-i18n="register.button" class="register-button btn_click"></button>
     </div>
     <div data-view-id="2fa" class="div-2fa page-view hidden opacity-0 transition-opacity duration-300">
-  	  <h1 class="logged_in" data-i18n="logged.title"></h1>
-      <h1 class="logged_in" >Здесь будет 2FA авторизация!</h1>
-      <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="continue"></button>
+      <label for="token" data-i18n="2fa.label_token"> </label> <input class="input data_input" type="text" data-input-id="2fa_token" data-i18n="2fa.token" class="input"/> <br>
+      <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
     </div>
     <div data-view-id="register" class="div-register page-view hidden opacity-0 transition-opacity duration-300">
       <h1 data-i18n="register.title"></h1>

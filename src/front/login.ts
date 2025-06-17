@@ -97,6 +97,12 @@ export async function login() {
 			return;
 		}
 		const data = await response.json();
+
+		// const qrImg = document.getElementById("qr-img") as HTMLImageElement;
+		// qrImg.src = data.qr;
+		// qrImg.alt = "Scan with Google Authenticator";
+		// user_f.id = -2;
+
 		user_f.id = data.user.id;
 		user_f.name = data.user.username;
 		console.log("[login] Login successful, User name = ", user_f.name);
@@ -109,6 +115,45 @@ export async function login() {
 	} catch (err) {
 		console.error("[login] Network error:", err);
 	}
+}
+
+export async function twofa() {
+	const token = document.querySelector<HTMLElement>(`.data_input[data-input-id="2fa_token"]`) as HTMLInputElement;
+	if (!token.value) {
+		console.log("[2fa] Code is empty");
+		return;
+	}
+	const twofaToken =  localStorage.getItem("twofaToken");
+	if (twofaToken ) {
+		try {
+			const response = await fetch(`/api/protected/2fa`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + twofaToken
+				},
+				body: JSON.stringify({
+				id: user_f.id,
+				token: token
+			})
+			});
+			if (!response.ok) {
+				const errorData = await response.json();
+				console.error("[2fa] 2FA check failed:", errorData.error);
+				navigateTo(ViewState.LOGIN);
+				return;
+			}
+			const data = await response.json();
+			user_f.id = data.user.id;
+			user_f.name = data.user.username;
+			navigateTo(ViewState.GAME);
+			return;
+		}  catch (err) {
+			console.error("[2fa] Network error:", err);
+		}
+	}
+	console.log("[2fa] Code is expired or bad");
+	navigateTo(ViewState.LOGIN);
 }
 
 export async function register() {

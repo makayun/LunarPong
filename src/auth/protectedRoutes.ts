@@ -1,5 +1,14 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import authHook from './auth.hook';
+import { getUser } from './auth.controller'
+import { getDB } from '../back/db';
+import { authenticator } from 'otplib';
+import { signAccessToken, signRefreshToken, verifyToken} from './auth.utils';
+
+interface twofaBody {
+	id: number;
+	token: string;
+}
 
 export default async function protectedRoutes(fastify: FastifyInstance) {
 	// Навешиваем хук авторизации на все маршруты
@@ -12,6 +21,35 @@ export default async function protectedRoutes(fastify: FastifyInstance) {
 	});
 
 	// Пример защищённого POST-запроса с валидацией
+	fastify.post('/2fa', {
+		schema: {
+			body: {
+				type: 'object',
+				properties: {
+					id: {type: 'string'},
+					token: {type: 'string'}
+				},
+				required: ['id', 'token']
+			}
+		}
+	}, async (request: FastifyRequest, reply: FastifyReply) => {
+		const { id, token } = request.body as twofaBody;
+		console.log(`[2fa] Request id = ${id}, token = ${token}`);
+		const user = await getDB().get('SELECT * FROM users WHERE id = ?', id) as getUser | undefined;
+		if (user !== undefined) {
+			return reply.status(400).send({ error: 'Wrong request' });
+		}
+		const isValid = authenticator.check(token, user!.otp);
+		if (!isValid) {
+			return reply.status(401).send({ error: 'Wrong request' });
+		}
+
+		const accessToken = signAccessToken(user!.id, user!.username);
+		const refreshToken = signRefreshToken(user!.id, user!.username);
+		const payload = verifyToken(accessToken);
+		return reply.send ({ accessToken: accessToken, refreshToken: refreshToken, user: payload });
+	});
+
 	fastify.post('/settings', {
 		schema: {
 			body: {
