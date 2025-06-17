@@ -109,8 +109,6 @@ export async function login() {
 		console.log("[login] Login successful, User id =", user_f.id);
 		// 💾 Сохраняем токены (в localStorage или sessionStorage)
 		localStorage.setItem("twofaToken", data.twofaToken);
-		// localStorage.setItem("accessToken", data.accessToken);
-		// localStorage.setItem("refreshToken", data.refreshToken);
 		navigateTo(ViewState.TWOFA);
 	} catch (err) {
 		console.error("[login] Network error:", err);
@@ -133,9 +131,9 @@ export async function twofa() {
 					"Authorization": "Bearer " + twofaToken
 				},
 				body: JSON.stringify({
-				id: user_f.id,
-				token: token
-			})
+					id: user_f.id,
+					token: token.value
+				})
 			});
 			if (!response.ok) {
 				const errorData = await response.json();
@@ -146,6 +144,9 @@ export async function twofa() {
 			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
+			localStorage.removeItem("twofaToken");
+			localStorage.setItem("accessToken", data.accessToken);
+			localStorage.setItem("refreshToken", data.refreshToken);
 			navigateTo(ViewState.GAME);
 			return;
 		}  catch (err) {

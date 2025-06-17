@@ -4,6 +4,7 @@ import { getUser } from './auth.controller'
 import { getDB } from '../back/db';
 import { authenticator } from 'otplib';
 import { signAccessToken, signRefreshToken, verifyToken} from './auth.utils';
+// import QRCode from 'qrcode';
 
 interface twofaBody {
 	id: number;
@@ -36,9 +37,17 @@ export default async function protectedRoutes(fastify: FastifyInstance) {
 		const { id, token } = request.body as twofaBody;
 		console.log(`[2fa] Request id = ${id}, token = ${token}`);
 		const user = await getDB().get('SELECT * FROM users WHERE id = ?', id) as getUser | undefined;
-		if (user !== undefined) {
+		console.log(`[2fa] DB id = ${user!.id}, opt = ${user!.otp}`);
+		if (user == undefined) {
 			return reply.status(400).send({ error: 'Wrong request' });
 		}
+		
+		// const secret = authenticator.generateSecret();
+		// const otpauth = authenticator.keyuri(user!.username, "Pong", secret);
+		// const qr = await QRCode.toDataURL(otpauth);
+		// console.log(`[2fa] SECRET = ${secret}`);
+		// console.log(`[2fa] SECRET (QR)  = ${qr}`);
+		
 		const isValid = authenticator.check(token, user!.otp);
 		if (!isValid) {
 			return reply.status(401).send({ error: 'Wrong request' });
