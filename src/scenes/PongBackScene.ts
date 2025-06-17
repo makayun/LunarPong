@@ -5,7 +5,7 @@ import { PongBaseScene } from "./PongBaseScene";
 import { generateGuid } from "../helpers/helpers";
 import type { User, Game, GUID, MeshPositions } from "../defines/types";
 import { AIOpponent } from "../back/aiOpponent";
-import type { ScoreUpdate } from "../defines/types";
+import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 
 export class PongBackScene extends PongBaseScene implements Game {
     public id: GUID = generateGuid();
@@ -41,6 +41,7 @@ export class PongBackScene extends PongBaseScene implements Game {
         if (Math.abs(ballPos.z) > fieldHeight / 2) {
             this.ballVelocity.z = -this.ballVelocity.z;
             ballPos.z = Math.sign(ballPos.z) * (fieldHeight / 2);
+            this.sendBallCollision(ballPos.z > 0 ? "edgeTop" : "edgeBottom");
         }
 
         const paddleLeft = this.pongMeshes.paddleLeft;
@@ -53,6 +54,7 @@ export class PongBackScene extends PongBaseScene implements Game {
             this.ballVelocity.x = -this.ballVelocity.x;
             ballPos.x = -fieldWidth / 2 + paddleWidth;
             this.ballVelocity.z += (ballPos.z - paddleLeft.position.z) * 0.5;
+            this.sendBallCollision("paddleLeft");
         }
 
         if (
@@ -62,12 +64,25 @@ export class PongBackScene extends PongBaseScene implements Game {
             this.ballVelocity.x = -this.ballVelocity.x;
             ballPos.x = fieldWidth / 2 - paddleWidth;
             this.ballVelocity.z += (ballPos.z - paddleRight.position.z) * 0.5;
+            this.sendBallCollision("paddleRight");
         }
 
         if (Math.abs(ballPos.x) > fieldWidth / 2) {
             this.handleGoal();
         }
     }
+
+    private sendBallCollision(mesh: MeshName): void {
+        const message: BallCollision = {
+            type: "BallCollision",
+            collidedWith: mesh,
+        };
+
+        this.players.forEach(player => {
+            player.gameSocket?.send(JSON.stringify(message));
+        });
+    }
+
 
     private handleGoal(): void {
         if (this.pongMeshes.ball.position.x > 0) {

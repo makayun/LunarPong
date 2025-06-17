@@ -91,6 +91,11 @@ export type InitGameSuccess = {
 	playerSide: "left" | "right",
 }
 
+export type BallCollision = {
+  type: "BallCollision";
+  collidedWith: MeshName;
+};
+
 export type ScoreUpdate = {
 	type: "ScoreUpdate";
 	score: [number, number];
@@ -112,4 +117,5 @@ export type WSMessage =
 	| ChatMessage
 	| InitGameRequest
 	| InitGameSuccess
+	| BallCollision
 	| ScoreUpdate
