@@ -31,6 +31,18 @@ export async function checkLogin() {
 			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
+			const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
+			if (logoffBtn) {
+				logoffBtn.addEventListener("click", async () => {
+					console.log("[logoff] Login button clicked:");
+					user_f.id = -1;
+					user_f.name = "";
+					localStorage.removeItem("twofaToken");
+					localStorage.removeItem("accessToken");
+					localStorage.removeItem("refreshToken");
+					navigateTo(ViewState.LOGIN);
+				}
+			)};
 			navigateTo(ViewState.GAME);
 			return;
 		}  catch (err) {

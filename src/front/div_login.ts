@@ -31,17 +31,18 @@ export function setDiv2fa() {
 }
 
 function initLoggedHandlers() {
-	// const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
-	// if (logoffBtn) {
-	// 	logoffBtn.addEventListener("click", async () => {
-	// 		console.log("[logoff] Login button clicked:");
-	// 		user_f.id = -1;
-	// 		user_f.name = "";
-	// 		localStorage.removeItem("accessToken");
-	// 		localStorage.removeItem("refreshToken");
-	// 		navigateTo(ViewState.LOGIN);
-	// 	}
-	// )};
+	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
+	if (logoffBtn) {
+		logoffBtn.addEventListener("click", async () => {
+			console.log("[logoff] Login button clicked:");
+			user_f.id = -1;
+			user_f.name = "";
+			localStorage.removeItem("twofaToken");
+			localStorage.removeItem("accessToken");
+			localStorage.removeItem("refreshToken");
+			navigateTo(ViewState.LOGIN);
+		}
+	)};
 	const continueBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="2fa_continue"]`);
 	if (continueBtn) {
 		continueBtn.addEventListener("click", async () => {
