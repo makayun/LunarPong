@@ -1,150 +1,112 @@
-import fs					from "node:fs";
-import path					from "node:path";
-import { NullEngine }		from "@babylonjs/core/Engines/nullEngine";
-import { Vector3 }			from "@babylonjs/core/Maths/math.vector";
-import { HavokPlugin }		from "@babylonjs/core/Physics/v2";
-import HavokPhysics 		from "@babylonjs/havok";
-import { PhysicsAggregate, PhysicsShapeType, PhysicsBody, IPhysicsCollisionEvent } from "@babylonjs/core/Physics";
+import { Vector3 } from "@babylonjs/core/Maths/math.vector";
+import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
 import type { WebSocket } from "@fastify/websocket";
-import "@babylonjs/core/Physics/physicsEngineComponent"
-
-import { PongBaseScene }	from "./PongBaseScene";
-import { generateGuid }		from "../helpers/helpers";
-import type { User, Game, GUID } from "../defines/types";
+import { PongBaseScene } from "./PongBaseScene";
+import { generateGuid } from "../helpers/helpers";
+import type { User, Game, GUID, MeshPositions } from "../defines/types";
 import { AIOpponent } from "../back/aiOpponent";
-
-const appDir: string = fs.realpathSync(process.cwd());
-const havokPath = path.join(appDir, 'node_modules/@babylonjs/havok/lib/esm/HavokPhysics.wasm');
-const havokWasmBuffer = fs.readFileSync(havokPath);
-const havokWasm = havokWasmBuffer.buffer.slice(havokWasmBuffer.byteOffset, havokWasmBuffer.byteOffset + havokWasmBuffer.byteLength);
-
+import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 
 export class PongBackScene extends PongBaseScene implements Game {
     public id: GUID = generateGuid();
     public players: User[] = [];
     public startTime = new Date();
     public aiOpponent?: AIOpponent;
+    private ballVelocity: Vector3 = new Vector3(10, 0, -2);
+    private ballSpeed: number = 18;
 
-    private gameInternalState = {
-        scoreLeft: 0,
-        scoreRight: 0,
-        // isPlaying: true,
-        maxScore: 2,
-        lastGoalTime: null as number | null
-    };
+    enablePongPhysics(): void {
+        this.pongMeshes.ball.position = new Vector3(0, 0, 0);
+        this.onBeforeRenderObservable.add(() => {
+            this.updateBall();
+        });
+    }
 
-	private ballAgg: any;
-    private ballBody: any; // Временные типчики 🌟🌟🌟
-    private groundBody: any;
-    private edgeTopBody: any;
-    private edgeBottomBody: any;
-    private edgeLeftBody: any;
-    private edgeRightBody: any;
-    private paddleLeftBody: any;
-    private paddleRightBody: any;
+    private updateBall(): void {
+        const deltaTime = this.getEngine().getDeltaTime() / 1000;
+        const moveDistance = this.ballSpeed * deltaTime;
+        const moveDirection = this.ballVelocity.normalize();
+        this.pongMeshes.ball.position.addInPlace(moveDirection.scale(moveDistance));
+        this.handleBallCollisions();
+    }
 
-        private lastCollisionTime: number = 0;
+    private handleBallCollisions(): void {
+        const ball = this.pongMeshes.ball;
+        const ballPos = ball.position;
+        const fieldWidth = 30;
+        const fieldHeight = 15;
+        const paddleWidth = 1;
+        const paddleHeight = 4;
 
-    async enablePongPhysics(): Promise<void> {
-        const havok = await HavokPhysics({ wasmBinary: havokWasm });
-        const physics = new HavokPlugin(true, havok);
-        physics.setVelocityLimits(20, 20);
-        this.enablePhysics(new Vector3(0, -9.81, 0), physics);
+        if (Math.abs(ballPos.z) > fieldHeight / 2) {
+            this.ballVelocity.z = -this.ballVelocity.z;
+            ballPos.z = Math.sign(ballPos.z) * (fieldHeight / 2);
+            this.sendBallCollision(ballPos.z > 0 ? "edgeTop" : "edgeBottom");
+        }
 
-        const scalingVec = new Vector3(1, 20, 1);
-        this.pongMeshes.ground.scaling = scalingVec;
-        this.pongMeshes.paddleLeft.scaling = scalingVec;
-        this.pongMeshes.paddleRight.scaling = scalingVec;
-        this.pongMeshes.edgeTop.scaling = scalingVec;
-        this.pongMeshes.edgeBottom.scaling = scalingVec;
-		    this.pongMeshes.edgeLeft.scaling = scalingVec;
-		    this.pongMeshes.edgeRight.scaling = scalingVec;
+        const paddleLeft = this.pongMeshes.paddleLeft;
+        const paddleRight = this.pongMeshes.paddleRight;
 
-        this.groundBody = new PhysicsAggregate(this.pongMeshes.ground, PhysicsShapeType.BOX, { mass: 0, restitution: 1 }, this).body;
-        this.edgeBottomBody = new PhysicsAggregate(this.pongMeshes.edgeBottom, PhysicsShapeType.BOX, { mass: 0, restitution: 1 }, this).body;
-        this.edgeTopBody = new PhysicsAggregate(this.pongMeshes.edgeTop, PhysicsShapeType.BOX, { mass: 0, restitution: 1 }, this).body;
-        this.edgeLeftBody = new PhysicsAggregate(this.pongMeshes.edgeLeft, PhysicsShapeType.BOX, { mass: 0, restitution: 1 }, this).body;
-        this.edgeRightBody = new PhysicsAggregate(this.pongMeshes.edgeRight, PhysicsShapeType.BOX, { mass: 0, restitution: 1 }, this).body;
-        this.paddleLeftBody = new PhysicsAggregate(this.pongMeshes.paddleLeft, PhysicsShapeType.CAPSULE, { mass: 0, restitution: 1 }, this).body;
-        this.paddleRightBody = new PhysicsAggregate(this.pongMeshes.paddleRight, PhysicsShapeType.CAPSULE, { mass: 0, restitution: 1 }, this).body;
+        if (
+            ballPos.x < -fieldWidth / 2 + paddleWidth &&
+            Math.abs(ballPos.z - paddleLeft.position.z) < paddleHeight / 2
+        ) {
+            this.ballVelocity.x = -this.ballVelocity.x;
+            ballPos.x = -fieldWidth / 2 + paddleWidth;
+            this.ballVelocity.z += (ballPos.z - paddleLeft.position.z) * 0.5;
+            this.sendBallCollision("paddleLeft");
+        }
 
-        this.resetBall(); // Используем resetBall и для начального импульса тоже!🌟🌟🌟
+        if (
+            ballPos.x > fieldWidth / 2 - paddleWidth &&
+            Math.abs(ballPos.z - paddleRight.position.z) < paddleHeight / 2
+        ) {
+            this.ballVelocity.x = -this.ballVelocity.x;
+            ballPos.x = fieldWidth / 2 - paddleWidth;
+            this.ballVelocity.z += (ballPos.z - paddleRight.position.z) * 0.5;
+            this.sendBallCollision("paddleRight");
+        }
 
+        if (Math.abs(ballPos.x) > fieldWidth / 2) {
+            this.handleGoal();
+        }
+    }
+
+    private sendBallCollision(mesh: MeshName): void {
+        const message: BallCollision = {
+            type: "BallCollision",
+            collidedWith: mesh,
+        };
+
+        this.players.forEach(player => {
+            player.gameSocket?.send(JSON.stringify(message));
+        });
     }
 
 
-  private setupCollisionHandling(): void {
-    this.ballBody.setCollisionCallbackEnabled(true);
-    const ballObserver = this.ballBody.getCollisionObservable();
+    private handleGoal(): void {
+        if (this.pongMeshes.ball.position.x > 0) {
+            this.score[0]++;
+        } else {
+            this.score[1]++;
+        }
 
-    ballObserver.add((collisionEvent: IPhysicsCollisionEvent) => {
-      const collidedAgainst = collisionEvent.collidedAgainst as PhysicsBody | null;
-      const point = collisionEvent.point as Vector3 | null;
+        this.pongMeshes.ball.position = new Vector3(0, 0, 0);
+        const randomAngle = (Math.random() - 0.5) * Math.PI / 4;
+        this.ballVelocity = new Vector3(
+            Math.cos(randomAngle) * this.ballSpeed * (Math.random() > 0.5 ? 1 : -1),
+            0,
+            Math.sin(randomAngle) * this.ballSpeed
+        );
 
-      if (!point || !collidedAgainst || collidedAgainst === this.groundBody)
-        return;
-
-      const now = Date.now();
-       if (now - this.lastCollisionTime < 100) return;
-       this.lastCollisionTime = now;
-
-      if (collidedAgainst === this.edgeLeftBody || collidedAgainst === this.edgeRightBody) {
-
-        if (collidedAgainst === this.edgeLeftBody)
-          this.gameInternalState.scoreRight++;
-        else
-          this.gameInternalState.scoreLeft++;
-
-	// this.resetBall();
-
-        return;
+        this.players.forEach(player => {
+            const message: ScoreUpdate = {
+                type: "ScoreUpdate",
+                score: [this.score[0], this.score[1]],
+            };
+            player.gameSocket?.send(JSON.stringify(message));
+        });
     }
-
-    const velocity = this.ballBody.getLinearVelocity();
-
-    if (collidedAgainst === this.edgeTopBody || collidedAgainst === this.edgeBottomBody) {
-        const newDir = new Vector3(velocity.x - point.x, 1, -point.z * 1.5);
-      this.ballBody.applyImpulse(newDir, this.pongMeshes.ball.absolutePosition);
-      return;
-    }
-
-    if (collidedAgainst === this.paddleLeftBody || collidedAgainst === this.paddleRightBody) {
-      this.handlePaddleCollision(point, velocity);
-      return;
-    }
-  });
-}
-
-
-  private resetBall(): void {
-	  this.ballAgg?.dispose();
-    this.pongMeshes.ball.position.set(0, 3, 0);
-	  this.ballAgg = new PhysicsAggregate(this.pongMeshes.ball, PhysicsShapeType.SPHERE, { mass: 1 /*5*/, restitution: 0.95/*1*/ }, this);
-	  this.ballBody = this.ballAgg.body;
-    this.gameInternalState.lastGoalTime = Date.now();
-
-    this.ballBody.setLinearVelocity(Vector3.Zero());
-    this.ballBody.setAngularVelocity(Vector3.Zero());
-
-    this.ballBody.setLinearDamping(0); // 🔥 Отключаем затухание
-    this.ballBody.setAngularDamping(0);
-
-	  this.setupCollisionHandling();
-
-        const randomX = Math.random() > 0.5 ? 50 : -50;
-        const randomZ = (Math.random() - 0.5) * 20;
-        const impulse = new Vector3(randomX, 0, randomZ);
-
-        this.ballBody.applyImpulse(impulse, this.pongMeshes.ball.absolutePosition);
-
-}
-
-
-    private handlePaddleCollision(point: Vector3, velocity: Vector3): void {
-        const newDir = new Vector3(-point.x * 1.5, 1, velocity.z);
-        this.ballBody.applyImpulse(newDir, this.pongMeshes.ball.absolutePosition);
-    }
-
 }
 
 export class PongBackEngine extends NullEngine {
@@ -167,8 +129,6 @@ export class PongBackEngine extends NullEngine {
 	}
 }
 
-import type { MeshPositions } from "../defines/types";
-
 export function startRenderLoop(engine: PongBackEngine) {
 	engine.runRenderLoop(() => {
 		engine.scenes.forEach(scene => scene.render());
@@ -187,3 +147,5 @@ export function startRenderLoop(engine: PongBackEngine) {
 		});
 	});
 }
+
+

@@ -9,7 +9,7 @@ import type { PongFrontScene } from "../scenes/PongFrontScene";
 import { PongAIGame, PongLocalGame, PongRemoteGame } from "../scenes/PongFrontVariants";
 
 const player: User = { id: getOrCreateClientId() };
-const socket = new WebSocket(`ws://${window.location.host}/ws-game`);
+const socket = new WebSocket(`wss://${window.location.host}/ws-game`);
 const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 const engine: Engine = new Engine(canvas, true);
 
@@ -25,7 +25,18 @@ const engine: Engine = new Engine(canvas, true);
 			socket.send(JSON.stringify(initGameMsg));
 
 			btn.disabled = true;
-			btn.hidden = true;
+			btn.classList.add("relative","w-96","cursor-not-allowed");
+			// btn.hidden = true;
+			["Local game", "Remote game", "Versus AI"].forEach(otherType => {
+                if (otherType !== type) {
+                    const otherBtn = document.getElementById(otherType) as HTMLButtonElement;
+                    if (otherBtn != btn) {
+                        otherBtn.disabled = true;
+						otherBtn.classList.remove("flex");
+                        otherBtn.classList.add("hidden","absolute");
+                    }
+                }
+            });
 		});
 	}
 });
@@ -93,6 +104,9 @@ async function babylonInit(opts: InitGameSuccess) : Promise<void> {
 			switch (message.type) {
 				case "MeshPositions":
 					meshPositions = message;
+					break;
+				case "ScoreUpdate":
+					pongScene.updateScore(message.score);
 					break;
 			}
 		} catch (error) {

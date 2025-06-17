@@ -26,6 +26,9 @@
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+    --animate-spin: spin 1s linear infinite;
+    --animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
@@ -178,6 +181,12 @@
   }
 }
 @layer utilities {
+  .absolute {
+    position: absolute;
+  }
+  .relative {
+    position: relative;
+  }
   .mb-4 {
     margin-bottom: calc(var(--spacing) * 4);
   }
@@ -193,8 +202,14 @@
   .table {
     display: table;
   }
+  .w-96 {
+    width: calc(var(--spacing) * 96);
+  }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+  }
+  .cursor-not-allowed {
+    cursor: not-allowed;
   }
   .resize {
     resize: both;
@@ -205,6 +220,9 @@
       margin-inline-start: calc(calc(var(--spacing) * 2) * var(--tw-space-x-reverse));
       margin-inline-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-x-reverse)));
     }
+  }
+  .bg-gray-50 {
+    background-color: var(--color-gray-50);
   }
   .opacity-0 {
     opacity: 0%;
@@ -233,19 +251,37 @@
     height: 100vh;
     display: flex;
     font-family: var(--font-mono);
-    background-color: var(--color-cyan-400);
+    background-image: url(../../assets/backgr.jpg);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
   }
   .game-button {
+    background-image: url(../../assets/cyberbutton.jpg);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     border-radius: calc(infinity * 1px);
-    background-color: var(--color-violet-500);
     padding-inline: calc(var(--spacing) * 5);
     padding-block: calc(var(--spacing) * 2);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-white);
+    color: var(--color-black);
     box-shadow: var(--shadow-md);
+    --tw-duration: 300ms;
+    transition-duration: 300ms;
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
+    cursor: pointer;
     &:hover {
       @media (hover: hover) {
-        background-color: var(--color-violet-700);
+        animation: var(--animate-pulse);
+        --tw-scale-x: 110%;
+        --tw-scale-y: 110%;
+        --tw-scale-z: 110%;
+        color: var(--color-white);
+        scale: var(--tw-scale-x) var(--tw-scale-y);
+        --tw-translate-y: calc(var(--spacing) * -1);
+        translate: var(--tw-translate-x) var(--tw-translate-y);
       }
     }
   }
@@ -265,13 +301,23 @@
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
     box-shadow: var(--shadow-md);
+    --tw-duration: 300ms;
+    transition-duration: 300ms;
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
     &:hover {
       @media (hover: hover) {
+        --tw-scale-x: 110%;
+        --tw-scale-y: 110%;
+        --tw-scale-z: 110%;
+        scale: var(--tw-scale-x) var(--tw-scale-y);
+        --tw-translate-y: calc(var(--spacing) * -1);
+        translate: var(--tw-translate-x) var(--tw-translate-y);
         background-color: var(--color-violet-700);
       }
     }
   }
-  .register-button {
+  .register-btn {
     border-radius: calc(infinity * 1px);
     background-color: var(--color-violet-500);
     padding-inline: calc(var(--spacing) * 5);
@@ -279,8 +325,18 @@
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
     box-shadow: var(--shadow-md);
+    --tw-duration: 300ms;
+    transition-duration: 300ms;
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
     &:hover {
       @media (hover: hover) {
+        --tw-scale-x: 110%;
+        --tw-scale-y: 110%;
+        --tw-scale-z: 110%;
+        scale: var(--tw-scale-x) var(--tw-scale-y);
+        --tw-translate-y: calc(var(--spacing) * -1);
+        translate: var(--tw-translate-x) var(--tw-translate-y);
         background-color: var(--color-violet-700);
       }
     }
@@ -293,8 +349,18 @@
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
     box-shadow: var(--shadow-md);
+    --tw-duration: 300ms;
+    transition-duration: 300ms;
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
     &:hover {
       @media (hover: hover) {
+        --tw-scale-x: 105%;
+        --tw-scale-y: 105%;
+        --tw-scale-z: 105%;
+        scale: var(--tw-scale-x) var(--tw-scale-y);
+        --tw-translate-y: calc(var(--spacing) * -1);
+        translate: var(--tw-translate-x) var(--tw-translate-y);
         background-color: var(--color-violet-700);
       }
     }
@@ -314,7 +380,15 @@
   .logged_in {
     font-weight: var(--font-weight-semibold);
   }
-  .div_main {
+  .div-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
+  .div-login {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -323,6 +397,9 @@
     height: 100%;
   }
   .lang-btn {
+    background-image: url(../../assets/cyberlang.jpg);
+    background-size: cover;
+    background-position: center;
     border-radius: calc(infinity * 1px);
     background-color: var(--color-violet-500);
     padding-inline: calc(var(--spacing) * 1);
@@ -330,13 +407,24 @@
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
     box-shadow: var(--shadow-md);
+    --tw-duration: 300ms;
+    transition-duration: 300ms;
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
     &:hover {
       @media (hover: hover) {
+        animation: var(--animate-spin);
+        --tw-scale-x: 110%;
+        --tw-scale-y: 110%;
+        --tw-scale-z: 110%;
+        scale: var(--tw-scale-x) var(--tw-scale-y);
+        --tw-translate-y: calc(var(--spacing) * -1);
+        translate: var(--tw-translate-x) var(--tw-translate-y);
         background-color: var(--color-violet-700);
       }
     }
   }
-  .div-logoff {
+  .div_logoff {
     position: absolute;
     bottom: 10px;
     left: 10px;
@@ -350,8 +438,18 @@
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
     box-shadow: var(--shadow-md);
+    --tw-duration: 300ms;
+    transition-duration: 300ms;
+    --tw-ease: var(--ease-in-out);
+    transition-timing-function: var(--ease-in-out);
     &:hover {
       @media (hover: hover) {
+        --tw-scale-x: 110%;
+        --tw-scale-y: 110%;
+        --tw-scale-z: 110%;
+        scale: var(--tw-scale-x) var(--tw-scale-y);
+        --tw-translate-y: calc(var(--spacing) * -1);
+        translate: var(--tw-translate-x) var(--tw-translate-y);
         background-color: var(--color-violet-700);
       }
     }
@@ -360,10 +458,8 @@
     display: flex;
     width: 100%;
     height: 100%;
-    background-color: var(--color-cyan-400);
   }
   .game-screen-div {
-    background-color: var(--color-cyan-400);
     flex: 3;
     display: flex;
     align-items: center;
@@ -382,13 +478,19 @@
     margin-bottom: 12px;
   }
   .graph-win {
-    background-color: var(--color-black);
+    background-image: url(../../assets/moon.png);
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     border-color: var(--color-white);
-    border-radius: 0.25rem;
+    border-radius: 1rem;
   }
   .chat-main-div {
     min-width: 240px;
     max-width: 400px;
+    background-image: url(../../assets/cat.jpg);
+    background-position: center;
+    background-attachment: fixed;
     padding: calc(var(--spacing) * 2);
     gap: calc(var(--spacing) * 2);
     background-color: var(--color-pink-300);
@@ -409,10 +511,11 @@
     background-color: var(--color-black);
   }
   .chat-select {
-    padding: calc(var(--spacing) * 1);
+    padding: calc(var(--spacing) * 0.5);
     font-family: var(--font-mono);
     background-color: var(--color-white);
     color: var(--color-black);
+    border-radius: 0.25rem;
   }
   .select-players {
     background-color: var(--color-white);
@@ -441,6 +544,7 @@
   }
   .msg-field {
     flex: 1;
+    opacity: 70%;
     overflow-y: auto;
     padding: calc(var(--spacing) * 2);
     background-color: var(--color-black);
@@ -492,6 +596,16 @@
 @property --tw-duration {
   syntax: "*";
   inherits: false;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
 }
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
