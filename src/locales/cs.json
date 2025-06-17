@@ -3,6 +3,9 @@
   "login": {
 	"title": "Vítejte!",
 	"name": "Přihlašovací jméno",
+  "label_name": "Přihlašovací jméno",
+  "label_password": "Heslo",
+	"password": "Heslo:",
 	"button": "Přihlášení"
   },
   "logged": {
