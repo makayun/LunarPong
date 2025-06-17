@@ -5,7 +5,7 @@ import '../styles/output.css';
 const input = document.getElementById('input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
-const socket = new WebSocket(`ws://${window.location.host}/ws-chat`);
+const socket = new WebSocket(`wss://${window.location.host}/ws-chat`);
 
 const user = {
   id: getOrCreateClientId(),

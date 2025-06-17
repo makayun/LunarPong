@@ -15,7 +15,8 @@ import { Color3, HighlightLayer } from "@babylonjs/core";
 
 
 import { PongBaseScene } from "./PongBaseScene";
-import { GUID, InitGameSuccess, PlayerSide } from "../defines/types";
+import { GUID, InitGameSuccess, MeshName, PlayerSide } from "../defines/types";
+
 // import { ReflectionProbe } from "@babylonjs/core/Probes";
 // import { PBRMaterial } from "@babylonjs/core/Materials/PBR";
 // import { Constants } from "@babylonjs/core/Engines";
@@ -33,6 +34,8 @@ export class PongFrontScene extends PongBaseScene {
 	public side: PlayerSide;
 	public socket: WebSocket;
 
+	private hl = new HighlightLayer("hl", this);
+
 	private advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("ui1", true, this);
 	private scoreLeft = createScoreBlock(this.advancedTexture, "left");
 	private scoreRight = createScoreBlock(this.advancedTexture, "right");
@@ -41,7 +44,7 @@ export class PongFrontScene extends PongBaseScene {
 		super(inEngine);
 
 		var helper = this.createDefaultEnvironment();
-		helper?.setMainColor(Color3.Teal());
+		helper?.setMainColor(Color3.Black());
 
 		this.id = opts.gameId;
 		this.side = opts.playerSide;
@@ -64,9 +67,9 @@ export class PongFrontScene extends PongBaseScene {
 		// 	this.pongMeshes.paddleRight
 		// );
 
-		var hl = new HighlightLayer("hl", this);
-		hl.setEffectIntensity(this.pongMeshes.ball, 0.5);
-		hl.addMesh(this.pongMeshes.ball, Color3.Teal());
+		// var hl = new HighlightLayer("hl", this);
+		this.hl.addMesh(this.pongMeshes.ball, Color3.Teal());
+		this.hl.setEffectIntensity(this.pongMeshes.ball, 0);
 	}
 
 	sendPlayerInput(_socket: WebSocket) {};
@@ -77,7 +80,32 @@ export class PongFrontScene extends PongBaseScene {
 		this.scoreLeft.text = this.score[0].toString();
 		this.scoreRight.text = this.score[1].toString();
 	}
+
+	animateHighlightIntensity(meshName: MeshName, duration = 500) {
+		let time = 0;
+		const max = 1.0;
+		const mesh = this.getMeshByName(meshName);
+
+		if (mesh) {
+			const observer = this.onBeforeRenderObservable.add(() => {
+				const engine = this.getEngine();
+				const dt = engine.getDeltaTime();
+				time += dt;
+				const progress = time / duration;
+
+				if (progress < 0.5) {
+					this.hl.setEffectIntensity(mesh, max * (progress * 2))
+				} else if (progress < 1.0) {
+					this.hl.setEffectIntensity(mesh, max * (2 - progress * 2));
+				} else {
+					this.hl.setEffectIntensity(mesh, 0);
+					this.onBeforeRenderObservable.remove(observer);
+				}
+			});
+		}
+	}
 }
+
 
 
 function createScoreBlock(ui: AdvancedDynamicTexture, side: PlayerSide) : TextBlock {

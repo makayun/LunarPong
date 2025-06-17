@@ -32,6 +32,9 @@ export class PongLocalGame extends PongFrontScene {
 					inputMessage.direction = -1;
 					this.socket.send(JSON.stringify(inputMessage));
 					break;
+				case 'g':
+					this.animateHighlightIntensity("ball");
+					break;
 				// ??? default: print a message to use w, s or arrows ???
 			};
 		}
