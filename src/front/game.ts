@@ -9,7 +9,7 @@ import type { PongFrontScene } from "../scenes/PongFrontScene";
 import { PongAIGame, PongLocalGame, PongRemoteGame } from "../scenes/PongFrontVariants";
 
 const player: User = { id: getOrCreateClientId() };
-const socket = new WebSocket(`ws://${window.location.host}/ws-game`);
+const socket = new WebSocket(`wss://${window.location.host}/ws-game`);
 const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 const engine: Engine = new Engine(canvas, true);
 
