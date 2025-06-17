@@ -49,6 +49,16 @@ export class PongFrontScene extends PongBaseScene {
 		this.id = opts.gameId;
 		this.side = opts.playerSide;
 		this.socket = inSocket;
+		
+		this.socket.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+
+			if (data.type === "ScoreUpdate" && Array.isArray(data.score)) {
+				this.updateScore(data.score);
+			} else {
+				console.warn("Wrong WS message:", data);
+			}
+		};
 
 		this.light1 = new HemisphericLight("light", new Vector3(0, 1, 0), this);
 		this.light1.intensity = 0.5;
