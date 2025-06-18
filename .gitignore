@@ -7,3 +7,4 @@ tmp
 docs
 output\.css
 /src/styles/output.css
+.env

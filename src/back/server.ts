@@ -21,6 +21,8 @@ import authRoutes from '../auth/auth.routes';
 import { initDB } from '../back/db';
 // import { initRedis } from './redis-client';
 import dotenv from 'dotenv';
+import googleAuthPlugin from "../plugins/googleAuth";
+
 
 dotenv.config();
 
@@ -57,6 +59,8 @@ async function main() {
 	});
 
 	const engine = new PongBackEngine();
+
+	server.register(googleAuthPlugin);
 
 	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 	server.register(websocket);

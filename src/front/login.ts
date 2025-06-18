@@ -57,25 +57,28 @@ async function refreshToken() {
 	if (refreshToken) {
 		try {
 			//const response = await fetch(`${baseUrl}/api/refresh`, {
-			const response = await fetch(`/api/refresh`, {
+			const response = await fetch(`/api/protected/refresh`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
+					"Authorization": "Bearer " + refreshToken
 				},
 				body: JSON.stringify({
-					refreshToken: refreshToken
+					token: refreshToken
 				})
 			});
 			if (!response.ok) {
 				const errorData = await response.json();
-				console.error("[login] Login failed:", errorData.error);
+				console.error("[refresh] Refresh failed:", errorData.error);
 				return false;
 			}
 			const data = await response.json();
-			console.log("[login] Refresh accessToken:", data.accessToken);
+			user_f.id = data.user.id;
+			user_f.name = data.user.username;
+			console.log("[refresh] Refresh accessToken:", data.accessToken);
 			localStorage.setItem("accessToken", data.accessToken);
 		}  catch (err) {
-			console.error("[login] Network error:", err);
+			console.error("[refresh] Network error:", err);
 			return false;
 		}
 	} else {

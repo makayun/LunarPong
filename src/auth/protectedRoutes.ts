@@ -4,10 +4,15 @@ import { getUser } from './auth.controller'
 import { getDB } from '../back/db';
 import { authenticator } from 'otplib';
 import { signAccessToken, signRefreshToken, verifyToken} from './auth.utils';
+import jwt from 'jsonwebtoken';
 // import QRCode from 'qrcode';
 
 interface twofaBody {
 	id: number;
+	token: string;
+}
+
+interface refreshBody {
 	token: string;
 }
 
@@ -21,7 +26,31 @@ export default async function protectedRoutes(fastify: FastifyInstance) {
 		return reply.send({ user: request.user });
 	});
 
-	// Пример защищённого POST-запроса с валидацией
+	fastify.post('/refresh', {
+		schema: {
+			body: {
+				type: 'object',
+				properties: {
+					token: {type: 'string'}
+				},
+				required: ['token']
+			}
+		}
+	}, async (request: FastifyRequest, reply: FastifyReply) => {
+		const { token } = request.body as refreshBody;
+		if (!token) {
+			return reply.status(400).send({ error: 'No refresh token provided' });
+		}
+		try {
+			const payload = jwt.verify(token, process.env.JWT_SECRET!) as any;
+			// Тут можно проверить refreshToken в БД (опционально)
+			const newAccessToken = signAccessToken(payload.id, payload.username);
+			return reply.send({ accessToken: newAccessToken, user: payload });
+		} catch {
+			return reply.status(401).send({ error: 'Invalid refresh token' });
+		}
+	});	
+
 	fastify.post('/2fa', {
 		schema: {
 			body: {

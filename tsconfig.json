@@ -21,7 +21,7 @@
     "noImplicitReturns": true,                        /* Enable error reporting for codepaths that do not explicitly return in a function. */
     "noImplicitOverride": true,                       /* Ensure overriding members in derived classes are marked with an override modifier. */
     "skipDefaultLibCheck": true,                      /* Skip type checking .d.ts files that are included with TypeScript. */
-    "skipLibCheck": true                              /* Skip type checking all .d.ts files. */
+    "skipLibCheck": true,                              /* Skip type checking all .d.ts files. */
     // "baseUrl": "./",                                  /* Specify the base directory to resolve non-relative module names. */
     // "paths": {},                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
@@ -29,6 +29,7 @@
     // "types": [],                                      /* Specify type package names to be included without being referenced in a source file. */
     // "resolvePackageJsonExports": true,                /* Use the package.json 'exports' field when resolving package imports. */
     // "resolvePackageJsonImports": true,                /* Use the package.json 'imports' field when resolving imports. */
+	"typeRoots": ["./node_modules/@types", "./types"]
   },
   "exclude": [
     "node_modules",
@@ -41,6 +42,7 @@
 	"data"
   ],
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+	"index.d.ts"
   ],
 }

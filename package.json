@@ -34,7 +34,10 @@
     "sqlite": "^5.1.1",
     "sqlite3": "^5.1.7",
 	"otplib": "^12.0.1",
-	"qrcode": "^1.5.4"
+	"qrcode": "^1.5.4",
+	"fastify-oauth2": "^4.6.0",
+	"axios": "^1.10.0",
+	"@fastify/oauth2": "^8.1.2"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.8",
