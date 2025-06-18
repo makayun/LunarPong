@@ -11,7 +11,7 @@ import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
 import { Control } from "@babylonjs/gui/2D/controls/control";
 import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock";
 
-import { Color3, HighlightLayer } from "@babylonjs/core";
+import { Color3, HighlightLayer, Mesh } from "@babylonjs/core";
 
 
 import { PongBaseScene } from "./PongBaseScene";
@@ -49,7 +49,7 @@ export class PongFrontScene extends PongBaseScene {
 		this.id = opts.gameId;
 		this.side = opts.playerSide;
 		this.socket = inSocket;
-		
+
 		this.socket.onmessage = (event) => {
 			const data = JSON.parse(event.data);
 
@@ -77,9 +77,16 @@ export class PongFrontScene extends PongBaseScene {
 		// 	this.pongMeshes.paddleRight
 		// );
 
-		// var hl = new HighlightLayer("hl", this);
-		this.hl.addMesh(this.pongMeshes.ball, Color3.Teal());
-		this.hl.setEffectIntensity(this.pongMeshes.ball, 0);
+		this.hl.blurHorizontalSize = 0.5;
+		this.hl.blurVerticalSize = 0.5;
+		this.meshes.forEach(mesh => {
+			if (mesh.name !== "ground") {
+				this.hl.addMesh(mesh as Mesh, Color3.Random());
+				this.hl.setEffectIntensity(mesh, 0);
+			}
+		})
+		// this.hl.addMesh(this.pongMeshes.ball, Color3.Random());
+		// this.hl.setEffectIntensity(this.pongMeshes.ball, 0);
 	}
 
 	sendPlayerInput(_socket: WebSocket) {};
@@ -95,6 +102,7 @@ export class PongFrontScene extends PongBaseScene {
 		let time = 0;
 		const max = 1.0;
 		const mesh = this.getMeshByName(meshName);
+		const ball = this.pongMeshes.ball;
 
 		if (mesh) {
 			const observer = this.onBeforeRenderObservable.add(() => {
@@ -104,9 +112,11 @@ export class PongFrontScene extends PongBaseScene {
 				const progress = time / duration;
 
 				if (progress < 0.5) {
-					this.hl.setEffectIntensity(mesh, max * (progress * 2))
+					this.hl.setEffectIntensity(mesh, max * (progress * 2));
+					this.hl.setEffectIntensity(ball, max * (progress * 2));
 				} else if (progress < 1.0) {
 					this.hl.setEffectIntensity(mesh, max * (2 - progress * 2));
+					this.hl.setEffectIntensity(ball, max * (2 - progress * 2));
 				} else {
 					this.hl.setEffectIntensity(mesh, 0);
 					this.onBeforeRenderObservable.remove(observer);
@@ -124,9 +134,8 @@ function createScoreBlock(ui: AdvancedDynamicTexture, side: PlayerSide) : TextBl
 	rectangle.height = 0.2;
 	rectangle.cornerRadius = 20;
 	rectangle.thickness = 3;
-	rectangle.color = "rgb(57,61,71)";
-	rectangle.background = "Teal";
-
+	rectangle.color = "White";
+	rectangle.background = "rgb(57,61,71)";
 
 	const sidePadding = 14;
 
@@ -138,8 +147,6 @@ function createScoreBlock(ui: AdvancedDynamicTexture, side: PlayerSide) : TextBl
 		rectangle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
 		rectangle.paddingRight = sidePadding;
 	}
-
-
 
 	rectangle.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
 	rectangle.paddingTop = 50;

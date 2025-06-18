@@ -41,7 +41,7 @@ export class PongBackScene extends PongBaseScene implements Game {
         if (Math.abs(ballPos.z) > fieldHeight / 2) {
             this.ballVelocity.z = -this.ballVelocity.z;
             ballPos.z = Math.sign(ballPos.z) * (fieldHeight / 2);
-            this.sendBallCollision(ballPos.z > 0 ? "edgeTop" : "edgeBottom");
+            this.sendBallCollision(ballPos.z < 0 ? "edgeTop" : "edgeBottom");
         }
 
         const paddleLeft = this.pongMeshes.paddleLeft;
