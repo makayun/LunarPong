@@ -1,5 +1,5 @@
 import { ViewState, navigateTo} from "./history"
-import { user_f, login, twofa} from "./login"
+import { user_f, login, twofa, logoff, startCountdown} from "./login"
 
 export function setDivLogin() {
 	initLoginHandlers();
@@ -27,6 +27,7 @@ export function setDiv2fa() {
 	if (el) {
 		el.setAttribute('data-i18n-args', JSON.stringify({ name: user_f.name, id: user_f.id }));
 	}
+	startCountdown(300, logoff);
 	initLoggedHandlers();
 }
 
@@ -34,13 +35,7 @@ function initLoggedHandlers() {
 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
 	if (logoffBtn) {
 		logoffBtn.addEventListener("click", async () => {
-			console.log("[logoff] Login button clicked:");
-			user_f.id = -1;
-			user_f.name = "";
-			localStorage.removeItem("twofaToken");
-			localStorage.removeItem("accessToken");
-			localStorage.removeItem("refreshToken");
-			navigateTo(ViewState.LOGIN);
+			logoff();
 		}
 	)};
 	const continueBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="2fa_continue"]`);

@@ -150,9 +150,10 @@ export async function twofa() {
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.error("[2fa] 2FA check failed:", errorData.error);
-				navigateTo(ViewState.LOGIN);
+				// navigateTo(ViewState.LOGIN);
 				return;
 			}
+			stopCountdown();
 			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
@@ -166,6 +167,17 @@ export async function twofa() {
 		}
 	}
 	console.log("[2fa] Code is expired or bad");
+	navigateTo(ViewState.LOGIN);
+}
+
+export async function logoff() {
+	console.log("[logoff] Login button clicked:");
+	stopCountdown();
+	localStorage.removeItem("twofaToken");
+	localStorage.removeItem("accessToken");
+	localStorage.removeItem("refreshToken");
+	user_f.id = -1;
+	user_f.name = "";
 	navigateTo(ViewState.LOGIN);
 }
 
@@ -200,4 +212,33 @@ export async function register() {
 		}
 	}
 	navigateTo(ViewState.LOGIN);
+}
+
+let countdownInterval: ReturnType<typeof setInterval> | undefined;
+
+export function startCountdown(seconds: number, onComplete: () => void) {
+	const countdownEl = document.querySelector<HTMLElement>(`.countdown[countdown-id="2fd"]`);
+	if (!countdownEl) return;
+
+	let remaining = seconds;
+
+	countdownEl.textContent = `${remaining} seconds remaining`;
+
+	countdownInterval = setInterval(() => {
+		remaining--;
+
+		if (remaining > 0) {
+			countdownEl.textContent = `${remaining} seconds remaining`;
+		} else {
+			stopCountdown(); // <- очищаем перед вызовом
+			onComplete();
+		}
+	}, 1000);
+}
+
+export function stopCountdown() {
+	if (countdownInterval !== undefined) {
+		clearInterval(countdownInterval);
+		countdownInterval = undefined;
+	}
 }
