@@ -18,7 +18,7 @@ import { PongBaseScene } from "./PongBaseScene";
 import { GUID, InitGameSuccess, MeshName, PlayerSide } from "../defines/types";
 
 // import { ReflectionProbe } from "@babylonjs/core/Probes";
-// import { PBRMaterial } from "@babylonjs/core/Materials/PBR";
+import { PBRMaterial } from "@babylonjs/core/Materials/PBR";
 // import { Constants } from "@babylonjs/core/Engines";
 // import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 // import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
@@ -63,6 +63,21 @@ export class PongFrontScene extends PongBaseScene {
 		this.light1 = new HemisphericLight("light", new Vector3(0, 1, 0), this);
 		this.light1.intensity = 0.5;
 
+		const metalBlack = new PBRMaterial("metalBlack", this);
+		metalBlack.albedoColor = Color3.Black();
+		metalBlack.roughness = 0.5;
+		metalBlack.metallic = 0.3;
+		this.pongMeshes.ground.material = metalBlack;
+		this.pongMeshes.edgeBottom.material = metalBlack;
+		this.pongMeshes.edgeTop.material = metalBlack;
+		this.pongMeshes.edgeLeft.material = metalBlack;
+		this.pongMeshes.edgeRight.material = metalBlack;
+
+		const metalWhite = metalBlack.clone("metalBlack");
+		metalWhite.albedoColor = Color3.White();
+		this.pongMeshes.ball.material = metalWhite;
+		this.pongMeshes.paddleLeft.material = metalWhite;
+		this.pongMeshes.paddleRight.material = metalWhite;
 		// this.light2 = new DirectionalLight("light2", Vector3.Zero(), this);
 		// this.light2.position = new Vector3(10, 30, 10);
 		// this.light2.intensity = 0.5;
@@ -82,7 +97,7 @@ export class PongFrontScene extends PongBaseScene {
 		this.meshes.forEach(mesh => {
 			if (mesh.name !== "ground") {
 				this.hl.addMesh(mesh as Mesh, Color3.Random());
-				this.hl.setEffectIntensity(mesh, 0);
+				this.hl.setEffectIntensity(mesh, 0.5);
 			}
 		})
 		// this.hl.addMesh(this.pongMeshes.ball, Color3.Random());
@@ -100,9 +115,10 @@ export class PongFrontScene extends PongBaseScene {
 
 	animateHighlightIntensity(meshName: MeshName, duration = 500) {
 		let time = 0;
-		const max = 1.0;
 		const mesh = this.getMeshByName(meshName);
 		const ball = this.pongMeshes.ball;
+		const max = 2.0;
+		const min = 0.5;
 
 		if (mesh) {
 			const observer = this.onBeforeRenderObservable.add(() => {
@@ -112,13 +128,18 @@ export class PongFrontScene extends PongBaseScene {
 				const progress = time / duration;
 
 				if (progress < 0.5) {
-					this.hl.setEffectIntensity(mesh, max * (progress * 2));
-					this.hl.setEffectIntensity(ball, max * (progress * 2));
+					const t = progress * 2;
+					const intensity = min + (max - min) * t;
+					this.hl.setEffectIntensity(mesh, intensity);
+					this.hl.setEffectIntensity(ball, intensity);
 				} else if (progress < 1.0) {
-					this.hl.setEffectIntensity(mesh, max * (2 - progress * 2));
-					this.hl.setEffectIntensity(ball, max * (2 - progress * 2));
+					const t = (progress - 0.5) * 2;
+					const intensity = max - (max - min) * t;
+					this.hl.setEffectIntensity(mesh, intensity);
+					this.hl.setEffectIntensity(ball, intensity);
 				} else {
-					this.hl.setEffectIntensity(mesh, 0);
+					this.hl.setEffectIntensity(mesh, min);
+					this.hl.setEffectIntensity(ball, min);
 					this.onBeforeRenderObservable.remove(observer);
 				}
 			});
