@@ -108,6 +108,8 @@ async function babylonInit(opts: InitGameSuccess) : Promise<void> {
 				case "ScoreUpdate":
 					pongScene.updateScore(message.score);
 					break;
+				case "BallCollision":
+					pongScene.animateHighlightIntensity(message.collidedWith);
 			}
 		} catch (error) {
 			console.error("Wrong WS message:", error);
