@@ -80,40 +80,42 @@
       <label for="email" data-i18n="register.label_email"> </label> <input type="email" class="input"/> <br>
       <button  data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
     </div>
-    <div data-view-id="game" class="game-div page-view hidden " id="div_container">
-      <div class="game-screen-div">
-          <h1 class="game-name">Lunar Pong</h1>
-          <div class="div-game-btns" id="gameButtons">
-            <button id="Local game" class="game-button">Local game</button>
-            <button id="Remote game" class="game-button">Remote game</button>
-            <button id="Versus AI" class="game-button">Versus AI</button>
-          </div>
-          <canvas id="pongCanvas" class="graph-win " width="1000%" height="700%"></canvas>
-      </div>
-      <div class="chat-main-div">
-        <div class="chat-head">
-          <select class="chat-select bg-gray-50" id="recipient">
-            <option class="select-players " value="all">All Players</option>
-          </select>
-          <button class="chat-util-btn" onclick="blockUser()">Block</button>
-          <button class="chat-util-btn" onclick="inviteUser()">Invite</button>
-          <button class="chat-util-btn" onclick="viewProfile()">Profile</button>
-        </div>
-        <div class="msg-field" id="messages">
-            
-        </div>
-        <div class="flex">
-            <input
-              class="chat-input focus:outline-none focus:ring-2 focus:ring-[#9ca3af] disabled:cursor-not-allowed disabled:opacity-50 text-white focus-visible:ring-offset-2"
-              type="text" id="input" class="chat-input" placeholder="Type your message" value="">
-            <button
-              class="inline-flex items-center justify-center rounded-md text-sm font-medium text-[#f9fafb] disabled:pointer-events-none disabled:opacity-50 bg-black hover:bg-[#111827E6] h-10 px-4 py-2">
-              Send</button>
-        </div>
-        <!-- <div class="msg-field" id="messages"></div>
-        <input type="text" id="input" class="chat-input" placeholder="Type here..." /> -->
-      </div>
+  <div data-view-id="game" class="page-view hidden flex-col lg:flex-row w-full h-screen gap-4 p-4 box-border" id="div_container">
+    <div class="flex-1 lg:flex-[3] flex items-center justify-center flex-col min-h-0">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-black mb-4 text-center">
+        Lunar Pong
+      </h1>
+    <div id="gameButtons" class="flex flex-col sm:flex-row gap-2 mb-4 w-full max-w-md justify-center">
+      <button id="Local game" class="game-button-tw">
+        Local game
+      </button>
+      <button id="Remote game" class="game-button-tw">
+        Remote game
+      </button>
+      <button id="Versus AI" class="game-button-tw">
+        Versus AI
+      </button>
     </div>
-  <div>
+    <canvas id="pongCanvas" class="w-full max-w-4xl h-auto aspect-[10/7] rounded-2xl border-2 border-white" 
+            style="background-image: url(../../assets/moon.png); background-size: cover; background-position: center;"
+            width="1000" height="700">
+    </canvas>
+  </div>
+  <div class="flex-1 lg:max-w-md lg:min-w-80 p-4 rounded-2xl border-2 border-gray-400 flex flex-col gap-4 min-h-48 max-h-96 lg:max-h-none lg:h-full"
+       style="background-image: url(../../assets/cat.jpg); background-position: center; background-attachment: fixed;">
+    <div class="flex flex-wrap gap-2 bg-black p-2 rounded-lg items-center">
+      <select id="recipient" class=" w-10 flex-1 p-2 bg-white text-black border-0 rounded font-mono">
+        <option value="all">👥</option>
+      </select>
+      <button onclick="blockUser()" class="chat-btn-tw">Block</button>
+      <button onclick="inviteUser()" class="chat-btn-tw">Invite</button>
+      <button onclick="viewProfile()" class="chat-btn-tw">Profile</button>
+    </div>
+    <div id="messages" class="flex-1 opacity-70 overflow-y-auto p-4 bg-black text-lime-400 break-words text-sm rounded font-mono min-h-24">
+    </div>
+    <input type="text" id="input" placeholder="Type here..." 
+           class="p-4 border-0 bg-black text-lime-400 font-mono text-sm outline-none rounded" />
+  </div>
+</div>
 </body>
 </html>

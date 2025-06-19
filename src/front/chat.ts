@@ -96,7 +96,7 @@ let userMap = new Map<GUID, string>();
 function updateUserList(users: { id: GUID; nick: string }[]) {
   console.log('Received users:', users);
   userMap.clear();
-  recipient.innerHTML = '<option value="all">All Players</option>';
+  recipient.innerHTML = '<option value="all">👥</option>';
   users.forEach((u) => {
     userMap.set(u.id, u.nick);
     if (u.nick !== user.nick) {
