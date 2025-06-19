@@ -8,7 +8,7 @@
   </style>
 </head>
 <body class="body">
-  <div id="main">
+  <div class="m-auto" id="main">
     <div class="giv_lang">
       <button class="lang-btn" data-lang="en">🇬🇧</button>
       <button class="lang-btn" data-lang="cs">🇨🇿</button>
@@ -23,10 +23,42 @@
 		<button onclick="navigateTo('TWOFA')" class="btn">2FA</button>
 		<button onclick="navigateTo('GAME')" class="btn">Game</button>
 	</nav> -->
-    <div class="div_logoff hidden" data-view-id="logoff" id="div_logoff">
-  	  <button class="logoff-btn btn_click" data-btn-id="logoff" data-i18n="logoff.button"></button>
-    </div>
-	  <div class="div-login page-view hidden opacity-0 transition-opacity duration-300" data-view-id="login" >
+      <div class="div_logoff hidden" id="div_logoff">
+  	    <button class="logoff-btn" data-i18n="logoff.button"></button>
+      </div>
+      <div class="div-login page-view hidden min-h-screen py-6 flex-col justify-center sm:py-12" data-view-id="login"> <!-- flex?? -->
+	      <div class="relative py-3 sm:max-w-xl sm:mx-auto">
+		      <div class="absolute inset-0 bg-gradient-to-r from-pink-400 to-blue-600 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl">
+		      </div>
+		    <div class="relative px-4 py-10 bg-white shadow-lg sm:rounded-3xl sm:p-20">
+			      <div class="max-w-md mx-auto">
+				      <div>
+					      <h1 class="text-2xl font-semibold" data-i18n="login.title"></h1>
+				      </div>
+				      <div class="divide-y divide-gray-200">
+					      <div class="py-8 text-base leading-6 space-y-4 text-gray-700 sm:text-lg sm:leading-7">
+						      <div class="relative">
+							      <input data-input-id="login_name" data-i18n="login.name" autocomplete="off" id="name" name="name" type="text" class="input data_input peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Name" />
+							      <label for="name" data-i18n="login.label_name" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Email Address</label>
+						      </div>
+						      <div class="relative">
+							      <input data-input-id="login_password" autocomplete="off" id="password" name="password" type="password" class="input data_input peer placeholder-transparent h-10 w-full border-b-2 border-gray-300 text-gray-900 focus:outline-none focus:borer-rose-600" placeholder="Password" />
+                    <label for="password" data-i18n="login.label_password" class="absolute left-0 -top-3.5 text-gray-600 text-sm peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-440 peer-placeholder-shown:top-2 transition-all peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">Password</label>
+						      </div>
+						      <div class="relative">
+                    <button data-btn-id="login" data-i18n="login.button" class="login-btn btn_click bg-purple-400 text-white rounded-md px-2 py-1"></button><br>
+                    <!-- <p data-i18n="or"></p>
+                    <h1 class="register-button" >Здесь будет GOOGLE авторизация!</h1>
+                    <p data-i18n="or"></p>
+							      <button data-btn-id="login_register" data-i18n="register.button" class="register-button bg-blue-500 text-white rounded-md px-2 py-1"></button> -->
+						      </div>
+					      </div>
+				      </div>
+			      </div>
+		      </div>
+	      </div>
+      </div>
+	  <!-- <div class="div-login page-view hidden opacity-0 transition-opacity duration-300" data-view-id="login" >
       <h1 data-i18n="login.title"></h1>
       <label for="name" data-i18n="login.label_name"> </label> <input class="input data_input" type="text" data-input-id="login_name" data-i18n="login.name" class="input"/> <br>
       <label for="password" data-i18n="login.label_password"> </label> <input class="input data_input" data-input-id="login_password" type="password"/> <br>
@@ -35,7 +67,7 @@
       <h1 class="register-button" >Здесь будет GOOGLE авторизация!</h1>
       <p data-i18n="or"></p>
       <button data-btn-id="login_register" data-i18n="register.button" class="register-button btn_click"></button>
-    </div>
+    </div> -->
     <div data-view-id="2fa" class="div-2fa page-view hidden opacity-0 transition-opacity duration-300">
       <label for="token" data-i18n="2fa.label_token"> </label> <input class="input data_input" type="text" data-input-id="2fa_token" data-i18n="2fa.token" class="input"/> <br>
       <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
@@ -67,8 +99,19 @@
           <button class="chat-util-btn" onclick="inviteUser()">Invite</button>
           <button class="chat-util-btn" onclick="viewProfile()">Profile</button>
         </div>
-        <div class="msg-field" id="messages"></div>
-        <input type="text" id="input" class="chat-input" placeholder="Type here..." />
+        <div class="msg-field" id="messages">
+            
+        </div>
+        <div class="flex">
+            <input
+              class="chat-input focus:outline-none focus:ring-2 focus:ring-[#9ca3af] disabled:cursor-not-allowed disabled:opacity-50 text-white focus-visible:ring-offset-2"
+              type="text" id="input" class="chat-input" placeholder="Type your message" value="">
+            <button
+              class="inline-flex items-center justify-center rounded-md text-sm font-medium text-[#f9fafb] disabled:pointer-events-none disabled:opacity-50 bg-black hover:bg-[#111827E6] h-10 px-4 py-2">
+              Send</button>
+        </div>
+        <!-- <div class="msg-field" id="messages"></div>
+        <input type="text" id="input" class="chat-input" placeholder="Type here..." /> -->
       </div>
     </div>
   <div>
