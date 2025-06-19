@@ -214,9 +214,12 @@
   .left-0 {
     left: calc(var(--spacing) * 0);
   }
+<<<<<<< HEAD
   .m-auto {
     margin: auto;
   }
+=======
+>>>>>>> c25f5af (,)
   .mx-auto {
     margin-inline: auto;
   }
@@ -269,9 +272,12 @@
   .flex-col {
     flex-direction: column;
   }
+<<<<<<< HEAD
   .items-center {
     align-items: center;
   }
+=======
+>>>>>>> c25f5af (,)
   .justify-center {
     justify-content: center;
   }
@@ -313,9 +319,12 @@
   .border-gray-300 {
     border-color: var(--color-gray-300);
   }
+<<<<<<< HEAD
   .bg-black {
     background-color: var(--color-black);
   }
+=======
+>>>>>>> c25f5af (,)
   .bg-blue-500 {
     background-color: var(--color-blue-500);
   }
@@ -349,9 +358,12 @@
   .py-1 {
     padding-block: calc(var(--spacing) * 1);
   }
+<<<<<<< HEAD
   .py-2 {
     padding-block: calc(var(--spacing) * 2);
   }
+=======
+>>>>>>> c25f5af (,)
   .py-3 {
     padding-block: calc(var(--spacing) * 3);
   }
@@ -380,17 +392,23 @@
     --tw-leading: calc(var(--spacing) * 6);
     line-height: calc(var(--spacing) * 6);
   }
+<<<<<<< HEAD
   .font-medium {
     --tw-font-weight: var(--font-weight-medium);
     font-weight: var(--font-weight-medium);
   }
+=======
+>>>>>>> c25f5af (,)
   .font-semibold {
     --tw-font-weight: var(--font-weight-semibold);
     font-weight: var(--font-weight-semibold);
   }
+<<<<<<< HEAD
   .text-\[\#f9fafb\] {
     color: #f9fafb;
   }
+=======
+>>>>>>> c25f5af (,)
   .text-gray-600 {
     color: var(--color-gray-600);
   }
@@ -464,6 +482,7 @@
       color: var(--color-gray-600);
     }
   }
+<<<<<<< HEAD
   .hover\:bg-\[\#111827E6\] {
     &:hover {
       @media (hover: hover) {
@@ -482,12 +501,15 @@
       --tw-ring-color: #9ca3af;
     }
   }
+=======
+>>>>>>> c25f5af (,)
   .focus\:outline-none {
     &:focus {
       --tw-outline-style: none;
       outline-style: none;
     }
   }
+<<<<<<< HEAD
   .focus-visible\:ring-offset-2 {
     &:focus-visible {
       --tw-ring-offset-width: 2px;
@@ -509,6 +531,8 @@
       opacity: 50%;
     }
   }
+=======
+>>>>>>> c25f5af (,)
   .sm\:mx-auto {
     @media (width >= 40rem) {
       margin-inline: auto;
