@@ -1,6 +1,11 @@
 @import "tailwindcss";
 @theme {
-
+  --color-blue: #8b00ff;
+  --color-pink: #ff00cc;
+  --color-green: #39ff14;
+  --color-purple: #75b3fc;
+  --color-dark: #0a0a1e;
+  --color-white: #d6eefa;
 }
 
 @layer components {
@@ -9,26 +14,35 @@
     height: 100vh;
     display: flex;
     font-family: var(--font-mono);
-    /* background-color: var(--color-cyan-400); */
-    background-image: url(../../assets/backgr.jpg);
-    background-size: cover;
-    background-position: center;
+    background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 50%, #232946 100%);
     background-attachment: fixed;
-    /* background-image: url(../../assets/moon.png);
-    background-position: center; */
   }
+
+  .glow {
+    box-shadow: 0 0 16px var(--color-blue), 0 0 32px var(--color-pink), 0 0 8px var(--color-green);
+  }
+
+  .glow-border {
+    border: 2px solid var(--color-blue);
+    box-shadow: 0 0 4px var(--color-blue), 0 0 8px var(--color-pink);
+  }
+
+  .glow-window {
+    border: 2px solid var(--color-blue);
+    box-shadow: 0 0 24px var(--color-blue), 0 0 32px var(--color-pink);
+    border-radius: 1rem;
+    backdrop-filter: blur(2px);
+  }
+
   .game-button {
-    background-image: url(../../assets/cyberbutton.jpg);
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
+    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    border: 2px solid var(--color-white);
+    box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
-    /* background-color: var(--color-violet-500); */
     padding-inline: --spacing(5);
     padding-block: --spacing(2);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-black);
-    box-shadow: var(--shadow-md);
+    color: var(--color-white);
     --tw-duration: 300ms;
     transition-duration: 300ms;
     --tw-ease: var(--ease-in-out);
@@ -36,35 +50,25 @@
     cursor: pointer;
     &:hover {
       @media (hover: hover) {
-        animation: var(--animate-pulse);
-        --tw-scale-x: 110%;
-        --tw-scale-y: 110%;
-        --tw-scale-z: 110%;
-        color: var(--color-white);
+        --tw-scale-x: 108%;
+        --tw-scale-y: 108%;
+        --tw-scale-z: 108%;
         scale: var(--tw-scale-x) var(--tw-scale-y);
-        --tw-translate-y: calc(var(--spacing) * -1);
-        translate: var(--tw-translate-x) var(--tw-translate-y);
-        /* background-color: var(--color-violet-700); */
+        box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
+        border-color: var(--color-pink);
       }
     }
   }
   
-  /* .input{
-    border-radius: calc(infinity * 0.2px);
-    background-color: var(--color-gray-50);
-    border-color: var(--color-sky-500);
-    outline-style: var(--tw-outline-style);
-    outline-width: 1px;
-    outline-color: var(--color-sky-500);
-  } */
   .login-btn{
+    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    border: 2px solid var(--color-white);
+    box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
-    background-color: var(--color-violet-500);
     padding-inline: --spacing(5);
     padding-block: --spacing(2);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
-    box-shadow: var(--shadow-md);
     --tw-duration: 300ms;
     transition-duration: 300ms;
     --tw-ease: var(--ease-in-out);
@@ -77,42 +81,21 @@
         scale: var(--tw-scale-x) var(--tw-scale-y);
         --tw-translate-y: calc(var(--spacing) * -1);
         translate: var(--tw-translate-x) var(--tw-translate-y);
-        background-color: var(--color-violet-700);
+        box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
+        border-color: var(--color-pink);
       }
     }
   }
-  /* .register-btn{
-    border-radius: calc(infinity * 1px);
-    background-color: var(--color-violet-500);
-    padding-inline: --spacing(5);
-    padding-block: --spacing(2);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-white);
-    box-shadow: var(--shadow-md);
-    --tw-duration: 300ms;
-    transition-duration: 300ms;
-    --tw-ease: var(--ease-in-out);
-    transition-timing-function: var(--ease-in-out);
-    &:hover {
-      @media (hover: hover) {
-        --tw-scale-x: 110%;
-        --tw-scale-y: 110%;
-        --tw-scale-z: 110%;
-        scale: var(--tw-scale-x) var(--tw-scale-y);
-        --tw-translate-y: calc(var(--spacing) * -1);
-        translate: var(--tw-translate-x) var(--tw-translate-y);
-        background-color: var(--color-violet-700);
-      }
-    }
-  } */
+
   .continue-btn{
+    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    border: 2px solid var(--color-white);
+    box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
-    background-color: var(--color-violet-500);
     padding-inline: --spacing(5);
     padding-block: --spacing(2);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
-    box-shadow: var(--shadow-md);
     --tw-duration: 300ms;
     transition-duration: 300ms;
     --tw-ease: var(--ease-in-out);
@@ -125,25 +108,32 @@
         scale: var(--tw-scale-x) var(--tw-scale-y);
         --tw-translate-y: calc(var(--spacing) * -1);
         translate: var(--tw-translate-x) var(--tw-translate-y);
-        background-color: var(--color-violet-700);
+        box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
+        border-color: var(--color-pink);
       }
     }
   }
+
   .giv_lang{
     position: absolute;
     top: 10px;
     left: 10px;
     z-index: 100;
+    display: flex;
+    gap: 8px;
   }
+
   .div_logoff{
     position: absolute;
     bottom: 10px;
     left: 10px;
     z-index: 100;
   }
+
   .logged_in{
     font-weight: var(--font-weight-semibold);
   }
+
   .div-main{
     display:flex;
     align-items:center;
@@ -152,57 +142,43 @@
     width: 100%;
     height: 100%;
   }
-  /* .div-login{
-    display:flex;
-    align-items:center;
-    justify-content: center;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-  } */
+
   .lang-btn{
-    background-image: url(../../assets/cyberlang.jpg);
-    background-size: cover;
-    background-position: center;
-    /* background-attachment: fixed; */
+    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    border: 2px solid var(--color-white);
+    box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
-    background-color: var(--color-violet-500);
-    padding-inline: --spacing(1);
+    padding-inline: --spacing(2);
     padding-block: --spacing(1);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
-    box-shadow: var(--shadow-md);
     --tw-duration: 300ms;
     transition-duration: 300ms;
     --tw-ease: var(--ease-in-out);
     transition-timing-function: var(--ease-in-out);
     &:hover {
       @media (hover: hover) {
-        animation: var(--animate-spin);
         --tw-scale-x: 110%;
         --tw-scale-y: 110%;
         --tw-scale-z: 110%;
         scale: var(--tw-scale-x) var(--tw-scale-y);
         --tw-translate-y: calc(var(--spacing) * -1);
         translate: var(--tw-translate-x) var(--tw-translate-y);
-        background-color: var(--color-violet-700);
+        box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
+        border-color: var(--color-pink);
       }
     }
   }
-  .div_logoff {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    z-index: 100;
-  }
+
   .logoff-btn{
+    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    border: 2px solid var(--color-green);
+    box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
-    background-color: var(--color-violet-500);
     padding-inline: --spacing(5);
     padding-block: --spacing(2);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
-    box-shadow: var(--shadow-md);
     --tw-duration: 300ms;
     transition-duration: 300ms;
     --tw-ease: var(--ease-in-out);
@@ -215,149 +191,179 @@
         scale: var(--tw-scale-x) var(--tw-scale-y);
         --tw-translate-y: calc(var(--spacing) * -1);
         translate: var(--tw-translate-x) var(--tw-translate-y);
-        background-color: var(--color-violet-700);
+        box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
+        border-color: var(--color-pink);
       }
     }
   }
+
   .game-div{
     display: flex;
     width: 100%;
     height: 100%;
-    /* background-color: var(--color-cyan-400); */
-    /* background-image: url(../../assets/moon.png);
-    background-position: center; */
-    /* background-attachment: fixed; */
   }
+
   .game-screen-div{
-    /* background-color: var(--color-cyan-400); */
     flex: 3;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
   }
+
   .game-name{
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
-    color: var(--color-black);
+    color: var(--color-blue);
+    text-shadow: 0 0 10px var(--color-blue);
     margin-bottom: calc(var(--spacing) * 4);
   }
+
   .div-game-btns{
      margin-bottom: 12px;
   }
+
   .graph-win{
-    background-image: url(../../assets/moon.png);
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    /* background-color: var(--color-black); */
-    border-color: var(--color-white);
+    border: 2px solid var(--color-blue);
+    box-shadow: 0 0 24px var(--color-blue), 0 0 32px var(--color-pink);
     border-radius: 1rem;
+    backdrop-filter: blur(2px);
   }
+
   .chat-main-div{
     min-width: 240px;
     max-width: 400px;
-    background-image: url(../../assets/cat.jpg);
-    background-position: center;
-    background-attachment: fixed;
+    border: 2px solid var(--color-blue);
+    box-shadow: 0 0 24px var(--color-blue), 0 0 32px var(--color-pink);
     padding: calc(var(--spacing) * 2);
     gap: calc(var(--spacing) * 2);
-    background-color: var(--color-pink-300);
     flex: 1;
     display: flex;
     flex-direction: column;
-    border-left-style: var(--tw-border-style);
-    border-left-width: 2px;
-    border-color: var(--color-gray-400);
     box-sizing: border-box;
     margin: calc(var(--spacing) * 5);
     margin-left: calc(var(--spacing) * 0);
     border-radius: 1rem;
+    backdrop-filter: blur(2px);
+  }
+  .chat-bg{
+    background-image: url(../../assets/cat.jpg);
+    background-position: center;
+    background-attachment: fixed;
   }
   .chat-head{
     display: flex;
     gap: calc(var(--spacing) * 2);
     margin-bottom: calc(var(--spacing) * 2);
-    background-color: var(--color-black);
+    background: rgba(0, 0, 0, 0.8);
+    padding: calc(var(--spacing) * 1);
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-green);
   }
+
   .chat-select{
     padding: calc(var(--spacing) * 0.5);
     font-family: var(--font-mono);
-    background-color: var(--color-white);
-    color: var(--color-black);
+    background-color: var(--color-black);
+    color: var(--color-blue);
+    border: 2px solid var(--color-green);
     border-radius: 0.25rem;
   }
+
   .select-players{
-    background-color: var(--color-white);
-    color: var(--color-black);
-    --tw-border-style: none;
-    border-style: none;
+    background-color: var(--color-black);
+    color: var(--color-blue);
+    border: 2px solid var(--color-green);
     border-radius: 0.25rem;
     cursor: pointer;
     &:hover {
         @media (hover: hover) {
-            background-color: var(--color-gray-800);
+            background-color: var(--color-dark);
+            box-shadow: 0 0 8px var(--color-green);
         }
     }
   }
+
   .chat-util-btn{
-    background-color: var(--color-white);
-    color: var(--color-black);
-    --tw-border-style: none;
-    border-style: none;
+    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    color: var(--color-white);
+    border: 1px solid var(--color-green);
     border-radius: 0.25rem;
+    padding: calc(var(--spacing) * 1);
+    font-size: var(--text-sm);
     &:hover {
         @media (hover: hover) {
-            background-color: var(--color-cyan-400);
+            box-shadow: 0 0 8px var(--color-pink);
+            border-color: var(--color-pink);
         }
     }
   }
+
   .msg-field{
     flex: 1;
-    opacity: 70%;
     overflow-y: auto;
     padding: calc(var(--spacing) * 2);
-    background-color: var(--color-black);
-    color: var(--color-lime-400);
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--color-green);
     overflow-wrap: break-word;
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     border-radius: 0.25rem;
+    border: 2px solid var(--color-blue);
+    box-shadow: 0 0 8px var(--color-blue);
   }
+
   .chat-input{
     padding: calc(var(--spacing) * 2);
-    --tw-border-style: none;
-    border-style: none;
-    background-color: var(--color-black);
-    color: var(--color-lime-400);
+    border: 2px solid var(--color-pink);
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--color-blue);
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
-    --tw-outline-style: none;
-    outline-style: none;
+    outline: none;
     border-radius: 0.25rem;
+    box-shadow: 0 0 8px var(--color-pink);
+    &:focus {
+      box-shadow: 0 0 16px var(--color-pink), 0 0 8px var(--color-blue);
+      border-color: var(--color-blue);
+    }
   }
+
   .game-button-tw {
-  @apply w-full sm:w-auto px-5 py-2 font-semibold text-white border-0 cursor-pointer 
-         transition-all duration-300 ease-in-out shadow-md rounded-full whitespace-nowrap
-         hover:scale-110 hover:-translate-y-1 hover:text-red-500;
-  background-image: url(../../assets/cyberbutton.jpg);
-  background-size: cover;
-  background-position: center;
-}
-.chat-btn-tw {
-  @apply bg-white text-black border-0 rounded px-2 py-2 cursor-pointer text-sm 
-         transition-colors duration-300 hover:bg-cyan-400;
-}
-@media (max-width: 640px) {
-  #gameButtons {
-    @apply flex-col w-full;
+    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    border: 2px solid var(--color-white);
+    box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
+    @apply w-full sm:w-auto px-5 py-2 font-semibold text-white cursor-pointer 
+           transition-all duration-300 ease-in-out rounded-full whitespace-nowrap;
+    &:hover {
+      @apply scale-110 -translate-y-1;
+      box-shadow: 0 0 16px var(--color-pink), 0 0 24px var(--color-blue);
+      border-color: var(--color-pink);
+    }
   }
-  
-  .game-button-tw {
-    @apply w-full max-w-xs mx-auto;
+
+  .chat-btn-tw {
+    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    color: var(--color-white);
+    border: 1px solid var(--color-white);
+    @apply rounded px-2 py-2 cursor-pointer text-sm 
+           transition-all duration-300;
+    &:hover {
+      box-shadow: 0 0 8px var(--color-pink);
+      border-color: var(--color-pink);
+    }
   }
-}
+
+  @media (max-width: 640px) {
+    #gameButtons {
+      @apply flex-col w-full;
+    }
+    
+    .game-button-tw {
+      @apply w-full max-w-xs mx-auto;
+    }
+  }
 }

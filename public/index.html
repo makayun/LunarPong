@@ -68,7 +68,7 @@
       <p data-i18n="or"></p>
       <button data-btn-id="login_register" data-i18n="register.button" class="register-button btn_click"></button>
     </div> -->
-    <div data-view-id="2fa" class="div-2fa page-view hidden opacity-0 transition-opacity duration-300">
+    <div data-view-id="2fa" class="div-2fa page-view hidden opacity-0 text-white transition-opacity duration-300">
       <label for="token" data-i18n="2fa.label_token"> </label> <input class="input data_input" type="text" data-input-id="2fa_token" data-i18n="2fa.token" class="input"/> <br>
       <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
     </div>
@@ -82,7 +82,7 @@
     </div>
   <div data-view-id="game" class="page-view hidden flex-col lg:flex-row w-full h-screen gap-4 p-4 box-border" id="div_container">
     <div class="flex-1 lg:flex-[3] flex items-center justify-center flex-col min-h-0">
-      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-black mb-4 text-center">
+      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 text-center">
         Lunar Pong
       </h1>
     <div id="gameButtons" class="flex flex-col sm:flex-row gap-2 mb-4 w-full max-w-md justify-center">
@@ -96,13 +96,12 @@
         Versus AI
       </button>
     </div>
-    <canvas id="pongCanvas" class="w-full max-w-4xl h-auto aspect-[10/7] rounded-2xl border-2 border-white" 
+    <canvas id="pongCanvas" class="glow-border w-full max-w-4xl h-auto aspect-[10/7] rounded-2xl border-2 border-white" 
             style="background-image: url(../../assets/moon.png); background-size: cover; background-position: center;"
             width="1000" height="700">
     </canvas>
   </div>
-  <div class="flex-1 lg:max-w-md lg:min-w-80 p-4 rounded-2xl border-2 border-gray-400 flex flex-col gap-4 min-h-48 max-h-96 lg:max-h-none lg:h-full"
-       style="background-image: url(../../assets/cat.jpg); background-position: center; background-attachment: fixed;">
+  <div class="glow-border chat-bg flex-1 lg:max-w-md lg:min-w-80 p-4 rounded-2xl border-2 border-gray-400 flex flex-col gap-4 min-h-48 max-h-96 lg:max-h-none lg:h-full">
     <div class="flex flex-wrap gap-2 bg-black p-2 rounded-lg items-center">
       <select id="recipient" class=" w-10 flex-1 p-2 bg-white text-black border-0 rounded font-mono">
         <option value="all">👥</option>
