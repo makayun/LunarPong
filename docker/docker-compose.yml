@@ -40,12 +40,12 @@ volumes:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}/GitHub/FreakingPong
+      device: /home/${USER}/GitHub/Pong
   sqlite_data:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}/GitHub/FreakingPong/data/sqlite
+      device: /home/${USER}/GitHub/Pong/data/sqlite
 
 networks:
   front-tier: {}

@@ -1,6 +1,14 @@
 // import { setDivLogin, setDivLogged} from "./div_login"
 import { ViewState, navigateTo} from "./history"
 import type { User_f } from "../defines/types";
+import { jwtDecode } from 'jwt-decode';
+
+interface MyToken {
+	sub: string;
+	exp: number;
+	iat: number;
+	// add other fields here
+}
 
 export let user_f: User_f = {id: -1};
 
@@ -8,6 +16,10 @@ export let user_f: User_f = {id: -1};
 checkLogin();
 
 export async function checkLogin() {
+	if (validateToken("twofaToken"))  {
+		navigateTo(ViewState.TWOFA);
+		return;
+	}
 	if (!await refreshToken()) {
 		navigateTo(ViewState.LOGIN);
 		return;
@@ -111,6 +123,7 @@ export async function login() {
 			console.error("[login] Login failed:", errorData.error);
 			return;
 		}
+		stopCountdown();
 		const data = await response.json();
 
 		// const qrImg = document.getElementById("qr-img") as HTMLImageElement;
@@ -244,4 +257,30 @@ export function stopCountdown() {
 		clearInterval(countdownInterval);
 		countdownInterval = undefined;
 	}
+}
+
+export function validateToken(tokenName: string): boolean {
+	const token = localStorage.getItem(tokenName);
+	if (token) {
+		try {
+			const decoded = jwtDecode<MyToken>(token);
+			console.log("Decoded token:", decoded);
+
+			// Optional: check expiration manually
+			const now = Math.floor(Date.now() / 1000) + 10; // in seconds
+			if (decoded.exp && decoded.exp < now) {
+				console.log("Token has expired");
+				localStorage.removeItem(tokenName);
+			} else {
+				console.log("Token is still valid (not expired)");
+				const timeLeft = decoded.exp - now;
+				stopCountdown();
+				startCountdown(timeLeft, logoff);
+				return true;
+			}
+		} catch (err) {
+			console.error("Invalid token", err);
+		}
+	}
+	return false;
 }

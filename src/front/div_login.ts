@@ -1,5 +1,5 @@
 import { ViewState, navigateTo} from "./history"
-import { user_f, login, twofa, logoff, startCountdown} from "./login"
+import { user_f, login, twofa, logoff, validateToken} from "./login"
 
 export function setDivLogin() {
 	initLoginHandlers();
@@ -27,7 +27,11 @@ export function setDiv2fa() {
 	if (el) {
 		el.setAttribute('data-i18n-args', JSON.stringify({ name: user_f.name, id: user_f.id }));
 	}
-	startCountdown(300, logoff);
+	if (!validateToken("twofaToken"))  {
+		navigateTo(ViewState.LOGIN);
+		return;
+	}
+	// startCountdown(300, logoff);
 	initLoggedHandlers();
 }
 

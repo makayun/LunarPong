@@ -117,8 +117,8 @@ export const g_auth = (server: FastifyInstance) => async (req: FastifyRequest, r
 
 	const userInfoRes = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
 		headers: { Authorization: `Bearer ${token.token.access_token}` },
-
 	});
+
 	if (!userInfoRes.ok) {
 		const errorData = await userInfoRes.json();
 		console.error("[login] Login check failed:", errorData.error);
@@ -127,13 +127,17 @@ export const g_auth = (server: FastifyInstance) => async (req: FastifyRequest, r
 	}
 	const userInfo = await userInfoRes.json();
 	console.log(`[google] userInfo.name = ${userInfo.name}`);
-	const user = g_check_user(userInfo) as any;
-	// e.g. { id, email, name, picture }
-
-	// Create session or JWT:
-	// const jwt = fastify.jwt.sign({ id: userInfo.id, email: userInfo.email });
+	// console.log(`[google] userInfo.id = ${userInfo.id}`);
+	const user = await g_check_user(userInfo) as any;
+	// console.log(`[google] after db user `, user);
 
 	if (!user)
 		reply.status(500).send({ error: "???" });
-	reply.send({ user: userInfo });
+
+	// https://localhost:12800/#game?user=
+	// %7B%22refreshToken%22%3A%22eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwidXNlcm5hbWUiOiJLb25zdGFudGluIFNvcm9rb2xpdCIsImlhdCI6MTc1MDQyNzc2OSwiZXhwIjoxNzUxMDMyNTY5fQ.TlKYw0NV-lCPb7-G643b4YO8B1iYTTObqHe-4fvlngo%22%2C%22
+	// user%22%3A%7B%22id%22%3A4%2C%22username%22%3A%22Konstantin%20Sorokolit%22%2C%22iat%22%3A1750427769%2C%22exp%22%3A1751032569%7D%7D
+
+	const userEncoded = encodeURIComponent(JSON.stringify(user));
+	reply.redirect(`/#game?user=${userEncoded}`);
 };
