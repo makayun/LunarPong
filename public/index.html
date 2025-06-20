@@ -80,12 +80,12 @@
       <label for="email" data-i18n="register.label_email"> </label> <input type="email" class="input"/> <br>
       <button  data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
     </div>
-  <div data-view-id="game" class="page-view hidden flex-col lg:flex-row w-full h-screen gap-4 p-4 box-border" id="div_container">
-    <div class="flex-1 lg:flex-[3] flex items-center justify-center flex-col min-h-0">
-      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 text-center">
+  <div data-view-id="game" class="page-view hidden game-div" id="div_container">
+    <div class="game-screen-div">
+      <h1 class="game-name">
         Lunar Pong
       </h1>
-    <div id="gameButtons" class="flex flex-col sm:flex-row gap-2 mb-4 w-full max-w-md justify-center">
+    <div id="gameButtons" class="div-game-btns">
       <button id="Local game" class="game-button-tw">
         Local game
       </button>
@@ -96,24 +96,24 @@
         Versus AI
       </button>
     </div>
-    <canvas id="pongCanvas" class="glow-border w-full max-w-4xl h-auto aspect-[10/7] rounded-2xl border-2 border-white" 
-            style="background-image: url(../../assets/moon.png); background-size: cover; background-position: center;"
+    <canvas id="pongCanvas" class="glow-border" 
+            style="background-image: url(../../assets/moon.png); background-size: cover; background-position: center; width: 100%; max-width: min(80vw, 60vh * 10/7); height: auto; aspect-ratio: 10/7; border-radius: 1rem;"
             width="1000" height="700">
     </canvas>
   </div>
-  <div class="glow-border chat-bg flex-1 lg:max-w-md lg:min-w-80 p-4 rounded-2xl border-2 border-gray-400 flex flex-col gap-4 min-h-48 max-h-96 lg:max-h-none lg:h-full">
-    <div class="flex flex-wrap gap-2 bg-black p-2 rounded-lg items-center">
-      <select id="recipient" class=" w-10 flex-1 p-2 bg-white text-black border-0 rounded font-mono">
-        <option value="all">👥</option>
+  <div class="chat-main-div chat-bg">
+    <div class="chat-head">
+      <select id="recipient" class="chat-select">
+        <option value="all">👥 All Users</option>
       </select>
-      <button onclick="blockUser()" class="chat-btn-tw">Block</button>
-      <button onclick="inviteUser()" class="chat-btn-tw">Invite</button>
-      <button onclick="viewProfile()" class="chat-btn-tw">Profile</button>
+      <button onclick="blockUser()" class="chat-util-btn">Block</button>
+      <button onclick="inviteUser()" class="chat-util-btn">Invite</button>
+      <button onclick="viewProfile()" class="chat-util-btn">Profile</button>
     </div>
-    <div id="messages" class="flex-1 opacity-70 overflow-y-auto p-4 bg-black text-lime-400 break-words text-sm rounded font-mono min-h-24">
+    <div id="messages" class="msg-field">
     </div>
     <input type="text" id="input" placeholder="Type here..." 
-           class="p-4 border-0 bg-black text-lime-400 font-mono text-sm outline-none rounded" />
+           class="chat-input" />
   </div>
 </div>
 </body>

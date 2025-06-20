@@ -1,9 +1,9 @@
 @import "tailwindcss";
 @theme {
-  --color-blue: #8b00ff;
+  --color-purple: #8b00ff;
   --color-pink: #ff00cc;
   --color-green: #39ff14;
-  --color-purple: #75b3fc;
+  --color-blue: #75b3fc;
   --color-dark: #0a0a1e;
   --color-white: #d6eefa;
 }
@@ -35,7 +35,7 @@
   }
 
   .game-button {
-    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-white);
     box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
@@ -43,17 +43,12 @@
     padding-block: --spacing(2);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
-    --tw-duration: 300ms;
-    transition-duration: 300ms;
-    --tw-ease: var(--ease-in-out);
-    transition-timing-function: var(--ease-in-out);
+    transition: all 300ms var(--ease-in-out);
     cursor: pointer;
+    transform: scale(1) translateY(0);
     &:hover {
       @media (hover: hover) {
-        --tw-scale-x: 108%;
-        --tw-scale-y: 108%;
-        --tw-scale-z: 108%;
-        scale: var(--tw-scale-x) var(--tw-scale-y);
+        transform: scale(1.08) translateY(0);
         box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
         border-color: var(--color-pink);
       }
@@ -61,7 +56,7 @@
   }
   
   .login-btn{
-    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-white);
     box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
@@ -69,18 +64,11 @@
     padding-block: --spacing(2);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
-    --tw-duration: 300ms;
-    transition-duration: 300ms;
-    --tw-ease: var(--ease-in-out);
-    transition-timing-function: var(--ease-in-out);
+    transition: all 300ms var(--ease-in-out);
+    transform: scale(1) translateY(0);
     &:hover {
       @media (hover: hover) {
-        --tw-scale-x: 110%;
-        --tw-scale-y: 110%;
-        --tw-scale-z: 110%;
-        scale: var(--tw-scale-x) var(--tw-scale-y);
-        --tw-translate-y: calc(var(--spacing) * -1);
-        translate: var(--tw-translate-x) var(--tw-translate-y);
+        transform: scale(1.1) translateY(calc(var(--spacing) * -1));
         box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
         border-color: var(--color-pink);
       }
@@ -88,7 +76,7 @@
   }
 
   .continue-btn{
-    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-white);
     box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
@@ -96,18 +84,11 @@
     padding-block: --spacing(2);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
-    --tw-duration: 300ms;
-    transition-duration: 300ms;
-    --tw-ease: var(--ease-in-out);
-    transition-timing-function: var(--ease-in-out);
+    transition: all 300ms var(--ease-in-out);
+    transform: scale(1) translateY(0);
     &:hover {
       @media (hover: hover) {
-        --tw-scale-x: 105%;
-        --tw-scale-y: 105%;
-        --tw-scale-z: 105%;
-        scale: var(--tw-scale-x) var(--tw-scale-y);
-        --tw-translate-y: calc(var(--spacing) * -1);
-        translate: var(--tw-translate-x) var(--tw-translate-y);
+        transform: scale(1.05) translateY(calc(var(--spacing) * -1));
         box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
         border-color: var(--color-pink);
       }
@@ -135,16 +116,18 @@
   }
 
   .div-main{
-    display:flex;
-    align-items:center;
+    display: flex;
+    align-items: center;
     justify-content: center;
     flex-direction: column;
     width: 100%;
     height: 100%;
+    min-height: 100vh;
+    box-sizing: border-box;
   }
 
   .lang-btn{
-    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-white);
     box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
@@ -152,18 +135,11 @@
     padding-block: --spacing(1);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
-    --tw-duration: 300ms;
-    transition-duration: 300ms;
-    --tw-ease: var(--ease-in-out);
-    transition-timing-function: var(--ease-in-out);
+    transition: all 300ms var(--ease-in-out);
+    transform: scale(1) translateY(0);
     &:hover {
       @media (hover: hover) {
-        --tw-scale-x: 110%;
-        --tw-scale-y: 110%;
-        --tw-scale-z: 110%;
-        scale: var(--tw-scale-x) var(--tw-scale-y);
-        --tw-translate-y: calc(var(--spacing) * -1);
-        translate: var(--tw-translate-x) var(--tw-translate-y);
+        transform: scale(1.1) translateY(calc(var(--spacing) * -1));
         box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
         border-color: var(--color-pink);
       }
@@ -171,7 +147,7 @@
   }
 
   .logoff-btn{
-    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-green);
     box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
@@ -179,18 +155,12 @@
     padding-block: --spacing(2);
     font-weight: var(--font-weight-semibold);
     color: var(--color-white);
-    --tw-duration: 300ms;
-    transition-duration: 300ms;
-    --tw-ease: var(--ease-in-out);
-    transition-timing-function: var(--ease-in-out);
+    transition: all 300ms var(--ease-in-out);
+    /* Reset transform properties */
+    transform: scale(1) translateY(0);
     &:hover {
       @media (hover: hover) {
-        --tw-scale-x: 110%;
-        --tw-scale-y: 110%;
-        --tw-scale-z: 110%;
-        scale: var(--tw-scale-x) var(--tw-scale-y);
-        --tw-translate-y: calc(var(--spacing) * -1);
-        translate: var(--tw-translate-x) var(--tw-translate-y);
+        transform: scale(1.1) translateY(calc(var(--spacing) * -1));
         box-shadow: 0 0 24px var(--color-pink), 0 0 32px var(--color-blue);
         border-color: var(--color-pink);
       }
@@ -201,6 +171,8 @@
     display: flex;
     width: 100%;
     height: 100%;
+    flex-direction: row;
+    box-sizing: border-box;
   }
 
   .game-screen-div{
@@ -209,20 +181,28 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    min-height: 100vh;
+    box-sizing: border-box;
   }
 
   .game-name{
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
-    --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
     color: var(--color-blue);
     text-shadow: 0 0 10px var(--color-blue);
     margin-bottom: calc(var(--spacing) * 4);
+    text-align: center;
   }
 
   .div-game-btns{
-     margin-bottom: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: row;
+    gap: calc(var(--spacing) * 2);
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
   }
 
   .graph-win{
@@ -247,12 +227,16 @@
     margin-left: calc(var(--spacing) * 0);
     border-radius: 1rem;
     backdrop-filter: blur(2px);
+    /* Responsive width */
+    width: auto;
   }
+  
   .chat-bg{
     background-image: url(../../assets/cat.jpg);
     background-position: center;
     background-attachment: fixed;
   }
+  
   .chat-head{
     display: flex;
     gap: calc(var(--spacing) * 2);
@@ -260,7 +244,8 @@
     background: rgba(0, 0, 0, 0.8);
     padding: calc(var(--spacing) * 1);
     border-radius: 0.5rem;
-    border: 1px solid var(--color-green);
+    border: 1px solid var(--color-white);
+    flex-wrap: wrap;
   }
 
   .chat-select{
@@ -268,36 +253,42 @@
     font-family: var(--font-mono);
     background-color: var(--color-black);
     color: var(--color-blue);
-    border: 2px solid var(--color-green);
+    border: 2px solid var(--color-white);
     border-radius: 0.25rem;
+    min-width: 0;
+    flex: 1;
   }
 
   .select-players{
     background-color: var(--color-black);
     color: var(--color-blue);
-    border: 2px solid var(--color-green);
+    border: 2px solid var(--color-white);
     border-radius: 0.25rem;
     cursor: pointer;
+    transition: all 300ms var(--ease-in-out);
     &:hover {
-        @media (hover: hover) {
-            background-color: var(--color-dark);
-            box-shadow: 0 0 8px var(--color-green);
-        }
+      @media (hover: hover) {
+        background-color: var(--color-dark);
+        box-shadow: 0 0 8px var(--color-green);
+      }
     }
   }
 
   .chat-util-btn{
-    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     color: var(--color-white);
-    border: 1px solid var(--color-green);
+    border: 2px solid var(--color-white);
     border-radius: 0.25rem;
     padding: calc(var(--spacing) * 1);
     font-size: var(--text-sm);
+    transition: all 300ms var(--ease-in-out);
+    /* Responsive sizing */
+    white-space: nowrap;
     &:hover {
-        @media (hover: hover) {
-            box-shadow: 0 0 8px var(--color-pink);
-            border-color: var(--color-pink);
-        }
+      @media (hover: hover) {
+        box-shadow: 0 0 8px var(--color-pink);
+        border-color: var(--color-pink);
+      }
     }
   }
 
@@ -313,11 +304,12 @@
     border-radius: 0.25rem;
     border: 2px solid var(--color-blue);
     box-shadow: 0 0 8px var(--color-blue);
+    min-height: 200px;
   }
 
   .chat-input{
     padding: calc(var(--spacing) * 2);
-    border: 2px solid var(--color-pink);
+    border: 2px solid var(--color-white);
     background: rgba(0, 0, 0, 0.8);
     color: var(--color-blue);
     font-family: var(--font-mono);
@@ -326,6 +318,10 @@
     outline: none;
     border-radius: 0.25rem;
     box-shadow: 0 0 8px var(--color-pink);
+    transition: all 300ms var(--ease-in-out);
+    /* Responsive width */
+    width: 100%;
+    box-sizing: border-box;
     &:focus {
       box-shadow: 0 0 16px var(--color-pink), 0 0 8px var(--color-blue);
       border-color: var(--color-blue);
@@ -333,27 +329,67 @@
   }
 
   .game-button-tw {
-    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-white);
     box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
-    @apply w-full sm:w-auto px-5 py-2 font-semibold text-white cursor-pointer 
+    @apply px-5 py-2 font-semibold text-white cursor-pointer 
            transition-all duration-300 ease-in-out rounded-full whitespace-nowrap;
+    transform: scale(1) translateY(0);
+    width: auto;
+    min-width: fit-content;
     &:hover {
-      @apply scale-110 -translate-y-1;
-      box-shadow: 0 0 16px var(--color-pink), 0 0 24px var(--color-blue);
-      border-color: var(--color-pink);
+      @media (hover: hover) {
+        transform: scale(1.1) translateY(-4px);
+        box-shadow: 0 0 16px var(--color-pink), 0 0 24px var(--color-blue);
+        border-color: var(--color-pink);
+      }
     }
   }
 
   .chat-btn-tw {
-    background: linear-gradient(90deg, var(--color-blue) 0%, var(--color-pink) 100%);
+    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     color: var(--color-white);
     border: 1px solid var(--color-white);
     @apply rounded px-2 py-2 cursor-pointer text-sm 
            transition-all duration-300;
+
+    transform: scale(1);
     &:hover {
-      box-shadow: 0 0 8px var(--color-pink);
-      border-color: var(--color-pink);
+      @media (hover: hover) {
+        box-shadow: 0 0 8px var(--color-pink);
+        border-color: var(--color-pink);
+      }
+    }
+  }
+
+  /* Enhanced responsive behavior */
+  @media (max-width: 768px) {
+    .game-div {
+      flex-direction: column;
+    }
+    
+    .chat-main-div {
+      min-width: 100%;
+      max-width: 100%;
+      margin: calc(var(--spacing) * 2);
+      margin-top: 0;
+    }
+    
+    .div-game-btns {
+      flex-direction: column;
+      width: 100%;
+      align-items: stretch;
+    }
+    
+    .game-button-tw {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    
+    .chat-head {
+      flex-direction: column;
+      gap: calc(var(--spacing) * 1);
     }
   }
 
@@ -364,6 +400,38 @@
     
     .game-button-tw {
       @apply w-full max-w-xs mx-auto;
+    }
+    
+    .game-name {
+      font-size: var(--text-xl);
+    }
+    
+    .chat-main-div {
+      margin: calc(var(--spacing) * 1);
+    }
+  }
+
+  /* Ensure smooth transitions on resize */
+  @media (min-width: 641px) {
+    .div-game-btns {
+      flex-direction: row;
+    }
+    
+    .game-button-tw {
+      width: auto;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .game-div {
+      flex-direction: row;
+    }
+    
+    .chat-main-div {
+      min-width: 240px;
+      max-width: 400px;
+      margin: calc(var(--spacing) * 5);
+      margin-left: calc(var(--spacing) * 0);
     }
   }
 }
