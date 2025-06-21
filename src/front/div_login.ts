@@ -1,4 +1,4 @@
-import { ViewState, navigateTo} from "./history"
+import { ViewState, navigateTo} from "./state"
 import { user_f, login, twofa, logoff, validateToken} from "./login"
 
 export function setDivLogin() {

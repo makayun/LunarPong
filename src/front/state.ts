@@ -1,3 +1,7 @@
+// --- Обработчики событий ---
+// window.addEventListener("hashchange", handleHashChange);
+// window.addEventListener("DOMContentLoaded", handleHashChange);
+
 import { updateI18nContent } from "./i18next"
 import { setDivLogin, setDiv2fa, setDivRegister } from "./div_login"
 import { user_f } from "./login"
@@ -37,7 +41,7 @@ export enum ViewState {
 }
 
 // Функция-предохранитель (Type Guard)
-function isViewState(state: string): state is ViewState {
+export function isViewState(state: string): state is ViewState {
 	return Object.values(ViewState).includes(state as ViewState);
 }
 
@@ -122,24 +126,6 @@ export function set_view(state: ViewState) {
 export function navigateTo(state: ViewState) {
 	location.hash = state;
 }
-
-/**
- * Основная логика роутера. Срабатывает при смене хеша.
- */
-function handleHashChange() {
-	const hash = location.hash.replace("#", "");
-	
-	if (isViewState(hash)) {
-		set_view(hash);
-	} else {
-		// Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
-		navigateTo(ViewState.LOGIN);
-	}
-}
-
-// --- Обработчики событий ---
-window.addEventListener("hashchange", handleHashChange);
-window.addEventListener("DOMContentLoaded", handleHashChange);
 
 // // 1. Функция-предохранитель (Type Guard) для безопасной проверки строки
 // function isDivMainState(state: string): state is div_main_state {

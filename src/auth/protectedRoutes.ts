@@ -65,7 +65,7 @@ export default async function protectedRoutes(fastify: FastifyInstance) {
 	}, async (request: FastifyRequest, reply: FastifyReply) => {
 		const { id, token } = request.body as twofaBody;
 		console.log(`[2fa] Request id = ${id}, token = ${token}`);
-		const user = await getDB().get('SELECT * FROM users WHERE id = ?', id) as getUser | undefined;
+		const user = getDB().prepare('SELECT * FROM users WHERE id = ?').get(id) as getUser | undefined;
 		console.log(`[2fa] DB id = ${user!.id}, opt = ${user!.otp}`);
 		if (user == undefined) {
 			return reply.status(400).send({ error: 'Wrong request' });

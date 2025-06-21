@@ -1,7 +1,53 @@
+
+window.addEventListener("DOMContentLoaded", handleHashChange);
+window.addEventListener("hashchange", handleHashChange);
+
 // import { setDivLogin, setDivLogged} from "./div_login"
-import { ViewState, navigateTo} from "./history"
+import { isViewState, set_view, ViewState, navigateTo} from "./state"
 import type { User_f } from "../defines/types";
 import { jwtDecode } from 'jwt-decode';
+
+export let user_f: User_f = {id: -1};
+
+// function contentLoaded() {
+// 	const hash = location.hash.replace("#", "");
+	
+// 	if (isViewState(hash)) {
+// 		if (hash === ViewState.GAME && user_f.id === -1) {
+// 			// Если мы попали на страницу игры, проверяем авторизацию
+			
+// 			checkLogin();
+// 			return;
+// 		}
+// 		set_view(hash);
+// 	} else {
+// 		// Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
+// 		navigateTo(ViewState.LOGIN);
+// 	}
+// }
+
+/**
+* Основная логика роутера. Срабатывает при смене хеша.
+*/
+function handleHashChange() {
+	const hash = location.hash.replace("#", "");
+	
+	if (isViewState(hash)) {
+		set_view(hash);
+	} else {
+		// Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
+		navigateTo(ViewState.LOGIN);
+	}
+}
+
+function getCookie(name: string): string | null {
+	const value = `; ${document.cookie}`;
+	const parts = value.split(`; ${name}=`);
+	if (parts.length === 2) {
+		return parts.pop()!.split(';').shift() || null;
+	}
+	return null;
+}
 
 interface MyToken {
 	sub: string;
@@ -9,8 +55,6 @@ interface MyToken {
 	iat: number;
 	// add other fields here
 }
-
-export let user_f: User_f = {id: -1};
 
 // export const baseUrl = window.location.origin;
 checkLogin();
@@ -20,10 +64,19 @@ export async function checkLogin() {
 		navigateTo(ViewState.TWOFA);
 		return;
 	}
+	
+	const c_refreshToken = getCookie('refreshToken');
+	if (c_refreshToken) {
+		// console.log('Access token from cookie:', c_refreshToken);
+		localStorage.setItem("refreshToken", c_refreshToken);
+		document.cookie = `refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+	}
+
 	if (!await refreshToken()) {
 		navigateTo(ViewState.LOGIN);
 		return;
 	}
+
 	const accessToken =  localStorage.getItem("accessToken");
 	if (accessToken) {
 		try {

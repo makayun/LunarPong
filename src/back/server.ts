@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import fs								from "node:fs";
 import path								from "node:path";
 import { fastify }						from "fastify";
@@ -7,6 +10,8 @@ import closeWithGrace					from "close-with-grace";
 import type { FastifyInstance }			from "fastify/fastify";
 import type { FastifyListenOptions }	from "fastify";
 
+import cookie							from '@fastify/cookie'
+
 import { wsGamePlugin }			from "./ws-game";
 import { wsChatPlugin }			from "./ws-chat"; // ✅ импорт чата
 import { PongBackEngine }		from "../scenes/PongBackScene";
@@ -15,13 +20,7 @@ import type { User }			from "../defines/types";
 
 import protectedRoutes from '../auth/protectedRoutes';
 import authRoutes from '../auth/auth.routes';
-import { initDB } from '../back/db';
 // import { initRedis } from './redis-client';
-import dotenv from 'dotenv';
-import googleAuthPlugin from "../plugins/googleAuth";
-
-
-dotenv.config();
 
 async function main() {
 	const users: User[] = [];
@@ -29,7 +28,6 @@ async function main() {
 	const frontDir: string = "front";
 	const certPath = path.resolve(appDir, 'data/cert');
 
-	await initDB();
 	// await initRedis(); // временно отключил, потом надо будет вернуть
 
 	const listenOpts: FastifyListenOptions = {
@@ -49,8 +47,7 @@ async function main() {
 
 	const engine = new PongBackEngine();
 
-	server.register(googleAuthPlugin);
-
+	server.register(cookie);
 	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 	server.register(websocket);
 	await server.register(wsGamePlugin, { engine, users });

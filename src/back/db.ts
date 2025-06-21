@@ -1,24 +1,39 @@
-import sqlite3 from 'sqlite3';
-import { open, Database } from 'sqlite';
+import Sqlite = require("better-sqlite3");
+import Database from 'better-sqlite3';
+// const db = new Database('foobar.db', options);
+// const db: Sqlite.Database = require('better-sqlite3')(process.env.DATABASE_PATH, { verbose: console.log });
 
-// Типизированная переменная для подключения к БД
-let db: Database | null = null;
+let db: Sqlite.Database;
 
-export async function initDB(): Promise<void> {
-	const dbPath = process.env.DATABASE_PATH;
-	if (!dbPath) {
-		throw new Error('DATABASE_PATH is not defined in environment variables');
-	}
-
-	db = await open({
-		filename: dbPath,
-		driver: sqlite3.Database,
-	});
+try {
+	db = new Database(process.env.DATABASE_PATH!, { verbose: console.log });
+	console.log("✅ Database opened successfully");
+} catch (error) {
+	console.error("❌ Failed to open database:", error);
+	process.exit(1); // or handle accordingly
 }
 
-export function getDB(): Database {
+// import sqlite3 from 'sqlite3';
+// import { open, Database } from 'sqlite';
+
+// Типизированная переменная для подключения к БД
+// let db: Database | null = null;
+
+// export async function initDB(): Promise<void> {
+// 	const dbPath = process.env.DATABASE_PATH;
+// 	if (!dbPath) {
+// 		throw new Error('DATABASE_PATH is not defined in environment variables');
+// 	}
+
+// 	db = await open({
+// 		filename: dbPath,
+// 		driver: sqlite3.Database,
+// 	});
+// }
+
+export function getDB(): Sqlite.Database {
 	if (!db) {
-		throw new Error('Database not initialized. Call initDB() first.');
+		throw new Error('Database not initialized.');
 	}
 	return db;
 }
