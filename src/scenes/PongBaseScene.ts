@@ -56,7 +56,7 @@ export class PongBaseScene extends Scene {
 		this.pongMeshes.edgeRight.position.x = LR_EDGES_POS_X;
 
 		this.camera = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 5, 0, Vector3.Zero(), this);
-		this.camera.zoomOnFactor = 1;
+		this.camera.zoomOnFactor = 0.75;
 		this.camera.zoomOn([this.pongMeshes.ground, this.pongMeshes.edgeLeft, this.pongMeshes.edgeRight]);
 	}
 
