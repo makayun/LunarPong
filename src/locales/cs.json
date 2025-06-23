@@ -1,14 +1,42 @@
 {
-  "hello": "Ahoj, {{name}}!",
-  "login": {
-	"title": "Vítejte!",
-	"name": "Přihlašovací jméno",
-	"button": "Přihlášení"
-  },
-  "logged": {
-	"title": "Ahoj, {{name}}! (id: {{id}})"
-  },
-  "logoff": {
-	"button": "Odhlásit se"
-  }
+  "or": "nebo",
+    "hello": "Ahoj, {{name}}!",
+    "login": {
+      "title": "Vítejte!",
+      "label_name": "Uživatelské jméno",
+      "name": "Uživatelské jméno",
+      "label_password": "Heslo",
+      "password": "Heslo",
+      "button": "Přihlášení"
+    },
+    "logged": {
+      "title": "Ahoj, {{name}}! (id: {{id}})"
+    },
+    "logoff": {
+      "button": "Odhlášení"
+    },
+    "register": {
+      "title": "Registrace",
+      "label_name": "Uživatelské jméno",
+      "label_password1": "Heslo",
+      "label_password2": "Opakovat heslo",
+      "label_email": "Email",
+      "button": "Registrovat"
+    },
+    "continue": "Pokračovat",
+    "game": {
+      "title": "Lunární Pong",
+      "local-btn": "Místní hra",
+      "remote-btn": "Vzdálená hra",
+      "versusai-btn": "Proti AI",
+      "block-chat": "Blokovat",
+      "invite-chat": "Pozvat",
+      "profile-chat": "Profil",
+      "msg-input": "Napište zde..."
+    },
+    "2fa": {
+      "title": "Zadejte dvoufaktorový klíč",
+      "label_token": "Zadejte kód zde...",
+      "continue": "Pokračovat"
+    }
 }

@@ -1,3 +1,4 @@
+import { KeyboardEventTypes } from "@babylonjs/core";
 import { ViewState, navigateTo} from "./state"
 import { user_f, login, twofa, logoff, validateToken} from "./login"
 
@@ -7,6 +8,15 @@ export function setDivLogin() {
 
 function initLoginHandlers() {
 	const loginBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login"]`);
+	const loginInput = document.querySelector<HTMLElement>('.input');
+	if(loginInput)
+	{
+		document.addEventListener('keydown', (e) => {
+    	if ((e.key as KeyboardEventTypes) === 'Enter') {
+			login();
+		}
+		}); 
+	}
 	if (loginBtn) {
 		loginBtn.addEventListener("click", async () => {
 			console.log("[login] Login button clicked");
@@ -37,11 +47,21 @@ export function setDiv2fa() {
 
 function initLoggedHandlers() {
 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
+	const twofaInput = document.querySelector<HTMLElement>('.input');
 	if (logoffBtn) {
 		logoffBtn.addEventListener("click", async () => {
 			logoff();
 		}
 	)};
+	
+	if(twofaInput)
+	{
+		document.addEventListener('keydown', (e) => {
+    	if ((e.key as KeyboardEventTypes) === 'Enter') {
+			twofa();
+		}
+		}); 
+	}
 	const continueBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="2fa_continue"]`);
 	if (continueBtn) {
 		continueBtn.addEventListener("click", async () => {

@@ -1,14 +1,42 @@
 {
-  "hello": "¡Hola, {{name}}!",
-  "login": {
-    "title": "¡Bienvenido!",
-    "name": "Nombre de usuario",
-    "button": "Iniciar sesión"
-  },
-  "logged": {
-	"title": "¡Hola, {{name}}! (id: {{id}})"
-  },
-  "logoff": {
-	"button": "Desconectarse"
-  }
+  "or": "o",
+    "hello": "¡Hola, {{name}}!",
+    "login": {
+      "title": "¡Bienvenido!",
+      "label_name": "Nombre de usuario",
+      "name": "Nombre de usuario",
+      "label_password": "Contraseña",
+      "password": "Contraseña",
+      "button": "Iniciar sesión"
+    },
+    "logged": {
+      "title": "¡Hola, {{name}}! (id: {{id}})"
+    },
+    "logoff": {
+      "button": "Cerrar sesión"
+    },
+    "register": {
+      "title": "Registro",
+      "label_name": "Nombre de usuario",
+      "label_password1": "Contraseña",
+      "label_password2": "Repetir contraseña",
+      "label_email": "Correo electrónico",
+      "button": "Registrarse"
+    },
+    "continue": "Continuar",
+    "game": {
+      "title": "Pong Lunar",
+      "local-btn": "Juego local",
+      "remote-btn": "Juego remoto",
+      "versusai-btn": "Contra IA",
+      "block-chat": "Bloquear",
+      "invite-chat": "Invitar",
+      "profile-chat": "Perfil",
+      "msg-input": "Escribe aquí..."
+    },
+    "2fa": {
+      "title": "Ingresa la clave de autenticación de dos factores",
+      "label_token": "Ingresa el código aquí...",
+      "continue": "Continuar"
+    }
 }

@@ -8,7 +8,7 @@
   </style>
 </head>
 <body class="body">
-  <div id="main">
+  <div class="m-auto" id="main">
     <div class="giv_lang">
       <button class="lang-btn" data-lang="en">🇬🇧</button>
       <button class="lang-btn" data-lang="cs">🇨🇿</button>
@@ -23,56 +23,111 @@
 		<button onclick="navigateTo('TWOFA')" class="btn">2FA</button>
 		<button onclick="navigateTo('GAME')" class="btn">Game</button>
 	</nav> -->
-    <div class="div_logoff hidden" data-view-id="logoff" id="div_logoff">
-  	  <button class="logoff-btn btn_click" data-btn-id="logoff" data-i18n="logoff.button"></button>
-    </div>
-	  <div class="div-login page-view hidden opacity-0 transition-opacity duration-300" data-view-id="login" >
-      <h1 data-i18n="login.title"></h1>
-      <label for="name" data-i18n="login.label_name"> </label> <input class="input data_input" type="text" data-input-id="login_name" data-i18n="login.name" class="input"/> <br>
-      <label for="password" data-i18n="login.label_password"> </label> <input class="input data_input" data-input-id="login_password" type="password"/> <br>
-      <button class="login-btn btn_click" data-btn-id="login"  data-i18n="login.button"></button> <br>
-      <p data-i18n="or"></p>
-	  <a href="/api/auth/google" class="btn">Login with Google</a>
-      <!-- <h1 class="register-button" >Здесь будет GOOGLE авторизация!</h1> -->
-      <p data-i18n="or"></p>
-      <button data-btn-id="login_register" data-i18n="register.button" class="register-button btn_click"></button>
-    </div>
-    <div data-view-id="2fa" class="div-2fa page-view hidden opacity-0 transition-opacity duration-300">
-      <label for="token" data-i18n="2fa.label_token"> </label> <input class="input data_input" type="text" data-input-id="2fa_token" data-i18n="2fa.token" class="input"/> <br>
-	  <div id="countdown" class="text-3xl font-mono text-red-500 mt-4 text-center countdown" countdown-id="2fd"></div>
-      <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
-    </div>
-    <div data-view-id="register" class="div-main page-view hidden opacity-0 transition-opacity duration-300">
-      <h1 data-i18n="register.title"></h1>
-      <label for="name" data-i18n="register.label_name"> </label> <input type="text" data-i18n="register.name" class="input"/> <br>
-      <label for="password1" data-i18n="register.label_password1"> </label> <input type="password" class="input"/> <br>
-      <label for="password2" data-i18n="register.label_password2"> </label> <input type="password" class="input"/> <br>
-      <label for="email" data-i18n="register.label_email"> </label> <input type="email" class="input"/> <br>
-      <button  data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
-    </div>
-    <div data-view-id="game" class="game-div page-view hidden " id="div_container">
-      <div class="game-screen-div">
-          <h1 class="game-name">Lunar Pong</h1>
-          <div class="div-game-btns" id="gameButtons">
-            <button id="Local game" class="game-button">Local game</button>
-            <button id="Remote game" class="game-button">Remote game</button>
-            <button id="Versus AI" class="game-button">Versus AI</button>
-          </div>
-          <canvas id="pongCanvas" class="graph-win " width="1000%" height="700%"></canvas>
+      <div class="div_logoff hidden" id="div_logoff">
+  	    <button class="logoff-btn" data-i18n="logoff.button"></button>
       </div>
-      <div class="chat-main-div">
-        <div class="chat-head">
-          <select class="chat-select bg-gray-50" id="recipient">
-            <option class="select-players " value="all">All Players</option>
-          </select>
-          <button class="chat-util-btn" onclick="blockUser()">Block</button>
-          <button class="chat-util-btn" onclick="inviteUser()">Invite</button>
-          <button class="chat-util-btn" onclick="viewProfile()">Profile</button>
-        </div>
-        <div class="msg-field" id="messages"></div>
-        <input type="text" id="input" class="chat-input" placeholder="Type here..." />
+      <div class="div-login page-view hidden" data-view-id="login">
+  <div class="login-container">
+    <div class="login-background"></div>
+    <div class="login-form">
+      <h1 class="login-title" data-i18n="login.title"></h1>
+      <div class="input-group">
+        <input data-input-id="login_name" 
+               autocomplete="off" 
+               id="name" 
+               name="name" 
+               type="text" 
+               class="input data_input" 
+               placeholder="" />
+        <label for="name" data-i18n="login.label_name" class="input-label"></label>
       </div>
+      <div class="input-group">
+        <input data-input-id="login_password" 
+               autocomplete="off" 
+               id="password" 
+               name="password" 
+               type="password" 
+               class="input data_input" 
+               placeholder="" />
+        <label for="password" data-i18n="login.label_password" class="input-label"></label>
+      </div>
+      <button data-btn-id="login" data-i18n="login.button" class="login-btn btn_click"></button>
+	   <a href="/api/auth/google" class="btn">Login with Google</a>
     </div>
-  <div>
+  </div>
+</div>
+
+<div data-view-id="2fa" class="div-2fa page-view hidden">
+  <div class="twofa-container">
+    <h1 class="twofa-title" data-i18n="2fa.title"></h1>
+    <div class="input-group">
+      <input class="input data_input" 
+             type="text" 
+             data-input-id="2fa_token" 
+             placeholder="" />
+      <label data-i18n="2fa.label_token" class="input-label"></label>
+    </div>
+    <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
+  </div>
+</div>
+
+<div data-view-id="register" class="div-main page-view hidden">
+  <div class="register-container">
+    <h1 class="register-title" data-i18n="register.title"></h1>
+    <div class="input-group">
+      <input type="text" class="input" placeholder=""/>
+      <label data-i18n="register.label_name" class="input-label"></label>
+    </div>
+    <div class="input-group">
+      <input type="password" class="input" placeholder=""/>
+      <label data-i18n="register.label_password1" class="input-label"></label>
+    </div>
+    <div class="input-group">
+      <input type="password" class="input" placeholder=""/>
+      <label data-i18n="register.label_password2" class="input-label"></label>
+    </div>
+    <div class="input-group">
+      <input type="email" class="input" placeholder=""/>
+      <label data-i18n="register.label_email" class="input-label"></label>
+    </div>
+    <button data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
+  </div>
+</div>
+  <div data-view-id="game" class="page-view hidden game-div" id="div_container">
+    <div class="game-screen-div">
+      <h1 class="game-name" data-i18n="game.title">
+        Lunar Pong
+      </h1>
+    <div id="gameButtons" class="div-game-btns">
+      <button id="Local game" class="game-button-tw" data-i18n="game.local-btn">
+        Local game
+      </button>
+      <button id="Remote game" class="game-button-tw" data-i18n="game.remote-btn">
+        Remote game
+      </button>
+      <button id="Versus AI" class="game-button-tw" data-i18n="game.versusai-btn">
+        Versus AI
+      </button>
+    </div>
+    <canvas id="pongCanvas" class="glow-border game-win" 
+            style="background-size: cover; background-position: center; width: 100%; max-width: min(90vw, 80vh * 10/7); height: auto; aspect-ratio: 10/7; border-radius: 1rem;"
+            width="1000" height="700">
+    </canvas>
+  </div>
+  <div class="chat-main-div chat-bg">
+    <div class="chat-head">
+      <select id="recipient" class="chat-select">
+        <option value="all" >👥 All Users</option>
+      </select>
+      <button onclick="blockUser()" class="chat-util-btn" data-i18n="game.block-chat">Block</button>
+      <button onclick="inviteUser()" class="chat-util-btn" data-i18n="game.invite-chat">Invite</button>
+      <button onclick="viewProfile()" class="chat-util-btn" data-i18n="game.profile-chat">Profile</button>
+    </div>
+    <div id="messages" class="msg-field">
+    </div>
+    <input type="text" id="input" placeholder="Type here..." 
+           class="chat-input" data-i18n="game.msg-input"/>
+  </div>
+</div>
 </body>
 </html>
