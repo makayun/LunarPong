@@ -15,6 +15,8 @@ const pongScene = new PongFrontScene(engine);
 
 pongScene.executeWhenReady(() => {
 	["Local game", "Remote game", "Versus AI"].forEach(type => {
+		engine.runRenderLoop(() => pongScene.render());
+
 		const btn = document.getElementById(type) as HTMLButtonElement;
 		if (btn) {
 			btn.addEventListener("click", () => {
@@ -54,8 +56,7 @@ pongScene.socket.onmessage = function(event: MessageEvent) {
 export default async function babylonInit(opts: InitGameSuccess) : Promise<void> {
 	pongScene.side = opts.playerSide;
 	pongScene.id = opts.gameId;
-
-	assignInputHandler(opts.gameType);
+	pongScene.sendPlayerInput =  assignInputHandler(opts.gameType);
 
 	let meshPositions: MeshPositions = {
 		type: "MeshPositions",
@@ -87,7 +88,7 @@ export default async function babylonInit(opts: InitGameSuccess) : Promise<void>
 		}
 	};
 
-	engine.runRenderLoop(() => pongScene.render());
+	// engine.runRenderLoop(() => pongScene.render());
 
 	window.addEventListener("resize", function () {
 		engine.resize();
@@ -99,14 +100,14 @@ export default async function babylonInit(opts: InitGameSuccess) : Promise<void>
 	});
 }
 
-function assignInputHandler(gameType: GameType) : void {
+function assignInputHandler(gameType: GameType) {
 	switch (gameType) {
 		case "Local game":
-			pongScene.sendPlayerInput = localInputHandler(pongScene);
+			return localInputHandler(pongScene);
 		case "Remote game":
-			pongScene.sendPlayerInput = remoteInputHandler(pongScene);
+			return remoteInputHandler(pongScene);
 		case "Versus AI":
-			pongScene.sendPlayerInput = aiInputHandler(pongScene);
+			return aiInputHandler(pongScene);
 	}
 }
 

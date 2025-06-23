@@ -9,18 +9,26 @@ export function localInputHandler(scene: PongFrontScene): () => void {
 			const inputMessage: PlayerInput = {
 				type: "PlayerInput",
 				gameId: scene.id as GUID,
-				side: ev.key.startsWith("Arrow") ? "right" : "left",
+				side: "left",
 				direction: 0
 			};
 
 			switch (ev.key) {
-				case "w":
 				case "ArrowUp":
+					inputMessage.side = "right";
 					inputMessage.direction = 1;
 					scene.socket.send(JSON.stringify(inputMessage));
 					break;
-				case "s":
+				case "w":
+					inputMessage.direction = 1;
+					scene.socket.send(JSON.stringify(inputMessage));
+					break;
 				case "ArrowDown":
+					inputMessage.side = "right";
+					inputMessage.direction = -1;
+					scene.socket.send(JSON.stringify(inputMessage));
+					break;
+				case "s":
 					inputMessage.direction = -1;
 					scene.socket.send(JSON.stringify(inputMessage));
 					break;
