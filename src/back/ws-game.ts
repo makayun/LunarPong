@@ -54,7 +54,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 }
 
 async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: InitGameRequest): Promise<void> {
-	console.log("Initializing game for player:", [msg.user.id]);
+	console.log("Initializing game for player:", [msg.user.id], ", type : ", msg.gameType);
 
 	engine.scenes.forEach(
 		scene => scene.players.forEach(
