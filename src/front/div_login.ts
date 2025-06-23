@@ -1,3 +1,4 @@
+import { KeyboardEventTypes } from "@babylonjs/core";
 import { ViewState, navigateTo} from "./history"
 import { user_f, login, twofa} from "./login"
 
@@ -7,6 +8,15 @@ export function setDivLogin() {
 
 function initLoginHandlers() {
 	const loginBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login"]`);
+	const loginInput = document.querySelector<HTMLElement>('.input');
+	if(loginInput)
+	{
+		document.addEventListener('keydown', (e) => {
+    	if ((e.key as KeyboardEventTypes) === 'Enter') {
+			login();
+		}
+		}); 
+	}
 	if (loginBtn) {
 		loginBtn.addEventListener("click", async () => {
 			console.log("[login] Login button clicked");

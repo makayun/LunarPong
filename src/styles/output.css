@@ -353,7 +353,7 @@
   .input-label {
     position: absolute;
     left: calc(var(--spacing) * 2);
-    top: calc(var(--spacing) * -1.5);
+    top: calc(var(--spacing) * -2.5);
     color: var(--color-blue);
     font-size: var(--text-sm);
     font-weight: var(--font-weight-medium);
@@ -371,7 +371,7 @@
   }
   .input:focus + .input-label {
     top: calc(var(--spacing) * -2.5);
-    transform: translateY(0);
+    transform: translateY(-50%);
     border-radius: 0.5rem;
     font-size: var(--text-sm);
     color: var(--color-white);

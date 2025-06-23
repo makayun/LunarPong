@@ -1,6 +1,6 @@
 import { getOrCreateClientId, getOrCreateNickname } from "../helpers/helpers";
 import type { GUID } from "../defines/types";
-import '../styles/styles.css';
+// import '../styles/styles.css';
 import '../styles/output.css';
 const input = document.getElementById('input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
