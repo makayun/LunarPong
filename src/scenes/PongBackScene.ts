@@ -108,8 +108,10 @@ export class PongBackScene extends PongBaseScene implements Game {
     private handleGoal(): void {
         if (this.pongMeshes.ball.position.x > 0) {
             this.score[0]++;
+            this.sendBallCollision("edgeRight");
         } else {
             this.score[1]++;
+            this.sendBallCollision("edgeLeft");
         }
 
         this.pongMeshes.ball.position = new Vector3(0, 5, 0); // 💥 это выоста после гола
