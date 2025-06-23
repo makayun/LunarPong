@@ -16,3 +16,6 @@ export const PADDLE_STEP = 3;
 export const UP = -1;
 export const STOP = 0;
 export const DOWN = 1;
+
+export const GLOW_MAX = 3;
+export const GLOW_MIN = 0.7;

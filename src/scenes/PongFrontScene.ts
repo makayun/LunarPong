@@ -11,11 +11,11 @@ import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
 import { Control } from "@babylonjs/gui/2D/controls/control";
 import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock";
 
-import { Color3, HighlightLayer, Mesh } from "@babylonjs/core";
+import { HighlightLayer, Mesh } from "@babylonjs/core";
 
 
 import { PongBaseScene } from "./PongBaseScene";
-import { GUID, InitGameSuccess, MeshName, PlayerSide } from "../defines/types";
+import type { GUID, MeshName, PlayerSide } from "../defines/types";
 
 // import { ReflectionProbe } from "@babylonjs/core/Probes";
 import { PBRMaterial } from "@babylonjs/core/Materials/PBR";
@@ -23,16 +23,15 @@ import { PBRMaterial } from "@babylonjs/core/Materials/PBR";
 // import { Texture } from "@babylonjs/core/Materials/Textures/texture";
 // import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
 // import { GridMaterial } from "@babylonjs/materials";
-// import { Color3 } from "@babylonjs/core/Maths";
+import { Color3 } from "@babylonjs/core/Maths";
 // const grassTextureUrl: string = "/assets/grass.jpg";
 
+import { GLOW_MAX, GLOW_MIN } from "../defines/constants";
+
 export class PongFrontScene extends PongBaseScene {
-	private light1: HemisphericLight;
-	// private light2: DirectionalLight;
-	// private shadows: ShadowGenerator;
-	public id: GUID;
-	public side: PlayerSide;
-	public socket: WebSocket;
+	public id?: GUID;
+	public side?: PlayerSide;
+	public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-game`);
 
 	private hl = new HighlightLayer("hl", this);
 
@@ -40,28 +39,19 @@ export class PongFrontScene extends PongBaseScene {
 	private scoreLeft = createScoreBlock(this.advancedTexture, "left");
 	private scoreRight = createScoreBlock(this.advancedTexture, "right");
 
-	constructor (inEngine: Engine, opts: InitGameSuccess, inSocket: WebSocket) {
+	constructor (inEngine: Engine) {
 		super(inEngine);
 
 		var helper = this.createDefaultEnvironment();
 		helper?.setMainColor(Color3.Black());
 
-		this.id = opts.gameId;
-		this.side = opts.playerSide;
-		this.socket = inSocket;
+		// this.id = opts.gameId;
+		// this.side = opts.playerSide;
+		// this.socket = inSocket;
 
-		this.socket.onmessage = (event) => {
-			const data = JSON.parse(event.data);
-
-			if (data.type === "ScoreUpdate" && Array.isArray(data.score)) {
-				this.updateScore(data.score);
-			} else {
-				console.warn("Wrong WS message:", data);
-			}
-		};
-
-		this.light1 = new HemisphericLight("light", new Vector3(0, 1, 0), this);
-		this.light1.intensity = 0.5;
+		const light = new HemisphericLight("light", new Vector3(0, 1, 0), this);
+		light.intensity = 0.8;
+		light.groundColor = Color3.Magenta();
 
 		const metalBlack = new PBRMaterial("metalBlack", this);
 		metalBlack.albedoColor = Color3.Black();
@@ -78,30 +68,30 @@ export class PongFrontScene extends PongBaseScene {
 		this.pongMeshes.ball.material = metalWhite;
 		this.pongMeshes.paddleLeft.material = metalWhite;
 		this.pongMeshes.paddleRight.material = metalWhite;
-		// this.light2 = new DirectionalLight("light2", Vector3.Zero(), this);
-		// this.light2.position = new Vector3(10, 30, 10);
-		// this.light2.intensity = 0.5;
 
-		// this.shadows = new ShadowGenerator(512, this.light2);
-		// this.shadows.useBlurExponentialShadowMap = true;
-		// this.shadows.blurScale = 2;
-		// this.shadows.setDarkness(0.2);
-		// this.shadows.getShadowMap()?.renderList?.push(
-		// 	this.pongMeshes.ball,
-		// 	this.pongMeshes.paddleLeft,
-		// 	this.pongMeshes.paddleRight
-		// );
-
+		const purple = Color3.FromInts(178, 50, 250);
+		const green = Color3.FromInts(77, 230, 47);
+		const white = Color3.White()
 		this.hl.blurHorizontalSize = 0.5;
 		this.hl.blurVerticalSize = 0.5;
+
+		this.hl.addMesh(this.pongMeshes.edgeLeft, purple);
+		this.hl.addMesh(this.pongMeshes.edgeTop, purple);
+		this.hl.addMesh(this.pongMeshes.edgeRight, green);
+		this.hl.addMesh(this.pongMeshes.edgeBottom, green);
+
+		this.hl.addMesh(this.pongMeshes.ball, white);
+		this.hl.addMesh(this.pongMeshes.paddleLeft, white);
+		this.hl.addMesh(this.pongMeshes.paddleRight, white);
+
+		const back = this.getMeshByName("BackgroundPlane");
+		if (back)
+			this.hl.addMesh(back as Mesh, white);
+
 		this.meshes.forEach(mesh => {
-			if (mesh.name !== "ground") {
-				this.hl.addMesh(mesh as Mesh, Color3.Random());
-				this.hl.setEffectIntensity(mesh, 0.5);
-			}
+			if (mesh.name as MeshName !== "ground" && this.hl.hasMesh(mesh))
+				this.hl.setEffectIntensity(mesh, GLOW_MIN);
 		})
-		// this.hl.addMesh(this.pongMeshes.ball, Color3.Random());
-		// this.hl.setEffectIntensity(this.pongMeshes.ball, 0);
 	}
 
 	sendPlayerInput(_socket: WebSocket) {};
@@ -117,8 +107,6 @@ export class PongFrontScene extends PongBaseScene {
 		let time = 0;
 		const mesh = this.getMeshByName(meshName);
 		const ball = this.pongMeshes.ball;
-		const max = 2.0;
-		const min = 0.5;
 
 		if (mesh) {
 			const observer = this.onBeforeRenderObservable.add(() => {
@@ -129,25 +117,23 @@ export class PongFrontScene extends PongBaseScene {
 
 				if (progress < 0.5) {
 					const t = progress * 2;
-					const intensity = min + (max - min) * t;
+					const intensity = GLOW_MIN + (GLOW_MAX - GLOW_MIN) * t;
 					this.hl.setEffectIntensity(mesh, intensity);
 					this.hl.setEffectIntensity(ball, intensity);
 				} else if (progress < 1.0) {
 					const t = (progress - 0.5) * 2;
-					const intensity = max - (max - min) * t;
+					const intensity = GLOW_MAX - (GLOW_MAX - GLOW_MIN) * t;
 					this.hl.setEffectIntensity(mesh, intensity);
 					this.hl.setEffectIntensity(ball, intensity);
 				} else {
-					this.hl.setEffectIntensity(mesh, min);
-					this.hl.setEffectIntensity(ball, min);
+					this.hl.setEffectIntensity(mesh, GLOW_MIN);
+					this.hl.setEffectIntensity(ball, GLOW_MIN);
 					this.onBeforeRenderObservable.remove(observer);
 				}
 			});
 		}
 	}
 }
-
-
 
 function createScoreBlock(ui: AdvancedDynamicTexture, side: PlayerSide) : TextBlock {
 	const rectangle = new Rectangle("score" + side);
@@ -178,4 +164,6 @@ function createScoreBlock(ui: AdvancedDynamicTexture, side: PlayerSide) : TextBl
 
 	return scoreText;
 }
+
+
 
