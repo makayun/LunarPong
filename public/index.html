@@ -74,7 +74,7 @@
   <div class="register-container">
     <h1 class="register-title" data-i18n="register.title"></h1>
     <div class="input-group">
-      <input type="text" data-i18n="register.name" class="input" placeholder=""/>
+      <input type="text" class="input" placeholder=""/>
       <label data-i18n="register.label_name" class="input-label"></label>
     </div>
     <div class="input-group">
@@ -94,17 +94,17 @@
 </div>
   <div data-view-id="game" class="page-view hidden game-div" id="div_container">
     <div class="game-screen-div">
-      <h1 class="game-name">
+      <h1 class="game-name" data-i18n="game.title">
         Lunar Pong
       </h1>
     <div id="gameButtons" class="div-game-btns">
-      <button id="Local game" class="game-button-tw">
+      <button id="Local game" class="game-button-tw" data-i18n="game.local-btn">
         Local game
       </button>
-      <button id="Remote game" class="game-button-tw">
+      <button id="Remote game" class="game-button-tw" data-i18n="game.remote-btn">
         Remote game
       </button>
-      <button id="Versus AI" class="game-button-tw">
+      <button id="Versus AI" class="game-button-tw" data-i18n="game.versusai-btn">
         Versus AI
       </button>
     </div>
@@ -116,16 +116,16 @@
   <div class="chat-main-div chat-bg">
     <div class="chat-head">
       <select id="recipient" class="chat-select">
-        <option value="all">👥 All Users</option>
+        <option value="all" >👥 All Users</option>
       </select>
-      <button onclick="blockUser()" class="chat-util-btn">Block</button>
-      <button onclick="inviteUser()" class="chat-util-btn">Invite</button>
-      <button onclick="viewProfile()" class="chat-util-btn">Profile</button>
+      <button onclick="blockUser()" class="chat-util-btn" data-i18n="game.block-chat">Block</button>
+      <button onclick="inviteUser()" class="chat-util-btn" data-i18n="game.invite-chat">Invite</button>
+      <button onclick="viewProfile()" class="chat-util-btn" data-i18n="game.profile-chat">Profile</button>
     </div>
     <div id="messages" class="msg-field">
     </div>
     <input type="text" id="input" placeholder="Type here..." 
-           class="chat-input" />
+           class="chat-input" data-i18n="game.msg-input"/>
   </div>
 </div>
 </body>

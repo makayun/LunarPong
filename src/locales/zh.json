@@ -1,14 +1,42 @@
 {
-  "hello": "你好，{{name}}！",
-  "login": {
-    "title": "欢迎！",
-    "name": "用户名",
-    "button": "登录"
-  },
-  "logged": {
-	"title": "你好, {{name}}! (id: {{id}})"
-  },
-  "logoff": {
-	"button": "註銷"
-  }
+  "or": "或",
+    "hello": "你好，{{name}}！",
+    "login": {
+      "title": "欢迎！",
+      "label_name": "用户名",
+      "name": "用户名",
+      "label_password": "密码",
+      "password": "密码",
+      "button": "登录"
+    },
+    "logged": {
+      "title": "你好，{{name}}！(id: {{id}})"
+    },
+    "logoff": {
+      "button": "登出"
+    },
+    "register": {
+      "title": "注册",
+      "label_name": "用户名",
+      "label_password1": "密码",
+      "label_password2": "重复密码",
+      "label_email": "邮箱",
+      "button": "注册"
+    },
+    "continue": "继续",
+    "game": {
+      "title": "月球乒乓",
+      "local-btn": "本地游戏",
+      "remote-btn": "远程游戏",
+      "versusai-btn": "对战AI",
+      "block-chat": "屏蔽",
+      "invite-chat": "邀请",
+      "profile-chat": "个人资料",
+      "msg-input": "在此输入..."
+    },
+    "2fa": {
+      "title": "输入双因素认证密钥",
+      "label_token": "在此输入验证码...",
+      "continue": "继续"
+    }
 }

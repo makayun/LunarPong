@@ -23,5 +23,20 @@
 	"label_email": "Email",
   	"button": "Регистрация"
   },
-  "continue": "Продолжить"
+  "continue": "Продолжить",
+  "game":{
+	"title": "Лунный понг",
+	"local-btn": "Локальная игра",
+	"remote-btn": "Удаленная игра",
+	"versusai-btn": "Против ИИ",
+	"block-chat": "Блок",
+	"invite-chat": "Пригласить",
+	"profile-chat": "Профиль",
+	"msg-input": "Введите здесь..."
+  },
+  "2fa":{
+	"title": "Введите двухфакторный ключ",
+	"label_token": "Введите код здесь...",
+	"continue": "Продолжить"
+  }
 }

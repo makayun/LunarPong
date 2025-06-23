@@ -1,14 +1,42 @@
 {
-  "hello": "Hallo, {{name}}!",
-  "login": {
-	"title": "Willkommen!",
-	"name": "Anmeldename",
-	"button": "Login"
-  },
-  "logged": {
-	"title": "Hallo, {{name}}! (id: {{id}})"
-  },
-  "logoff": {
-	"button": "Abmelden"
-  }
+  "or": "oder",
+    "hello": "Hallo, {{name}}!",
+    "login": {
+      "title": "Willkommen!",
+      "label_name": "Benutzername",
+      "name": "Benutzername",
+      "label_password": "Passwort",
+      "password": "Passwort",
+      "button": "Anmelden"
+    },
+    "logged": {
+      "title": "Hallo, {{name}}! (id: {{id}})"
+    },
+    "logoff": {
+      "button": "Abmelden"
+    },
+    "register": {
+      "title": "Registrierung",
+      "label_name": "Benutzername",
+      "label_password1": "Passwort",
+      "label_password2": "Passwort wiederholen",
+      "label_email": "E-Mail",
+      "button": "Registrieren"
+    },
+    "continue": "Weiter",
+    "game": {
+      "title": "Mond-Pong",
+      "local-btn": "Lokales Spiel",
+      "remote-btn": "Online-Spiel",
+      "versusai-btn": "Gegen KI",
+      "block-chat": "Blockieren",
+      "invite-chat": "Einladen",
+      "profile-chat": "Profil",
+      "msg-input": "Hier eingeben..."
+    },
+    "2fa": {
+      "title": "Zwei-Faktor-Authentifizierungsschlüssel eingeben",
+      "label_token": "Code hier eingeben...",
+      "continue": "Weiter"
+    }
 }

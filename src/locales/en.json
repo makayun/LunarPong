@@ -1,28 +1,42 @@
 {
   "or": "or",
-  "hello": "Hello, {{name}}!",
-  "login": {
-	"title": "Welcome!",
-	"label_name": "User name",
-	"name": "User Name",
-	"label_password": "Password",
-	"password": "Password:",
-	"button": "Login"
-  },
-  "logged": {
-	"title": "Hello, {{name}}! (id: {{id}})"
-  },
-  "logoff": {
-	"button": "Logoff"
-  },
-  "register": {
-	"title": "Registration",
-	"label_name": "User name",
-	"name": "User Name",
-	"label_password1": "Password",
-	"label_password2": "Repeat Password",
-	"label_email": "Email",
-  	"button": "Register"
-  },
-  "continue": "Continue"
+    "hello": "Hello, {{name}}!",
+    "login": {
+      "title": "Welcome!",
+      "label_name": "Username",
+      "name": "Username",
+      "label_password": "Password",
+      "password": "Password",
+      "button": "Login"
+    },
+    "logged": {
+      "title": "Hello, {{name}}! (id: {{id}})"
+    },
+    "logoff": {
+      "button": "Logout"
+    },
+    "register": {
+      "title": "Registration",
+      "label_name": "Username",
+      "label_password1": "Password",
+      "label_password2": "Repeat Password",
+      "label_email": "Email",
+      "button": "Register"
+    },
+    "continue": "Continue",
+    "game": {
+      "title": "Lunar Pong",
+      "local-btn": "Local Game",
+      "remote-btn": "Remote Game",
+      "versusai-btn": "Versus AI",
+      "block-chat": "Block",
+      "invite-chat": "Invite",
+      "profile-chat": "Profile",
+      "msg-input": "Type here..."
+    },
+    "2fa": {
+      "title": "Enter two-factor authentication key",
+      "label_token": "Enter code here...",
+      "continue": "Continue"
+    }
 }
