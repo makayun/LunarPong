@@ -42,6 +42,7 @@ export function setDiv2fa() {
 
 function initLoggedHandlers() {
 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
+	const twofaInput = document.querySelector<HTMLElement>('.input');
 	if (logoffBtn) {
 		logoffBtn.addEventListener("click", async () => {
 			console.log("[logoff] Login button clicked:");
@@ -53,6 +54,15 @@ function initLoggedHandlers() {
 			navigateTo(ViewState.LOGIN);
 		}
 	)};
+	
+	if(twofaInput)
+	{
+		document.addEventListener('keydown', (e) => {
+    	if ((e.key as KeyboardEventTypes) === 'Enter') {
+			twofa();
+		}
+		}); 
+	}
 	const continueBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="2fa_continue"]`);
 	if (continueBtn) {
 		continueBtn.addEventListener("click", async () => {
