@@ -3,6 +3,7 @@
   --color-purple: #8b00ff;
   --color-pink: #ff00cc;
   --color-green: #39ff14;
+  --color-chat-green: #21A0A0;
   --color-blue: #75b3fc;
   --color-dark: #0a0a1e;
   --color-white: #d6eefa;
@@ -427,11 +428,11 @@
     margin-left: calc(var(--spacing) * 20);
     border-radius: 1rem;
     backdrop-filter: blur(2px);
-    width: auto;
   }
   
   .chat-bg{
-    background-image: url(../../assets/cat.jpg);
+    background-image: url(../../assets/neon-drive.jpg);
+    background-repeat: no-repeat;
     background-position: center;
     background-attachment:local;
   }
@@ -491,16 +492,19 @@
 
   .msg-field{
     flex: 1;
-    overflow-y: auto;
     padding: calc(var(--spacing) * 2);
     background: rgba(0, 0, 0, 0.8);
-    color: var(--color-green);
+    color: var(--color-white);
     overflow-wrap: break-word;
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     border-radius: 0.25rem;
     border: 2px solid var(--color-blue);
-    min-height: 200px;
+    height: 600px;
+    min-height: 400px;
+    max-height: 80vh;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .chat-input{

@@ -118,8 +118,18 @@
             style="background-size: cover; background-position: center; width: 100%; max-width: min(90vw, 80vh * 10/7); height: auto; aspect-ratio: 10/7; border-radius: 1rem;"
             width="1000" height="700">
     </canvas>
+    <div class="flex flex-wrap gap-4 justify-center mt-6 px-4">
+      <button id="createTournament" 
+              class="game-button-tw">
+          Create Tournament
+      </button>
+      <button id="joinTournament"
+              class="game-button-tw">
+          Join Tournament
+      </button>
+    </div>
   </div>
-  <div class="chat-main-div chat-bg">
+  <div class="chat-main-div">
     <div class="chat-head">
       <select id="recipient" class="chat-select">
         <option value="all" >👥 All Users</option>
@@ -128,7 +138,13 @@
       <button onclick="inviteUser()" class="chat-util-btn" data-i18n="game.invite-chat">Invite</button>
       <button onclick="viewProfile()" class="chat-util-btn" data-i18n="game.profile-chat">Profile</button>
     </div>
-    <div id="messages" class="msg-field">
+    <div id="messages" class="
+          msg-field 
+          bg-no-repeat 
+          bg-cover 
+          bg-center
+		      bg-[url('../../assets/neon-drive.jpg')]
+          [--tw-bg-opacity:0.5]">
     </div>
     <input type="text" id="input" placeholder="Type here..." 
            class="chat-input" data-i18n="game.msg-input"/>

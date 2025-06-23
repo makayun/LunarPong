@@ -208,6 +208,9 @@
   .m-auto {
     margin: auto;
   }
+  .mt-6 {
+    margin-top: calc(var(--spacing) * 6);
+  }
   .mb-4 {
     margin-bottom: calc(var(--spacing) * 4);
   }
@@ -235,12 +238,36 @@
   .resize {
     resize: both;
   }
+  .flex-wrap {
+    flex-wrap: wrap;
+  }
+  .justify-center {
+    justify-content: center;
+  }
+  .gap-4 {
+    gap: calc(var(--spacing) * 4);
+  }
   .space-x-2 {
     :where(& > :not(:last-child)) {
       --tw-space-x-reverse: 0;
       margin-inline-start: calc(calc(var(--spacing) * 2) * var(--tw-space-x-reverse));
       margin-inline-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-x-reverse)));
     }
+  }
+  .bg-\[url\(\'\.\.\/\.\.\/assets\/neon-drive\.jpg\'\)\] {
+    background-image: url('../../assets/neon-drive.jpg');
+  }
+  .bg-cover {
+    background-size: cover;
+  }
+  .bg-center {
+    background-position: center;
+  }
+  .bg-no-repeat {
+    background-repeat: no-repeat;
+  }
+  .px-4 {
+    padding-inline: calc(var(--spacing) * 4);
   }
   .opacity-0 {
     opacity: 0%;
@@ -252,6 +279,9 @@
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, visibility, content-visibility, overlay, pointer-events;
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
+  }
+  .\[--tw-bg-opacity\:0\.5\] {
+    --tw-bg-opacity: 0.5;
   }
 }
 @layer components {
@@ -632,10 +662,10 @@
     margin-left: calc(var(--spacing) * 20);
     border-radius: 1rem;
     backdrop-filter: blur(2px);
-    width: auto;
   }
   .chat-bg {
-    background-image: url(../../assets/cat.jpg);
+    background-image: url(../../assets/neon-drive.jpg);
+    background-repeat: no-repeat;
     background-position: center;
     background-attachment: local;
   }
@@ -690,16 +720,19 @@
   }
   .msg-field {
     flex: 1;
-    overflow-y: auto;
     padding: calc(var(--spacing) * 2);
     background: rgba(0, 0, 0, 0.8);
-    color: var(--color-green);
+    color: var(--color-white);
     overflow-wrap: break-word;
-    font-size: var(--text-sm);
+    font-size: var(--text-base);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     border-radius: 0.25rem;
     border: 2px solid var(--color-blue);
-    min-height: 200px;
+    height: 600px;
+    min-height: 400px;
+    max-height: 80vh;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
   .chat-input {
     padding: calc(var(--spacing) * 2);
