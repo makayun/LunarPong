@@ -56,7 +56,7 @@ export function set_view(state: ViewState) {
 	if (state != ViewState.LOGIN && state != ViewState.REGISTER && user_f.id == -1) {
 		return;
 	}
-	const logoffElement = document.querySelector<HTMLElement>(`.div_logoff[data-view-id="logoff"]`);
+	const logoffElement = document.querySelector<HTMLElement>(`.div_logoff`);
 	if (logoffElement) {
 		if (user_f.id != -1) {
 			console.log(`[view] Put the button logoff on`);
