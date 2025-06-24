@@ -7,3 +7,5 @@ tmp
 docs
 output\.css
 /src/styles/output.css
+.env
+docker/nginx_modsecurity/rules

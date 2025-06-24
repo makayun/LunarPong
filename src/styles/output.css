@@ -19,6 +19,7 @@
     --text-xl--line-height: calc(1.75 / 1.25);
     --text-2xl: 1.5rem;
     --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
@@ -185,6 +186,24 @@
   }
   .relative {
     position: relative;
+  }
+  .container {
+    width: 100%;
+    @media (width >= 40rem) {
+      max-width: 40rem;
+    }
+    @media (width >= 48rem) {
+      max-width: 48rem;
+    }
+    @media (width >= 64rem) {
+      max-width: 64rem;
+    }
+    @media (width >= 80rem) {
+      max-width: 80rem;
+    }
+    @media (width >= 96rem) {
+      max-width: 96rem;
+    }
   }
   .m-auto {
     margin: auto;
@@ -445,24 +464,6 @@
       }
     }
   }
-  .login-btn {
-    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
-    border: 2px solid var(--color-blue);
-    border-radius: calc(infinity * 1px);
-    padding-inline: calc(var(--spacing) * 5);
-    padding-block: calc(var(--spacing) * 2);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-white);
-    transition: all 300ms var(--ease-in-out);
-    transform: scale(1) translateY(0);
-    &:hover {
-      @media (hover: hover) {
-        transform: scale(1.1) translateY(calc(var(--spacing) * -1));
-        box-shadow: 0 0 8px var(--color-white);
-        border-color: var(--color-white);
-      }
-    }
-  }
   .continue-btn {
     background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-blue);
@@ -480,6 +481,38 @@
         box-shadow: 0 0 8px var(--color-white);
         border-color: var(--color-white);
       }
+    }
+  }
+  .logoff-btn, .login-btn, .back-btn, .register-button, .btn {
+    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
+    border: 2px solid var(--color-blue);
+    border-radius: calc(infinity * 1px);
+    padding-inline: calc(var(--spacing) * 3);
+    padding-block: calc(var(--spacing) * 2.5);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-white);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: all 300ms var(--ease-in-out);
+    transform: scale(1) translateY(0);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--text-base);
+    outline: none;
+    min-width: calc(var(--spacing) * 20);
+    min-height: calc(var(--spacing) * 8);
+    &:hover {
+      @media (hover: hover) {
+        transform: scale(1.1) translateY(calc(var(--spacing) * -1));
+        box-shadow: 0 0 8px var(--color-white);
+        border-color: var(--color-white);
+        text-decoration: none;
+      }
+    }
+    &:focus-visible {
+      outline: 2px solid var(--color-white);
+      outline-offset: 2px;
     }
   }
   .giv_lang {
@@ -530,7 +563,6 @@
   .logoff-btn {
     background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-green);
-    box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
     padding-inline: calc(var(--spacing) * 5);
     padding-block: calc(var(--spacing) * 2);
@@ -740,7 +772,29 @@
       }
     }
   }
+  .countdown {
+    font-family: var(--font-mono);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-green);
+    text-align: center;
+    margin-top: calc(var(--spacing) * 4);
+    margin-bottom: calc(var(--spacing) * 4);
+    padding: calc(var(--spacing) * 3);
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid var(--color-blue);
+    border-radius: 1rem;
+    backdrop-filter: blur(2px);
+    transition: all 300ms var(--ease-in-out);
+    position: relative;
+    overflow: hidden;
+  }
   @media (max-width: 768px) {
+    .countdown {
+      font-size: var(--text-2xl);
+      padding: calc(var(--spacing) * 2);
+      margin: calc(var(--spacing) * 2) 0;
+    }
     .game-div {
       flex-direction: column;
     }
@@ -786,6 +840,10 @@
     }
     .chat-main-div {
       margin: calc(var(--spacing) * 1);
+    }
+    .countdown {
+      font-size: var(--text-xl);
+      padding: calc(var(--spacing) * 1.5);
     }
   }
   @media (min-width: 641px) {

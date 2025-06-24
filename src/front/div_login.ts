@@ -1,6 +1,6 @@
 import { KeyboardEventTypes } from "@babylonjs/core";
-import { ViewState, navigateTo} from "./history"
-import { user_f, login, twofa} from "./login"
+import { ViewState, navigateTo} from "./state"
+import { user_f, login, twofa, logoff, validateToken} from "./login"
 
 export function setDivLogin() {
 	initLoginHandlers();
@@ -37,6 +37,11 @@ export function setDiv2fa() {
 	if (el) {
 		el.setAttribute('data-i18n-args', JSON.stringify({ name: user_f.name, id: user_f.id }));
 	}
+	if (!validateToken("twofaToken"))  {
+		navigateTo(ViewState.LOGIN);
+		return;
+	}
+	// startCountdown(300, logoff);
 	initLoggedHandlers();
 }
 
@@ -45,13 +50,7 @@ function initLoggedHandlers() {
 	const twofaInput = document.querySelector<HTMLElement>('.input');
 	if (logoffBtn) {
 		logoffBtn.addEventListener("click", async () => {
-			console.log("[logoff] Login button clicked:");
-			user_f.id = -1;
-			user_f.name = "";
-			localStorage.removeItem("twofaToken");
-			localStorage.removeItem("accessToken");
-			localStorage.removeItem("refreshToken");
-			navigateTo(ViewState.LOGIN);
+			logoff();
 		}
 	)};
 	
@@ -79,6 +78,12 @@ export function setDivRegister() {
 
 function initRegisterHandlers() {
 	const continueBtn = document.querySelector(".register-btn");
+	const backBtn = document.querySelector('.btn_click[data-btn-id="back"]') as HTMLButtonElement;
+	if (backBtn) {
+		backBtn.addEventListener("click", async () => {
+			console.log("[register] Back button clicked");
+			navigateTo(ViewState.LOGIN);
+	})};
 	if (continueBtn) {
 		continueBtn.addEventListener("click", async () => {
 			console.log("[register] Register button clicked:");

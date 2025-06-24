@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   node_sqlite:
     build:
@@ -26,26 +25,69 @@ services:
     networks:
       - front-tier
 
-  redis:
-    image: redis:7-alpine
-    container_name: redis
+  nginx_modsecurity:
+    build:
+      context: nginx_modsecurity/
+      dockerfile: Dockerfile
+    container_name: nginx_modsecurity
     ports:
-      - "6379:6379"
-    restart: unless-stopped
+      - "8443:8443"
+      - "8080:8080"
+    depends_on:
+      - node_sqlite
     networks:
       - front-tier
+    # volumes:
+    #   - ms_log:/var/log/modsec
+    environment:
+      PORT: 8080
+      SSL_PORT: 8443
+      SERVER_NAME: localhost
+      SERVER_TOKENS: off
+      NGINX_ALWAYS_TLS_REDIRECT: on
+      SSL_CERT: /etc/nginx/ssl/front.crt
+      SSL_CERT_KEY: /etc/nginx/ssl/front.key
+      SSL_PROTOCOLS: "TLSv1.2 TLSv1.3"
+      SSL_CIPHERS: "HIGH:!aNULL:!MD5"
+      SSL_PREFER_CIPHERS: on
+      SSL_VERIFY: off
+      SSL_VERIFY_DEPTH: 1
+      PROXY_PASS: https://node_sqlite:12800
+      PROXY_SSL_PROTOCOLS: "TLSv1.2 TLSv1.3"
+      PROXY_SSL_CIPHERS: "HIGH:!aNULL:!MD5"
+      PROXY_SSL_VERIFY: off
+      MODSEC_AUDIT_ENGINE: on
+      MODSEC_AUDIT_LOG: /var/log/modsec/audit.log
+      LOGLEVEL: warn
+      ERRORLOG: /var/log/modsec/error.log
+      MODSECURITY_CONFIG: /opt/conf/modsecurity.conf
+      CRS_SETUP_CONF: /opt/conf/crs-setup.conf
+
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: redis
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
+  #   networks:
+  #     - front-tier
 
 volumes:
   fp_data:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}/GitHub/FreakingPong
+      device: /home/${USER}/GitHub/Pong
   sqlite_data:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}/GitHub/FreakingPong/data/sqlite
+      device: /home/${USER}/GitHub/Pong/data/sqlite
+  ms_log:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/GitHub/Pong/docker/node_sqlite/log
 
 networks:
   front-tier: {}

@@ -26,6 +26,15 @@ env:
 	@printf "Show ENV ${name}:\n"
 	@docker compose config --environment
 
+delete:
+	@printf "Delete ${name}:\n"
+	docker container stop node_sqlite;
+	docker container rm node_sqlite;
+	docker image rm docker-node_sqlite;
+	docker container stop nginx_modsecurity;
+	docker container rm nginx_modsecurity;
+	docker image rm docker-nginx_modsecurity;
+
 bash:
 	@echo "run interactive session on "$(ARGUMENTS)".";
 	@docker exec -it $(ARGUMENTS) bash

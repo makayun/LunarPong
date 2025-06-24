@@ -4,11 +4,11 @@ import { verifyToken } from './auth.utils';
 
 // dotenv.config();
 
-declare module 'fastify' {
-	interface FastifyRequest {
-		user?: any;
-	}
-}
+// declare module 'fastify' {
+// 	interface FastifyRequest {
+// 		user?: any;
+// 	}
+// }
 
 export default async function authHook(
 		request: FastifyRequest,
