@@ -28,6 +28,17 @@ export function getOrCreateClientId(): GUID {
 	return clientId as GUID;
 }
 
+export function getAccessToken() : string {
+	const token = localStorage.getItem("accessToken");
+
+	if (!token) {
+		const errMsg = "No such client!";
+		alert(errMsg);
+		throw new Error(errMsg);
+	}
+	return token;
+}
+
 export function getOrCreateNickname(): string {
 	const key = "pong-nickname";
 	let nickname = sessionStorage.getItem(key);
