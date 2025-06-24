@@ -17,8 +17,18 @@ const engine: Engine = new Engine(canvas, true);
 const pongScene = new PongFrontScene(engine);
 
 pongScene.executeWhenReady(() => {
+	engine.runRenderLoop(() => pongScene.render());
+
+	window.addEventListener("resize", function () {
+		engine.resize();
+		pongScene.camera.zoomOn([
+			pongScene.pongMeshes.edgeBottom,
+			pongScene.pongMeshes.edgeLeft,
+			pongScene.pongMeshes.edgeRight
+		]);
+	});
+
 	["Local game", "Remote game", "Versus AI"].forEach(type => {
-		engine.runRenderLoop(() => pongScene.render());
 
 		const btn = document.getElementById(type) as HTMLButtonElement;
 		if (btn) {
@@ -90,17 +100,6 @@ async function babylonInit(opts: InitGameSuccess) : Promise<void> {
 			// socket.send("Invalid WS message: " + JSON.stringify(error));
 		}
 	};
-
-	// engine.runRenderLoop(() => pongScene.render());
-
-	window.addEventListener("resize", function () {
-		engine.resize();
-		pongScene.camera.zoomOn([
-			pongScene.pongMeshes.edgeBottom,
-			pongScene.pongMeshes.edgeLeft,
-			pongScene.pongMeshes.edgeRight
-		]);
-	});
 }
 
 function assignInputHandler(gameType: GameType) {
