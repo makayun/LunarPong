@@ -254,8 +254,8 @@
       margin-inline-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-x-reverse)));
     }
   }
-  .bg-\[url\(\'\.\.\/\.\.\/assets\/neon-drive\.jpg\'\)\] {
-    background-image: url('../../assets/neon-drive.jpg');
+  .bg-\[url\(\'\.\.\/\.\.\/assets\/term-back\.jpg\'\)\] {
+    background-image: url('../../assets/term-back.jpg');
   }
   .bg-cover {
     background-size: cover;
