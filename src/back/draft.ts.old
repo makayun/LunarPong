@@ -34,4 +34,3 @@ export class PongBackScene {
     // Логика обработки ввода (w, s, ArrowUp, ArrowDown)
   }
 }
-
