@@ -23,8 +23,8 @@
 		<button onclick="navigateTo('TWOFA')" class="btn">2FA</button>
 		<button onclick="navigateTo('GAME')" class="btn">Game</button>
 	</nav> -->
-      <div class="div_logoff hidden" id="div_logoff">
-  	    <button class="logoff-btn" data-i18n="logoff.button"></button>
+      <div class="div_logoff hidden" data-view-id="logoff" id="div_logoff">
+  	    <button class="logoff-btn btn_click" data-btn-id="logoff" data-i18n="logoff.button"></button>
       </div>
       <div class="div-login page-view hidden" data-view-id="login">
   <div class="login-container">
@@ -53,11 +53,14 @@
       </div>
       <button data-btn-id="login" data-i18n="login.button" class="login-btn btn_click"></button>
 	   <a href="/api/auth/google" class="btn">Login with Google</a>
+     <p data-i18n="or"></p>
+      <button data-btn-id="login_register" data-i18n="register.button" class="register-button btn_click"></button>
     </div>
   </div>
 </div>
 
 <div data-view-id="2fa" class="div-2fa page-view hidden">
+  <div id="countdown" class="countdown" countdown-id="2fd"></div>
   <div class="twofa-container">
     <h1 class="twofa-title" data-i18n="2fa.title"></h1>
     <div class="input-group">
@@ -65,7 +68,7 @@
              type="text" 
              data-input-id="2fa_token" 
              placeholder="" />
-      <label data-i18n="2fa.label_token" class="input-label"></label>
+      <label data-i18n="2fa.label_token" class="input-label"></label><br>
     </div>
     <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
   </div>
@@ -92,6 +95,8 @@
     </div>
     <button data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
   </div>
+  <br>
+  <button data-btn-id="back" class="back-btn btn_click" data-i18n="back.button"></button>
 </div>
   <div data-view-id="game" class="page-view hidden game-div" id="div_container">
     <div class="game-screen-div">

@@ -38,5 +38,8 @@
       "title": "Enter two-factor authentication key",
       "label_token": "Enter code here...",
       "continue": "Continue"
+    },
+    "back": {
+      "button": "Back"
     }
 }

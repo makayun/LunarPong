@@ -78,6 +78,12 @@ export function setDivRegister() {
 
 function initRegisterHandlers() {
 	const continueBtn = document.querySelector(".register-btn");
+	const backBtn = document.querySelector('.btn_click[data-btn-id="back"]') as HTMLButtonElement;
+	if (backBtn) {
+		backBtn.addEventListener("click", async () => {
+			console.log("[register] Back button clicked");
+			navigateTo(ViewState.LOGIN);
+	})};
 	if (continueBtn) {
 		continueBtn.addEventListener("click", async () => {
 			console.log("[register] Register button clicked:");

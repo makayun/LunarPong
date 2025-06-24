@@ -19,6 +19,7 @@
     --text-xl--line-height: calc(1.75 / 1.25);
     --text-2xl: 1.5rem;
     --text-2xl--line-height: calc(2 / 1.5);
+    --text-3xl: 1.875rem;
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
@@ -482,7 +483,7 @@
       }
     }
   }
-  .logoff-btn, .login-btn, .btn {
+  .logoff-btn, .login-btn, .back-btn, .register-button, .btn {
     background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-blue);
     border-radius: calc(infinity * 1px);
@@ -562,7 +563,6 @@
   .logoff-btn {
     background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
     border: 2px solid var(--color-green);
-    box-shadow: 0 0 8px var(--color-pink), 0 0 16px var(--color-blue);
     border-radius: calc(infinity * 1px);
     padding-inline: calc(var(--spacing) * 5);
     padding-block: calc(var(--spacing) * 2);
@@ -772,7 +772,29 @@
       }
     }
   }
+  .countdown {
+    font-family: var(--font-mono);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-green);
+    text-align: center;
+    margin-top: calc(var(--spacing) * 4);
+    margin-bottom: calc(var(--spacing) * 4);
+    padding: calc(var(--spacing) * 3);
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid var(--color-blue);
+    border-radius: 1rem;
+    backdrop-filter: blur(2px);
+    transition: all 300ms var(--ease-in-out);
+    position: relative;
+    overflow: hidden;
+  }
   @media (max-width: 768px) {
+    .countdown {
+      font-size: var(--text-2xl);
+      padding: calc(var(--spacing) * 2);
+      margin: calc(var(--spacing) * 2) 0;
+    }
     .game-div {
       flex-direction: column;
     }
@@ -818,6 +840,10 @@
     }
     .chat-main-div {
       margin: calc(var(--spacing) * 1);
+    }
+    .countdown {
+      font-size: var(--text-xl);
+      padding: calc(var(--spacing) * 1.5);
     }
   }
   @media (min-width: 641px) {
