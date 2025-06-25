@@ -7,12 +7,12 @@ export function setDivLogin() {
 
 function initLoginHandlers() {
 	const loginBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login"]`);
-	const loginInput = document.querySelector<HTMLInputElement>('.input[data-input-id="login_password"]');
+	const loginInput = document.querySelector<HTMLElement>('.input[data-input-id="login_password"]');
 	if(loginInput)
 	{
 		document.addEventListener('keydown', (e) => {
 		const currentView = document.querySelector('[data-view-id="login"]:not(.hidden)');
-    	if ((e.key) === "enter" && currentView) {
+    	if ((e.key) === "Enter" && currentView) {
 			login();
 		}
 		}); 
