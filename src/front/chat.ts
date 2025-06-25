@@ -3,7 +3,7 @@ import type { GUID } from "../defines/types";
 // import '../styles/styles.css';
 import '../styles/output.css';
 
-const input = document.getElementById('input') as HTMLInputElement;
+const input = document.getElementById('chat-input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
 const socket = new WebSocket(`wss://${window.location.host}/ws-chat`);
