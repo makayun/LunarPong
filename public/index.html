@@ -123,6 +123,50 @@
               class="game-button-tw">
           Create Tournament
       </button>
+      <div id="tournamentDialog" class="dialog-overlay">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h2 class="dialog-title">Create Tournament</h2>
+        <button class="close-btn" id="btn-close">&times;</button>
+      </div>
+      <form id="tournamentForm">
+        <div class="form-group">
+          <label class="form-label">Tournament Name</label>
+          <input 
+            type="text" 
+            id="tournamentName" 
+            class="tournament-name-input" 
+            placeholder="Enter tournament name..."
+            required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Number of Players</label>
+          <div class="player-count-grid" id="playerCountOptions">
+            <div class="player-count-option" data-players="2">
+              <span class="player-number">2</span>
+              <span class="player-label">Players</span>
+            </div>
+            <div class="player-count-option" data-players="4">
+              <span class="player-number">4</span>
+              <span class="player-label">Players</span>
+            </div>
+            <div class="player-count-option" data-players="8">
+              <span class="player-number">8</span>
+              <span class="player-label">Players</span>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button type="button" class="dialog-btn btn-cancel" id="Cancel-btn">
+            Cancel
+          </button>
+          <button type="submit" class="dialog-btn btn-create" id="createBtn" disabled>
+            Create Tournament
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
       <button id="joinTournament"
               class="game-button-tw">
           Join Tournament

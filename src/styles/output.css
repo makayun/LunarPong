@@ -931,6 +931,182 @@
     }
   }
 }
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 300ms var(--ease-in-out);
+}
+.dialog-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+.dialog {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(0, 0, 0, 0.98));
+  border: 2px solid var(--color-blue);
+  border-radius: 1rem;
+  padding: calc(var(--spacing) * 4);
+  max-width: 500px;
+  width: 90%;
+  transform: scale(0.8) translateY(20px);
+  transition: all 300ms var(--ease-in-out);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+.dialog-overlay.active .dialog {
+  transform: scale(1) translateY(0);
+}
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: calc(var(--spacing) * 3);
+  border-bottom: 1px solid var(--color-blue);
+  padding-bottom: calc(var(--spacing) * 2);
+}
+.dialog-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-white);
+  margin: 0;
+}
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--color-white);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 200ms;
+}
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.form-group {
+  margin-bottom: calc(var(--spacing) * 3);
+}
+.form-label {
+  display: block;
+  margin-bottom: calc(var(--spacing) * 1);
+  color: var(--color-blue);
+  font-weight: 600;
+}
+.tournament-name-input {
+  width: 100%;
+  padding: calc(var(--spacing) * 2);
+  border: 2px solid var(--color-blue);
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--color-white);
+  border-radius: 0.5rem;
+  font-size: var(--text-base);
+  transition: all 300ms var(--ease-in-out);
+  box-sizing: border-box;
+}
+.tournament-name-input:focus {
+  outline: none;
+  border-color: var(--color-white);
+  box-shadow: 0 0 8px var(--color-blue);
+}
+.player-count-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 2);
+}
+.player-count-option {
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid var(--color-blue);
+  color: var(--color-white);
+  padding: calc(var(--spacing) * 3);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 300ms var(--ease-in-out);
+  text-align: center;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+}
+.player-count-option:hover {
+  border-color: var(--color-white);
+  box-shadow: 0 0 12px var(--color-blue);
+  transform: translateY(-2px);
+}
+.player-count-option.selected {
+  background: linear-gradient(135deg, var(--color-purple), var(--color-green));
+  border-color: var(--color-white);
+  box-shadow: 0 0 16px var(--color-green);
+}
+.player-count-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 500ms;
+}
+.player-count-option:hover::before {
+  left: 100%;
+}
+.player-number {
+  font-size: 2rem;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 4px;
+}
+.player-label {
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+.dialog-actions {
+  display: flex;
+  gap: calc(var(--spacing) * 2);
+  margin-top: calc(var(--spacing) * 4);
+  justify-content: flex-end;
+}
+.dialog-btn {
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+  border: 2px solid;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 300ms var(--ease-in-out);
+  font-size: var(--text-base);
+}
+.btn-cancel {
+  background: transparent;
+  color: var(--color-white);
+  border-color: var(--color-white);
+}
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.btn-create {
+  background: linear-gradient(135deg, var(--color-purple), var(--color-green));
+  color: var(--color-white);
+  border-color: var(--color-green);
+}
+.btn-create:hover {
+  box-shadow: 0 0 16px var(--color-green);
+  transform: translateY(-2px);
+}
+.btn-create:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 @property --tw-rotate-x {
   syntax: "*";
   inherits: false;
