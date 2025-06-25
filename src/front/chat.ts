@@ -154,6 +154,10 @@ export function viewProfile() {
               <p>⭐ Rating: ${data.rating || 'N/A'}</p>
               <p>🏆 Wins: ${data.wins || 0}</p>
               <p>🔥 Streak: ${data.streak || 0}</p>
+              <button id="joinTournament"
+                class="game-button-tw">
+                Join Tournament
+              </button>
             </div>
           `;
 

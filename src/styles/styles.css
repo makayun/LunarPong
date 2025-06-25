@@ -350,25 +350,6 @@
     }
   }
 
-  .logoff-btn{
-    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
-    border: 2px solid var(--color-green);
-    border-radius: calc(infinity * 1px);
-    padding-inline: --spacing(5);
-    padding-block: --spacing(2);
-    font-weight: var(--font-weight-semibold);
-    color: var(--color-white);
-    transition: all 300ms var(--ease-in-out);
-    transform: scale(1) translateY(0);
-    &:hover {
-      @media (hover: hover) {
-        transform: scale(1.1) translateY(calc(var(--spacing) * -1));
-        box-shadow: 0 0 8px var(--color-white);
-        border-color: var(--color-white);
-      }
-    }
-  }
-
   .game-div{
     display: flex;
     width: 100%;
@@ -433,8 +414,7 @@
   .chat-bg{
     background-image: url(../../assets/neon-drive.jpg);
     background-repeat: no-repeat;
-    background-position: center;
-    background-attachment:local;
+    background-size: cover;
   }
   
   .chat-head{
