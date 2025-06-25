@@ -6,6 +6,7 @@ import { generateGuid } from "../helpers/helpers";
 import type { User, Game, GUID, MeshPositions } from "../defines/types";
 import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
+import { endGameLog } from "../back/db";
 
 export class PongBackScene extends PongBaseScene implements Game {
     public id: GUID = generateGuid();
