@@ -2,61 +2,72 @@ import '../styles/output.css';
 // import '../styles/styles.css';
 
 import { Engine } from "@babylonjs/core/Engines/engine";
-
-import { getOrCreateClientId } from "../helpers/helpers";
-import type { User, GameType, InitGameSuccess, MeshPositions, MeshesDict, WSMessage, InitGameRequest } from "../defines/types";
 import { PongFrontScene } from "../scenes/PongFrontScene";
+import { getUserId } from '../helpers/helpers';
 import { aiInputHandler, localInputHandler, remoteInputHandler } from './gameInputVariants';
+import type { User, GameType, InitGameSuccess, MeshPositions, MeshesDict, WSMessage, InitGameRequest } from "../defines/types";
 
-const player: User = { id: getOrCreateClientId() };
-const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
-const engine: Engine = new Engine(canvas, true);
-const pongScene = new PongFrontScene(engine);
+async function gameMain() {
+	const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
+	const engine = new Engine(canvas, true);
+	const pongScene = new PongFrontScene(engine);
+	const player: User = { id: await getUserId() };
 
-pongScene.executeWhenReady(() => {
-	["Local game", "Remote game", "Versus AI"].forEach(type => {
+	pongScene.executeWhenReady(() => {
 		engine.runRenderLoop(() => pongScene.render());
 
-		const btn = document.getElementById(type) as HTMLButtonElement;
-		if (btn) {
-			btn.addEventListener("click", () => {
-				const initGameMsg: InitGameRequest = {
-					type: "InitGameRequest",
-					gameType: type as GameType,
-					user: player
-				};
-				pongScene.socket.send(JSON.stringify(initGameMsg));
+		window.addEventListener("resize", function () {
+			engine.resize();
+			pongScene.camera.zoomOn([
+				pongScene.pongMeshes.edgeBottom,
+				pongScene.pongMeshes.edgeLeft,
+				pongScene.pongMeshes.edgeRight
+			]);
+		});
 
-				btn.disabled = true;
-				btn.classList.add("relative","w-96","cursor-not-allowed");
-				// btn.hidden = true;
-				["Local game", "Remote game", "Versus AI"].forEach(otherType => {
-					if (otherType !== type) {
-						const otherBtn = document.getElementById(otherType) as HTMLButtonElement;
-						if (otherBtn != btn) {
-							otherBtn.disabled = true;
-							otherBtn.classList.remove("flex");
-							otherBtn.classList.add("hidden","absolute");
+		["Local game", "Remote game", "Versus AI"].forEach(type => {
+
+			const btn = document.getElementById(type) as HTMLButtonElement;
+			if (btn) {
+				btn.addEventListener("click", () => {
+					const initGameMsg: InitGameRequest = {
+						type: "InitGameRequest",
+						gameType: type as GameType,
+						user: player
+					};
+					pongScene.socket.send(JSON.stringify(initGameMsg));
+
+					btn.disabled = true;
+					btn.classList.add("relative","w-96","cursor-not-allowed");
+					// btn.hidden = true;
+					["Local game", "Remote game", "Versus AI"].forEach(otherType => {
+						if (otherType !== type) {
+							const otherBtn = document.getElementById(otherType) as HTMLButtonElement;
+							if (otherBtn != btn) {
+								otherBtn.disabled = true;
+								otherBtn.classList.remove("flex");
+								otherBtn.classList.add("hidden","absolute");
+							}
 						}
-					}
+					});
 				});
-			});
+			}
+		});
+	})
+
+
+	pongScene.socket.onmessage = async function(event: MessageEvent) {
+		const msg = JSON.parse(event.data);
+		if (msg.type === "InitGameSuccess") {
+			await gameInit(pongScene, msg);
 		}
-	});
-})
-
-
-pongScene.socket.onmessage = function(event: MessageEvent) {
-	const msg = JSON.parse(event.data);
-	if (msg.type === "InitGameSuccess") {
-		babylonInit(msg);
 	}
 }
 
-export default async function babylonInit(opts: InitGameSuccess) : Promise<void> {
+async function gameInit(pongScene: PongFrontScene, opts: InitGameSuccess) : Promise<void> {
 	pongScene.side = opts.playerSide;
 	pongScene.id = opts.gameId;
-	pongScene.sendPlayerInput =  assignInputHandler(opts.gameType);
+	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType);
 
 	let meshPositions: MeshPositions = {
 		type: "MeshPositions",
@@ -87,20 +98,10 @@ export default async function babylonInit(opts: InitGameSuccess) : Promise<void>
 			// socket.send("Invalid WS message: " + JSON.stringify(error));
 		}
 	};
-
-	// engine.runRenderLoop(() => pongScene.render());
-
-	window.addEventListener("resize", function () {
-		engine.resize();
-		pongScene.camera.zoomOn([
-			pongScene.pongMeshes.edgeBottom,
-			pongScene.pongMeshes.edgeLeft,
-			pongScene.pongMeshes.edgeRight
-		]);
-	});
 }
 
-function assignInputHandler(gameType: GameType) {
+
+function assignInputHandler(pongScene: PongFrontScene, gameType: GameType) {
 	switch (gameType) {
 		case "Local game":
 			return localInputHandler(pongScene);
@@ -111,8 +112,11 @@ function assignInputHandler(gameType: GameType) {
 	}
 }
 
+
 function applyMeshPositions (meshes: MeshesDict, newPositions: MeshPositions) : void {
 	meshes.ball.position = newPositions.ball;
 	meshes.paddleLeft.position = newPositions.paddleLeft;
 	meshes.paddleRight.position = newPositions.paddleRight;
 }
+
+gameMain();

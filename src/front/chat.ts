@@ -1,60 +1,78 @@
-import { getOrCreateClientId, getOrCreateNickname } from "../helpers/helpers";
+import { getUserId, getUserNickname } from "../helpers/helpers";
 import type { GUID } from "../defines/types";
 // import '../styles/styles.css';
 import '../styles/output.css';
-const input = document.getElementById('input') as HTMLInputElement;
+
+const input = document.getElementById('chat-input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
 const socket = new WebSocket(`wss://${window.location.host}/ws-chat`);
 
-const user = {
-  id: getOrCreateClientId(),
-  nick: getOrCreateNickname(),
-};
+async function chatMain() {
+  const user = {
+    id: await getUserId(),
+    nick: await getUserNickname()
+  };
 
-socket.addEventListener('open', () => {
-  socket.send(JSON.stringify({ type: 'register', user }));
-  addMessage(`[System] You are ${user.nick}`);
-});
+  socket.addEventListener('open', () => {
+    socket.send(JSON.stringify({ type: 'register', user }));
+    addMessage(`[System] You are ${user.nick}`);
+  });
 
-socket.addEventListener('message', (event) => {
-  console.log('Received:', event.data);
-  try {
-    const data = JSON.parse(event.data);
-    if (data.type === 'nick-confirm') {
-      if (data.nick !== user.nick) {
-        user.nick = data.nick;
-        sessionStorage.setItem('pong-nickname', data.nick);
-        addMessage(`[System] Your nickname was changed to ${data.nick} because the previous one was taken.`);
-      }
-    }
-    switch (data.type) {
-      case 'message': {
-        let direction = 'all';
-        if (data.to?.nick === user.nick) {
-          direction = 'you';
-        } else if (data.to?.nick) {
-          direction = userMap.get(data.to.id as GUID) || data.to.id;
+  socket.addEventListener('message', (event) => {
+    console.log('Received:', event.data);
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === 'nick-confirm') {
+        if (data.nick !== user.nick) {
+          user.nick = data.nick;
+          sessionStorage.setItem('pong-nickname', data.nick);
+          addMessage(`[System] Your nickname was changed to ${data.nick} because the previous one was taken.`);
         }
-        const fromNick = userMap.get(data.from as GUID) || data.from;
-        addMessage(`[${fromNick} -> ${direction}] ${data.content}`);
+      }
+      switch (data.type) {
+        case 'message': {
+          let direction = 'all';
+          if (data.to?.nick === user.nick) {
+            direction = 'you';
+          } else if (data.to?.nick) {
+            direction = userMap.get(data.to.id as GUID) || data.to.id;
+          }
+          const fromNick = userMap.get(data.from as GUID) || data.from;
+          addMessage(`[${fromNick} -> ${direction}] ${data.content}`);
+          break;
+        }
+        case 'system':
+          addMessage(`[System] ${data.content}`);
+          break;
+        case 'userlist':
+          updateUserList(data.users);
+          break;
+        case 'invite':
+          const fromNick = userMap.get(data.from as GUID) || data.from;
+          addMessage(`[Invite] ${fromNick} invited you to play ${data.game} 👤🏓👤`);
         break;
       }
-      case 'system':
-        addMessage(`[System] ${data.content}`);
-        break;
-      case 'userlist':
-        updateUserList(data.users);
-        break;
-      case 'invite':
-        const fromNick = userMap.get(data.from as GUID) || data.from;
-        addMessage(`[Invite] ${fromNick} invited you to play ${data.game} 👤🏓👤`);
-      break;
+    } catch {
+      addMessage(event.data);
     }
-  } catch {
-    addMessage(event.data);
+  });
+
+  function updateUserList(users: { id: GUID; nick: string }[]) {
+    console.log('Received users:', users);
+    userMap.clear();
+    recipient.innerHTML = '<option value="all">👥</option>';
+    users.forEach((u) => {
+      userMap.set(u.id, u.nick);
+      if (u.nick !== user.nick) {
+        const option = document.createElement('option');
+        option.value = u.id;
+        option.textContent = u.nick;
+        recipient.appendChild(option);
+      }
+    });
+    console.log('userMap after update:', Array.from(userMap.entries()));
   }
-});
 
 input.addEventListener('keydown', (e: KeyboardEvent) => {
   if (e.key === 'Enter') {
@@ -93,23 +111,9 @@ function addMessage(msg: string) {
 
 let userMap = new Map<GUID, string>();
 
-function updateUserList(users: { id: GUID; nick: string }[]) {
-  console.log('Received users:', users);
-  userMap.clear();
-  recipient.innerHTML = '<option value="all">👥</option>';
-  users.forEach((u) => {
-    userMap.set(u.id, u.nick);
-    if (u.nick !== user.nick) {
-      const option = document.createElement('option');
-      option.value = u.id;
-      option.textContent = u.nick;
-      recipient.appendChild(option);
-    }
-  });
-  console.log('userMap after update:', Array.from(userMap.entries()));
-}
 
-export function blockUser() {
+
+function blockUser() {
   const target = recipient.value;
   if (target !== 'all') {
     socket.send(JSON.stringify({ type: 'block', user: { id: target } }));
@@ -118,7 +122,7 @@ export function blockUser() {
   }
 }
 
-export function inviteUser() {
+function inviteUser() {
   const recipientElement = document.getElementById('recipient') as HTMLSelectElement | null;
   if (!recipientElement) {
     console.error('Recipient element not found');
@@ -132,7 +136,7 @@ export function inviteUser() {
   }
 }
 
-export function viewProfile() {
+function viewProfile() {
   const target = recipient.value;
   if (target !== 'all') {
     const playerNick = userMap.get(target as GUID) || target;
@@ -173,3 +177,6 @@ export function viewProfile() {
 (window as any).blockUser = blockUser;
 (window as any).inviteUser = inviteUser;
 (window as any).viewProfile = viewProfile;
+}
+
+chatMain();

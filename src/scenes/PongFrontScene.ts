@@ -42,12 +42,8 @@ export class PongFrontScene extends PongBaseScene {
 	constructor (inEngine: Engine) {
 		super(inEngine);
 
-		var helper = this.createDefaultEnvironment();
+		var helper = this.createDefaultEnvironment({ createSkybox: false });
 		helper?.setMainColor(Color3.Black());
-
-		// this.id = opts.gameId;
-		// this.side = opts.playerSide;
-		// this.socket = inSocket;
 
 		const light = new HemisphericLight("light", new Vector3(0, 1, 0), this);
 		light.intensity = 0.8;
@@ -138,25 +134,25 @@ export class PongFrontScene extends PongBaseScene {
 function createScoreBlock(ui: AdvancedDynamicTexture, side: PlayerSide) : TextBlock {
 	const rectangle = new Rectangle("score" + side);
 	rectangle.width = 0.2;
-	rectangle.height = 0.2;
+	rectangle.height = "60px";
 	rectangle.cornerRadius = 20;
 	rectangle.thickness = 3;
 	rectangle.color = "White";
 	rectangle.background = "rgb(57,61,71)";
 
-	const sidePadding = 14;
+	const padding = 14;
 
 	if (side === "left") {
 		rectangle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-		rectangle.paddingLeft = sidePadding;
+		rectangle.paddingLeft = padding;
 	}
 	else {
 		rectangle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
-		rectangle.paddingRight = sidePadding;
+		rectangle.paddingRight = padding;
 	}
 
 	rectangle.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-	rectangle.paddingTop = 50;
+	rectangle.paddingTop = padding;
 	const scoreText = new TextBlock("scoreText" + side, "0");
 	rectangle.addControl(scoreText);
 

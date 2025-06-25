@@ -1,4 +1,3 @@
-import { KeyboardEventTypes } from "@babylonjs/core";
 import { ViewState, navigateTo} from "./state"
 import { user_f, login, twofa, logoff, validateToken} from "./login"
 
@@ -8,11 +7,12 @@ export function setDivLogin() {
 
 function initLoginHandlers() {
 	const loginBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login"]`);
-	const loginInput = document.querySelector<HTMLElement>('.input');
+	const loginInput = document.querySelector<HTMLElement>('.input[data-input-id="login_password"]');
 	if(loginInput)
 	{
 		document.addEventListener('keydown', (e) => {
-    	if ((e.key as KeyboardEventTypes) === 'Enter') {
+		const currentView = document.querySelector('[data-view-id="login"]:not(.hidden)');
+    	if ((e.key) === "Enter" && currentView) {
 			login();
 		}
 		}); 
@@ -47,7 +47,7 @@ export function setDiv2fa() {
 
 function initLoggedHandlers() {
 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
-	const twofaInput = document.querySelector<HTMLElement>('.input');
+	const twofaInput = document.querySelector<HTMLInputElement>('.input[data-input-id="2fa_token"]');
 	if (logoffBtn) {
 		logoffBtn.addEventListener("click", async () => {
 			logoff();
@@ -57,7 +57,8 @@ function initLoggedHandlers() {
 	if(twofaInput)
 	{
 		document.addEventListener('keydown', (e) => {
-    	if ((e.key as KeyboardEventTypes) === 'Enter') {
+		const currentView = document.querySelector('[data-view-id="2fa"]:not(.hidden)');
+    	if ((e.key) === 'Enter' && currentView) {
 			twofa();
 		}
 		}); 

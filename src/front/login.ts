@@ -6,16 +6,17 @@ window.addEventListener("hashchange", handleHashChange);
 import { isViewState, set_view, ViewState, navigateTo} from "./state"
 import type { User_f } from "../defines/types";
 import { jwtDecode } from 'jwt-decode';
+import { setUser, unsetUser } from "../helpers/helpers";
 
 export let user_f: User_f = {id: -1};
 
 // function contentLoaded() {
 // 	const hash = location.hash.replace("#", "");
-	
+
 // 	if (isViewState(hash)) {
 // 		if (hash === ViewState.GAME && user_f.id === -1) {
 // 			// Если мы попали на страницу игры, проверяем авторизацию
-			
+
 // 			checkLogin();
 // 			return;
 // 		}
@@ -31,7 +32,7 @@ export let user_f: User_f = {id: -1};
 */
 function handleHashChange() {
 	const hash = location.hash.replace("#", "");
-	
+
 	if (isViewState(hash)) {
 		set_view(hash);
 	} else {
@@ -64,7 +65,7 @@ export async function checkLogin() {
 		navigateTo(ViewState.TWOFA);
 		return;
 	}
-	
+
 	const c_refreshToken = getCookie('refreshToken');
 	if (c_refreshToken) {
 		// console.log('Access token from cookie:', c_refreshToken);
@@ -96,12 +97,14 @@ export async function checkLogin() {
 			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
+			setUser(user_f);
 			const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
 			if (logoffBtn) {
 				logoffBtn.addEventListener("click", async () => {
 					console.log("[logoff] Login button clicked:");
 					user_f.id = -1;
 					user_f.name = "";
+					unsetUser();
 					localStorage.removeItem("twofaToken");
 					localStorage.removeItem("accessToken");
 					localStorage.removeItem("refreshToken");
@@ -140,6 +143,7 @@ async function refreshToken() {
 			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
+			setUser(user_f);
 			console.log("[refresh] Refresh accessToken:", data.accessToken);
 			localStorage.setItem("accessToken", data.accessToken);
 		}  catch (err) {
@@ -147,7 +151,7 @@ async function refreshToken() {
 			return false;
 		}
 	} else {
-		return false;	
+		return false;
 	}
 	return true;
 }
@@ -186,6 +190,7 @@ export async function login() {
 
 		user_f.id = data.user.id;
 		user_f.name = data.user.username;
+		setUser(user_f);
 		console.log("[login] Login successful, User name = ", user_f.name);
 		console.log("[login] Login successful, User id =", user_f.id);
 		// 💾 Сохраняем токены (в localStorage или sessionStorage)
@@ -226,6 +231,7 @@ export async function twofa() {
 			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
+			setUser(user_f);
 			localStorage.removeItem("twofaToken");
 			localStorage.setItem("accessToken", data.accessToken);
 			localStorage.setItem("refreshToken", data.refreshToken);
@@ -247,6 +253,7 @@ export async function logoff() {
 	localStorage.removeItem("refreshToken");
 	user_f.id = -1;
 	user_f.name = "";
+	unsetUser();
 	navigateTo(ViewState.LOGIN);
 }
 
@@ -274,6 +281,7 @@ export async function register() {
 			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
+			setUser(user_f);
 			navigateTo(ViewState.GAME);
 			return;
 		}  catch (err) {
