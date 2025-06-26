@@ -16,7 +16,7 @@ async function chatMain() {
 
   socket.addEventListener('open', () => {
     socket.send(JSON.stringify({ type: 'register', user }));
-    addMessage(`[System] You are ${user.nick}`);
+    // addMessage(`[System] You are ${user.nick}`);
   });
 
   socket.addEventListener('message', (event) => {
