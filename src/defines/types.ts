@@ -81,7 +81,7 @@ export type InitGameRequest = {
 	type: "InitGameRequest",
 	gameType: GameType,
 	user: User,
-	opponent: User
+	// opponent: User
 };
 
 export type InitGameSuccess = {
