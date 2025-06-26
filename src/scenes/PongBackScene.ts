@@ -52,6 +52,14 @@ export class PongBackScene extends PongBaseScene implements Game {
         const moveDistance = this.ballSpeed * deltaTime;
         const moveDirection = this.ballVelocity.normalize();
         this.pongMeshes.ball.position.addInPlace(moveDirection.scale(moveDistance));
+
+        const x = this.pongMeshes.ball.position.x;
+        const fieldWidth = 12; // если поиграться этими циферками, то можно 😸
+        const waveAmplitude = 2; // достичь идеальных подскакиваний мячика 😸
+        const waveFrequency = Math.PI / fieldWidth;
+        this.pongMeshes.ball.position.y = waveAmplitude * Math.abs(Math.sin(x * waveFrequency));
+
+
         this.handleBallCollisions();
     }
 
