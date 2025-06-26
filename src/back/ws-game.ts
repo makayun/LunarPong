@@ -2,6 +2,7 @@ import type { FastifyInstance }	from "fastify";
 import type { FastifyRequest }	from "fastify";
 import type { WebSocket }		from "@fastify/websocket";
 
+import { startGameLog } from "./db";
 import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
 import { PADDLE_STEP }				from "../defines/constants";
@@ -54,6 +55,10 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 }
 
 async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: InitGameRequest): Promise<void> {
+	// *Наташа: Старт логирования игры
+    const logId = await startGameLog(msg.user.id, msg.opponent.id);
+    // (можно передать logId в сцену)
+	
 	console.log("Initializing game for player:", [msg.user.id], ", type : ", msg.gameType);
 
 	engine.scenes.forEach(

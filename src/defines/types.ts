@@ -80,7 +80,8 @@ export type MeshPositions = {
 export type InitGameRequest = {
 	type: "InitGameRequest",
 	gameType: GameType,
-	user: User
+	user: User,
+	opponent: User
 };
 
 export type InitGameSuccess = {

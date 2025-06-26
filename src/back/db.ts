@@ -51,3 +51,21 @@ export function getDB(): Sqlite.Database {
 // `).run();
 
 // export default db;
+
+
+// *Наташа: Старт логирования игры
+export async function startGameLog(player1Id: string, player2Id: string){
+    const result = await db.run(
+        `INSERT INTO game_logs (player1_id, player2_id, status) VALUES (?, ?, 'started')`,
+        [player1Id, player2Id]
+    );
+    return result.lastID;
+}
+
+// *Наташа: Завершение логирования игры
+export async function endGameLog(logId: number, score1: number, score2: number): Promise<void> {
+    await db.run(
+        `UPDATE game_logs SET ended_at = CURRENT_TIMESTAMP, score1 = ?, score2 = ?, status = 'finished' WHERE id = ?`,
+        [score1, score2, logId]
+    );
+}
