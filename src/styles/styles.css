@@ -557,163 +557,6 @@
   overflow: hidden;
   }
 
-  @media (max-width: 768px) {
-    .countdown {
-    font-size: var(--text-2xl);
-    padding: calc(var(--spacing) * 2);
-    margin: calc(var(--spacing) * 2) 0;
-  }
-    .game-div {
-      flex-direction: column;
-    }
-    .game-win{
-      max-width: min(90vw, 80vh * 10/7);
-    }
-    .chat-main-div {
-      min-width: 100%;
-      max-width: min(90vw, 80vh * 10/7);
-      margin: calc(var(--spacing) * 2);
-      margin-top: 0;
-    }
-    
-    .div-game-btns {
-      flex-direction: column;
-      width: 100%;
-      align-items: stretch;
-    }
-    
-    .game-button-tw {
-      width: 100%;
-      max-width: 300px;
-      margin: 0 auto;
-    }
-    
-    .chat-head {
-      flex-direction: column;
-      gap: calc(var(--spacing) * 1);
-    }
-  }
-
-  @media (max-width: 640px) {
-    #gameButtons {
-      @apply flex-col w-full;
-    }
-    .game-win{
-      max-width: min(90vw, 80vh * 10/7);
-    }
-    .game-button-tw {
-      @apply w-full max-w-xs mx-auto;
-    }
-    
-    .game-name {
-      font-size: var(--text-xl);
-    }
-    
-    .chat-main-div {
-      margin: calc(var(--spacing) * 1);
-    }
-    .countdown {
-    font-size: var(--text-xl);
-    padding: calc(var(--spacing) * 1.5);
-  }
-  }
-  @media (min-width: 641px) {
-    .div-game-btns {
-      flex-direction: row;
-    }
-    
-    .game-button-tw {
-      width: auto;
-    }
-  }
-
-  @media (min-width: 769px) {
-    .game-win{
-      max-width: min(90vw, 80vh * 10/7);
-    }
-    .game-div {
-      flex-direction: row;
-
-    }
-    
-    .chat-main-div {
-      min-width: 240px;
-      max-width: 800px;
-      margin: calc(var(--spacing) * 5);
-      margin-left: calc(var(--spacing) * 20);
-    }
-  }
-  @media (max-width: 768px) {
-    .login-container,
-    .twofa-container,
-    .register-container {
-      max-width: 90vw;
-      padding: calc(var(--spacing) * 4);
-    }
-    
-    .login-form {
-      padding: calc(var(--spacing) * 4);
-    }
-    
-    .login-title,
-    .twofa-title,
-    .register-title {
-      font-size: var(--text-xl);
-      margin-bottom: calc(var(--spacing) * 3);
-    }
-    
-    .input-group {
-      margin-bottom: calc(var(--spacing) * 3);
-    }
-  }
-
-  @media (max-width: 640px) {
-    .login-container,
-    .twofa-container,
-    .register-container {
-      max-width: 95vw;
-      padding: calc(var(--spacing) * 3);
-    }
-    
-    .login-form {
-      padding: calc(var(--spacing) * 3);
-    }
-    
-    .login-title,
-    .twofa-title,
-    .register-title {
-      font-size: var(--text-lg);
-      margin-bottom: calc(var(--spacing) * 2);
-    }
-    
-    .input-group {
-      margin-bottom: calc(var(--spacing) * 2);
-    }
-  }
-
-  @media (min-width: 641px) {
-    .login-container,
-    .twofa-container,
-    .register-container {
-      max-width: 400px;
-    }
-  }
-
-  @media (min-width: 769px) {
-    .login-container {
-      max-width: 400px;
-    }
-    
-    .twofa-container {
-      max-width: 360px;
-    }
-    
-    .register-container {
-      max-width: 400px;
-    }
-  }
-}
-
 
 
 .dialog-overlay {
@@ -904,7 +747,7 @@
     .btn-create {
       background: linear-gradient(135deg, var(--color-purple), var(--color-green));
       color: var(--color-white);
-      border-color: var(--color-green);
+      border-color: var(--color-white);
     }
 
     .btn-create:hover {
@@ -918,3 +761,205 @@
       transform: none;
       box-shadow: none;
     }
+  @media (max-width: 768px) {
+    .countdown {
+    font-size: var(--text-2xl);
+    padding: calc(var(--spacing) * 2);
+    margin: calc(var(--spacing) * 2) 0;
+  }
+    .game-div {
+      flex-direction: column;
+    }
+    .game-win{
+      max-width: min(90vw, 80vh * 10/7);
+    }
+    .chat-main-div {
+      min-width: 100%;
+      max-width: min(90vw, 80vh * 10/7);
+      margin: calc(var(--spacing) * 2);
+      margin-top: 0;
+    }
+    
+    .div-game-btns {
+      flex-direction: column;
+      width: 100%;
+      align-items: stretch;
+    }
+    
+    .game-button-tw {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    
+    .chat-head {
+      flex-direction: column;
+      gap: calc(var(--spacing) * 1);
+    }
+  }
+
+  @media (max-width: 640px) {
+    #gameButtons {
+      @apply flex-col w-full;
+    }
+    .game-win{
+      max-width: min(90vw, 80vh * 10/7);
+    }
+    .game-button-tw {
+      @apply w-full max-w-xs mx-auto;
+    }
+    
+    .game-name {
+      font-size: var(--text-xl);
+    }
+    
+    .chat-main-div {
+      margin: calc(var(--spacing) * 1);
+    }
+    .countdown {
+    font-size: var(--text-xl);
+    padding: calc(var(--spacing) * 1.5);
+  }
+  }
+  @media (min-width: 641px) {
+    .div-game-btns {
+      flex-direction: row;
+    }
+    
+    .game-button-tw {
+      width: auto;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .game-win{
+      max-width: min(90vw, 80vh * 10/7);
+    }
+    .game-div {
+      flex-direction: row;
+
+    }
+    
+    .chat-main-div {
+      min-width: 240px;
+      max-width: 800px;
+      margin: calc(var(--spacing) * 5);
+      margin-left: calc(var(--spacing) * 20);
+    }
+  }
+  @media (max-width: 768px) {
+    .login-container,
+    .twofa-container,
+    .register-container {
+      max-width: 90vw;
+      padding: calc(var(--spacing) * 4);
+    }
+    
+    .login-form {
+      padding: calc(var(--spacing) * 4);
+    }
+    
+    .login-title,
+    .twofa-title,
+    .register-title {
+      font-size: var(--text-xl);
+      margin-bottom: calc(var(--spacing) * 3);
+    }
+    
+    .input-group {
+      margin-bottom: calc(var(--spacing) * 3);
+    }
+    .dialog {
+    width: 95%;
+    padding: calc(var(--spacing) * 3);
+    max-width: 420px;
+  }
+
+  .dialog-title {
+    font-size: 1.25rem;
+  }
+
+  .player-count-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dialog-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dialog-btn {
+    width: 100%;
+    text-align: center;
+  }
+     
+  }
+
+  @media (max-width: 640px) {
+    .login-container,
+    .twofa-container,
+    .register-container {
+      max-width: 95vw;
+      padding: calc(var(--spacing) * 3);
+    }
+    
+    .login-form {
+      padding: calc(var(--spacing) * 3);
+    }
+    
+    .login-title,
+    .twofa-title,
+    .register-title {
+      font-size: var(--text-lg);
+      margin-bottom: calc(var(--spacing) * 2);
+    }
+    
+    .input-group {
+      margin-bottom: calc(var(--spacing) * 2);
+    }
+  }
+
+  @media (min-width: 641px) {
+    .login-container,
+    .twofa-container,
+    .register-container {
+      max-width: 400px;
+    }
+  }
+
+  @media (min-width: 769px) {
+    .login-container {
+      max-width: 400px;
+    }
+    
+    .twofa-container {
+      max-width: 360px;
+    }
+    
+    .register-container {
+      max-width: 400px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dialog {
+    padding: calc(var(--spacing) * 2);
+  }
+
+  .player-count-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .player-number {
+    font-size: 1.5rem;
+  }
+
+  .player-label {
+    font-size: 0.75rem;
+  }
+
+  .dialog-title {
+    font-size: 1.125rem;
+  }
+}
