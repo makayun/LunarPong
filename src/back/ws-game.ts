@@ -47,9 +47,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 		});
 
 		socket.on("close", () => {
-
 			engine.removePlayerBySocket(socket);
-			engine.removeEmptyScenes();
 		});
 	});
 }

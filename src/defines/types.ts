@@ -36,6 +36,8 @@ export type User_f = {
 	name?: string;
 };
 
+export type GameButtons = Map<GameType, HTMLButtonElement>;
+
 export type User = {
 	id: GUID,
 	gameId?: GUID,
@@ -102,6 +104,12 @@ export type ScoreUpdate = {
 	score: [number, number];
 }
 
+export type GameOver = {
+	type: "GameOver",
+	winner: GUID,
+	finalScore: [number, number]
+}
+
 export type ChatMessage =
   | { type: 'register', user: User }
   | { type: 'message', to: User, content: string }
@@ -120,3 +128,4 @@ export type WSMessage =
 	| InitGameSuccess
 	| BallCollision
 	| ScoreUpdate
+	| GameOver

@@ -5,13 +5,23 @@ import { Engine } from "@babylonjs/core/Engines/engine";
 import { PongFrontScene } from "../scenes/PongFrontScene";
 import { getUserId } from '../helpers/helpers';
 import { aiInputHandler, localInputHandler, remoteInputHandler } from './gameInputVariants';
-import type { User, GameType, InitGameSuccess, MeshPositions, MeshesDict, WSMessage, InitGameRequest } from "../defines/types";
+import type { User, GameType, InitGameSuccess, MeshPositions, MeshesDict, WSMessage } from "../defines/types";
+import { initGameButtons, setGameButtons } from './gameButtons';
+
+const gameButtons = initGameButtons();
 
 async function gameMain() {
 	const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 	const engine = new Engine(canvas, true);
 	const pongScene = new PongFrontScene(engine);
-	const player: User = { id: await getUserId() };
+	let player: User | null = { id: await getUserId() };
+
+	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
+	if (logoffBtn) {
+		logoffBtn.addEventListener("click", async function() {
+			player = null;
+		})
+	}
 
 	pongScene.executeWhenReady(() => {
 		engine.runRenderLoop(() => pongScene.render());
@@ -25,46 +35,22 @@ async function gameMain() {
 			]);
 		});
 
-		["Local game", "Remote game", "Versus AI"].forEach(type => {
-
-			const btn = document.getElementById(type) as HTMLButtonElement;
-			if (btn) {
-				btn.addEventListener("click", () => {
-					const initGameMsg: InitGameRequest = {
-						type: "InitGameRequest",
-						gameType: type as GameType,
-						user: player
-					};
-					pongScene.socket.send(JSON.stringify(initGameMsg));
-
-					btn.disabled = true;
-					btn.classList.add("relative","w-96","cursor-not-allowed");
-					// btn.hidden = true;
-					["Local game", "Remote game", "Versus AI"].forEach(otherType => {
-						if (otherType !== type) {
-							const otherBtn = document.getElementById(otherType) as HTMLButtonElement;
-							if (otherBtn != btn) {
-								otherBtn.disabled = true;
-								otherBtn.classList.remove("flex");
-								otherBtn.classList.add("hidden","absolute");
-							}
-						}
-					});
-				});
-			}
-		});
+		setGameButtons(gameButtons, pongScene, player);
 	})
-
 
 	pongScene.socket.onmessage = async function(event: MessageEvent) {
 		const msg = JSON.parse(event.data);
 		if (msg.type === "InitGameSuccess") {
-			await gameInit(pongScene, msg);
+			await gameInit(pongScene, player, msg);
 		}
 	}
 }
 
-async function gameInit(pongScene: PongFrontScene, opts: InitGameSuccess) : Promise<void> {
+async function gameInit(pongScene: PongFrontScene, player: User | null, opts: InitGameSuccess) : Promise<void> {
+	if (!player)
+		player = { id: await getUserId() };
+	pongScene.score = [0,0];
+	pongScene.updateScore(pongScene.score);
 	pongScene.side = opts.playerSide;
 	pongScene.id = opts.gameId;
 	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType);
@@ -92,6 +78,9 @@ async function gameInit(pongScene: PongFrontScene, opts: InitGameSuccess) : Prom
 					break;
 				case "BallCollision":
 					pongScene.animateHighlightIntensity(message.collidedWith);
+					break;
+				case "GameOver":
+					setGameButtons(gameButtons, pongScene, player);
 			}
 		} catch (error) {
 			console.error("Wrong WS message:", error);

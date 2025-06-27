@@ -3,7 +3,7 @@ import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
 import type { WebSocket } from "@fastify/websocket";
 import { PongBaseScene } from "./PongBaseScene";
 import { generateGuid } from "../helpers/helpers";
-import type { User, Game, GUID, MeshPositions, GameState } from "../defines/types";
+import type { User, Game, GUID, MeshPositions, GameState, GameOver } from "../defines/types";
 import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 import { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";
@@ -132,7 +132,7 @@ export class PongBackScene extends PongBaseScene implements Game {
         this.gameState = "over";
 
         const winnerIndex = this.score[0] >= 21 ? 0 : 1;
-        const message = {
+        const message : GameOver = {
             type: "GameOver",
             winner: this.players[winnerIndex]?.id,
             finalScore: [this.score[0], this.score[1]],
@@ -141,8 +141,8 @@ export class PongBackScene extends PongBaseScene implements Game {
         this.players.forEach(player => {
             player.gameSocket?.send(JSON.stringify(message));
         });
-
         this.onBeforeRenderObservable.clear();
+        this.players.length = 0;
     }
 
     private handleGoal(): void {
@@ -163,7 +163,7 @@ export class PongBackScene extends PongBaseScene implements Game {
             player.gameSocket?.send(JSON.stringify(message));
         });
 
-        if (this.score[0] >= 21 || this.score[1] >= 21) {
+        if (this.score[0] >= 7 || this.score[1] >= 7) {
             this.endGame();
             return;
         }
@@ -185,6 +185,7 @@ export class PongBackEngine extends NullEngine {
     public removeEmptyScenes() {
         this.scenes = this.scenes.filter(scene => {
             if (scene.players.length === 0) {
+                console.log("Removing game:", [scene.id]);
                 scene.dispose();
                 return false;
             }
@@ -195,11 +196,9 @@ export class PongBackEngine extends NullEngine {
 
 export function startRenderLoop(engine: PongBackEngine) {
     engine.runRenderLoop(() => {
-        engine.scenes.forEach(scene => scene.render());
-
         engine.scenes.forEach(scene => {
-
             if (scene.gameState !== "running") return; // state
+            scene.render();
 
             const posMessage: MeshPositions = {
                 type: "MeshPositions",
@@ -212,5 +211,7 @@ export function startRenderLoop(engine: PongBackEngine) {
                 player.gameSocket?.send(JSON.stringify(posMessage));
             });
         });
+        engine.removeEmptyScenes();
+
     });
 }
