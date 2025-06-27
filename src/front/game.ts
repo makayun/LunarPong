@@ -14,7 +14,14 @@ async function gameMain() {
 	const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 	const engine = new Engine(canvas, true);
 	const pongScene = new PongFrontScene(engine);
-	const player: User = { id: await getUserId() };
+	let player: User | null = { id: await getUserId() };
+
+	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
+	if (logoffBtn) {
+		logoffBtn.addEventListener("click", async function() {
+			player = null;
+		})
+	}
 
 	pongScene.executeWhenReady(() => {
 		engine.runRenderLoop(() => pongScene.render());
@@ -31,7 +38,6 @@ async function gameMain() {
 		setGameButtons(gameButtons, pongScene, player);
 	})
 
-
 	pongScene.socket.onmessage = async function(event: MessageEvent) {
 		const msg = JSON.parse(event.data);
 		if (msg.type === "InitGameSuccess") {
@@ -40,7 +46,11 @@ async function gameMain() {
 	}
 }
 
-async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameSuccess) : Promise<void> {
+async function gameInit(pongScene: PongFrontScene, player: User | null, opts: InitGameSuccess) : Promise<void> {
+	if (!player)
+		player = { id: await getUserId() };
+	pongScene.score = [0,0];
+	pongScene.updateScore(pongScene.score);
 	pongScene.side = opts.playerSide;
 	pongScene.id = opts.gameId;
 	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType);

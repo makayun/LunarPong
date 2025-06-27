@@ -9,10 +9,17 @@ const recipient = document.getElementById('recipient') as HTMLSelectElement;
 const socket = new WebSocket(`wss://${window.location.host}/ws-chat`);
 
 async function chatMain() {
-  const user = {
+  let user = {
     id: await getUserId(),
     nick: await getUserNickname()
   };
+
+  const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
+	if (logoffBtn) {
+		logoffBtn.addEventListener("click", async function() {
+			user = { id: await getUserId(), nick: await getUserNickname() }
+		})
+	}
 
   socket.addEventListener('open', () => {
     socket.send(JSON.stringify({ type: 'register', user }));
