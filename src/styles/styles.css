@@ -10,7 +10,7 @@
 }
 
 @layer components {
-  .body {
+.body {
     margin: calc(var(--spacing) * 0);
     height: 100vh;
     display: flex;
@@ -19,20 +19,9 @@
     background-attachment: fixed;
   }
 
-  .glow {
-    box-shadow: 0 0 16px var(--color-blue), 0 0 32px var(--color-pink), 0 0 8px var(--color-green);
-  }
-
   .glow-border {
     border: 2px solid var(--color-blue);
     box-shadow: 0 0 4px var(--color-blue);
-  }
-
-  .glow-window {
-    border: 2px solid var(--color-blue);
-    box-shadow: 0 0 16px var(--color-blue);
-    border-radius: 1rem;
-    backdrop-filter: blur(2px);
   }
 
   .game-button {
@@ -54,6 +43,7 @@
       }
     }
   }
+
   .div-login {
     display: flex;
     align-items: center;
@@ -89,6 +79,9 @@
     border: 2px solid var(--color-blue);
     border-radius: 1.5rem;
     backdrop-filter: blur(2px);
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 2);
   }
 
   .login-title {
@@ -167,6 +160,7 @@
     color: var(--color-white);
     opacity: 1;
   }
+
   .div-2fa {
     display: flex;
     align-items: center;
@@ -198,6 +192,7 @@
     margin-bottom: calc(var(--spacing) * 4);
     text-align: center;
   }
+
   .register-container {
     width: 100%;
     max-width: 400px;
@@ -240,8 +235,6 @@
       }
     }
   }
-  
-
 
   .continue-btn{
     background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
@@ -262,6 +255,7 @@
       }
     }
   }
+
   .logoff-btn,
   .login-btn,
   .back-btn,
@@ -300,6 +294,7 @@
     outline-offset: 2px;
   }
 }
+
   .giv_lang{
     position: absolute;
     top: 10px;
@@ -314,10 +309,6 @@
     bottom: 10px;
     left: 10px;
     z-index: 100;
-  }
-
-  .logged_in{
-    font-weight: var(--font-weight-semibold);
   }
 
   .div-main{
@@ -388,13 +379,6 @@
     align-items: center;
   }
 
-  .graph-win{
-    border: 2px solid var(--color-blue);
-    box-shadow: 0 0 6px var(--color-blue);
-    border-radius: 1rem;
-    backdrop-filter: blur(2px);
-  }
-
   .chat-main-div{
     min-width: 240px;
     max-width: 800px;
@@ -409,12 +393,6 @@
     margin-left: calc(var(--spacing) * 20);
     border-radius: 1rem;
     backdrop-filter: blur(2px);
-  }
-  
-  .chat-bg{
-    background-image: url(../../assets/neon-drive.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
   }
   
   .chat-head{
@@ -437,21 +415,6 @@
     border-radius: 0.25rem;
     min-width: 0;
     flex: 1;
-  }
-
-  .select-players{
-    background-color: var(--color-black);
-    color: var(--color-blue);
-    border: 2px solid var(--color-white);
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: all 300ms var(--ease-in-out);
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-dark);
-        box-shadow: 0 0 8px var(--color-green);
-      }
-    }
   }
 
   .chat-util-btn{
@@ -524,21 +487,6 @@
     }
   }
 
-  .chat-btn-tw {
-    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
-    color: var(--color-white);
-    border: 1px solid var(--color-blue);
-    @apply rounded px-2 py-2 cursor-pointer text-sm 
-           transition-all duration-300;
-
-    transform: scale(1);
-    &:hover {
-      @media (hover: hover) {
-        box-shadow: 0 0 8px var(--color-white);
-        border-color: var(--color-pink);
-      }
-    }
-  }
   .countdown {
   font-family: var(--font-mono);
   font-size: var(--text-3xl);
@@ -556,8 +504,6 @@
   position: relative;
   overflow: hidden;
   }
-
-
 
 .dialog-overlay {
       position: fixed;

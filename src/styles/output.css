@@ -35,7 +35,6 @@
     --color-pink: #ff00cc;
     --color-green: #39ff14;
     --color-blue: #75b3fc;
-    --color-dark: #0a0a1e;
   }
 }
 @layer base {
@@ -367,18 +366,9 @@
     background: linear-gradient(135deg, #0a0a1e 0%, #1a1a2e 50%, #232946 100%);
     background-attachment: fixed;
   }
-  .glow {
-    box-shadow: 0 0 16px var(--color-blue), 0 0 32px var(--color-pink), 0 0 8px var(--color-green);
-  }
   .glow-border {
     border: 2px solid var(--color-blue);
     box-shadow: 0 0 4px var(--color-blue);
-  }
-  .glow-window {
-    border: 2px solid var(--color-blue);
-    box-shadow: 0 0 16px var(--color-blue);
-    border-radius: 1rem;
-    backdrop-filter: blur(2px);
   }
   .game-button {
     background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
@@ -431,6 +421,9 @@
     border: 2px solid var(--color-blue);
     border-radius: 1.5rem;
     backdrop-filter: blur(2px);
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 2);
   }
   .login-title {
     font-size: var(--text-2xl);
@@ -633,9 +626,6 @@
     left: 10px;
     z-index: 100;
   }
-  .logged_in {
-    font-weight: var(--font-weight-semibold);
-  }
   .div-main {
     display: flex;
     align-items: center;
@@ -698,12 +688,6 @@
     justify-content: center;
     align-items: center;
   }
-  .graph-win {
-    border: 2px solid var(--color-blue);
-    box-shadow: 0 0 6px var(--color-blue);
-    border-radius: 1rem;
-    backdrop-filter: blur(2px);
-  }
   .chat-main-div {
     min-width: 240px;
     max-width: 800px;
@@ -718,11 +702,6 @@
     margin-left: calc(var(--spacing) * 20);
     border-radius: 1rem;
     backdrop-filter: blur(2px);
-  }
-  .chat-bg {
-    background-image: url(../../assets/neon-drive.jpg);
-    background-repeat: no-repeat;
-    background-size: cover;
   }
   .chat-head {
     display: flex;
@@ -743,20 +722,6 @@
     border-radius: 0.25rem;
     min-width: 0;
     flex: 1;
-  }
-  .select-players {
-    background-color: var(--color-black);
-    color: var(--color-blue);
-    border: 2px solid var(--color-white);
-    border-radius: 0.25rem;
-    cursor: pointer;
-    transition: all 300ms var(--ease-in-out);
-    &:hover {
-      @media (hover: hover) {
-        background-color: var(--color-dark);
-        box-shadow: 0 0 8px var(--color-green);
-      }
-    }
   }
   .chat-util-btn {
     background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
@@ -834,29 +799,6 @@
         transform: scale(1.1) translateY(-4px);
         box-shadow: 0 0 8px var(--color-white);
         border-color: var(--color-white);
-      }
-    }
-  }
-  .chat-btn-tw {
-    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
-    color: var(--color-white);
-    border: 1px solid var(--color-blue);
-    cursor: pointer;
-    border-radius: 0.25rem;
-    padding-inline: calc(var(--spacing) * 2);
-    padding-block: calc(var(--spacing) * 2);
-    font-size: var(--text-sm);
-    line-height: var(--tw-leading, var(--text-sm--line-height));
-    transition-property: all;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
-    --tw-duration: 300ms;
-    transition-duration: 300ms;
-    transform: scale(1);
-    &:hover {
-      @media (hover: hover) {
-        box-shadow: 0 0 8px var(--color-white);
-        border-color: var(--color-pink);
       }
     }
   }
