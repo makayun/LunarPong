@@ -27,7 +27,7 @@ import { Color3 } from "@babylonjs/core/Maths";
 // const grassTextureUrl: string = "/assets/grass.jpg";
 
 import { GLOW_MAX, GLOW_MIN } from "../defines/constants";
-import { AIOpponent } from "../back/aiOpponent"; // Укажи правильный путь
+import { AIOpponent } from "../back/aiOpponent";
 
 export class PongFrontScene extends PongBaseScene {
 	public id?: GUID;
