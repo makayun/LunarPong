@@ -131,7 +131,7 @@ export class PongBackScene extends PongBaseScene implements Game {
     private endGame(): void {
         this.gameState = "over";
 
-        const winnerIndex = this.score[0] >= 21 ? 0 : 1;
+        const winnerIndex = this.score[0] >= 7 ? 0 : 1;
         const message : GameOver = {
             type: "GameOver",
             winner: this.players[winnerIndex]?.id,
