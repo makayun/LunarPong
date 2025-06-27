@@ -27,9 +27,11 @@ import { Color3 } from "@babylonjs/core/Maths";
 // const grassTextureUrl: string = "/assets/grass.jpg";
 
 import { GLOW_MAX, GLOW_MIN } from "../defines/constants";
+import { AIOpponent } from "../back/aiOpponent"; // Укажи правильный путь
 
 export class PongFrontScene extends PongBaseScene {
 	public id?: GUID;
+	aiOpponent?: AIOpponent;
 	public side?: PlayerSide;
 	public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-game`);
 

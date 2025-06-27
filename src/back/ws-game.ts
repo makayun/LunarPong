@@ -125,9 +125,18 @@ function assignSide(game: PongBackScene) : PlayerSide {
 }
 
 function addAiOpponent(game: PongBackScene) : void {
-	if (!game.aiOpponent)
-		game.aiOpponent = new AIOpponent(game, "right");
+    if (!game.aiOpponent) {
+        game.aiOpponent = new AIOpponent(game, "right");
+        console.log("AI opponent created for right side, game ID:", game.id);
+    } else {
+        console.log("AI opponent already exists for game ID:", game.id);
+    }
 }
+
+// function addAiOpponent(game: PongBackScene) : void {
+// 	if (!game.aiOpponent)
+// 		game.aiOpponent = new AIOpponent(game, "right");
+// }
 
 function sendInitGameSuccess(inGameType: GameType, inGameId: GUID, inPlayerSide: PlayerSide, socket: WebSocket) {
 	const response : InitGameSuccess = {

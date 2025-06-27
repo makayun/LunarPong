@@ -1,5 +1,6 @@
-import type { GUID, PlayerInput, PlayerSide } from "../defines/types";
+import type { GUID, PlayerInput, PlayerSide/*, MeshPositions*/ } from "../defines/types";
 import type { PongFrontScene } from "../scenes/PongFrontScene";
+// import { AIOpponent } from "../back/aiOpponent";
 
 export function localInputHandler(scene: PongFrontScene): () => void {
 	return () => {
