@@ -6,6 +6,7 @@ import { generateGuid } from "../helpers/helpers";
 import type { User, Game, GUID, MeshPositions, GameState } from "../defines/types";
 import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
+import { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";
 // import { endGameLog } from "../back/db";
 
 export class PongBackScene extends PongBaseScene implements Game {
@@ -17,6 +18,21 @@ export class PongBackScene extends PongBaseScene implements Game {
     private ballSpeed: number = 18;
     private isFalling: boolean = false;
     public gameState: GameState = "init"; // state
+
+    private fieldWidth: number;
+    private fieldHeight: number;
+    private paddleWidth: number;
+    private paddleHeight: number;
+
+    constructor(engine: AbstractEngine) {
+        super(engine);
+        const groundBounds = this.pongMeshes.ground.getBoundingInfo().boundingBox;
+        this.fieldWidth = groundBounds.maximum.x - groundBounds.minimum.x;
+        this.fieldHeight = groundBounds.maximum.z - groundBounds.minimum.z;
+        const paddleBounds = this.pongMeshes.paddleLeft.getBoundingInfo().boundingBox;
+        this.paddleWidth = paddleBounds.maximum.x - paddleBounds.minimum.x;
+        this.paddleHeight = paddleBounds.maximum.z - paddleBounds.minimum.z;
+    }
 
     enablePongPhysics(): void {
         this.pongMeshes.ball.position = new Vector3(0, 25, 0); // 💥средняя цифра - высота на старте. меняем как хотим)
@@ -64,46 +80,42 @@ export class PongBackScene extends PongBaseScene implements Game {
     }
 
     private handleBallCollisions(): void {
-        const ball = this.pongMeshes.ball;
-        const ballPos = ball.position;
-        const fieldWidth = 30;
-        const fieldHeight = 15;
-        const paddleWidth = 1;
-        const paddleHeight = 4;
+    const ball = this.pongMeshes.ball;
+    const ballPos: Vector3 = ball.position;
 
-        if (Math.abs(ballPos.z) > fieldHeight / 2) {
-            this.ballVelocity.z = -this.ballVelocity.z;
-            ballPos.z = Math.sign(ballPos.z) * (fieldHeight / 2);
-            this.sendBallCollision(ballPos.z < 0 ? "edgeTop" : "edgeBottom");
-        }
-
-        const paddleLeft = this.pongMeshes.paddleLeft;
-        const paddleRight = this.pongMeshes.paddleRight;
-
-        if (
-            ballPos.x < -fieldWidth / 2 + paddleWidth &&
-            Math.abs(ballPos.z - paddleLeft.position.z) < paddleHeight / 2
-        ) {
-            this.ballVelocity.x = -this.ballVelocity.x;
-            ballPos.x = -fieldWidth / 2 + paddleWidth;
-            this.ballVelocity.z += (ballPos.z - paddleLeft.position.z) * 0.5;
-            this.sendBallCollision("paddleLeft");
-        }
-
-        if (
-            ballPos.x > fieldWidth / 2 - paddleWidth &&
-            Math.abs(ballPos.z - paddleRight.position.z) < paddleHeight / 2
-        ) {
-            this.ballVelocity.x = -this.ballVelocity.x;
-            ballPos.x = fieldWidth / 2 - paddleWidth;
-            this.ballVelocity.z += (ballPos.z - paddleRight.position.z) * 0.5;
-            this.sendBallCollision("paddleRight");
-        }
-
-        if (Math.abs(ballPos.x) > fieldWidth / 2) {
-            this.handleGoal();
-        }
+    if (Math.abs(ballPos.z) > this.fieldHeight / 2) {
+        this.ballVelocity.z = -this.ballVelocity.z;
+        ballPos.z = Math.sign(ballPos.z) * (this.fieldHeight / 2);
+        this.sendBallCollision(ballPos.z < 0 ? "edgeTop" : "edgeBottom");
     }
+
+    const paddleLeft = this.pongMeshes.paddleLeft;
+    const paddleRight = this.pongMeshes.paddleRight;
+
+    if (
+        ballPos.x < -this.fieldWidth / 2 + this.paddleWidth &&
+        Math.abs(ballPos.z - paddleLeft.position.z) < this.paddleHeight / 2
+    ) {
+        this.ballVelocity.x = -this.ballVelocity.x;
+        ballPos.x = -this.fieldWidth / 2 + this.paddleWidth;
+        this.ballVelocity.z += (ballPos.z - paddleLeft.position.z) * 0.5;
+        this.sendBallCollision("paddleLeft");
+    }
+
+    if (
+        ballPos.x > this.fieldWidth / 2 - this.paddleWidth &&
+        Math.abs(ballPos.z - paddleRight.position.z) < this.paddleHeight / 2
+    ) {
+        this.ballVelocity.x = -this.ballVelocity.x;
+        ballPos.x = this.fieldWidth / 2 - this.paddleWidth;
+        this.ballVelocity.z += (ballPos.z - paddleRight.position.z) * 0.5;
+        this.sendBallCollision("paddleRight");
+    }
+
+    if (Math.abs(ballPos.x) > this.fieldWidth / 2) {
+        this.handleGoal();
+    }
+}
 
     private sendBallCollision(mesh: MeshName): void {
         const message: BallCollision = {
@@ -158,14 +170,6 @@ export class PongBackScene extends PongBaseScene implements Game {
 
         this.pongMeshes.ball.position = new Vector3(0, 15, 0); // 💥 это выоста после гола
         this.isFalling = true;
-
-        // this.players.forEach(player => {
-        //     const message: ScoreUpdate = {
-        //         type: "ScoreUpdate",
-        //         score: [this.score[0], this.score[1]],
-        //     };
-        //     player.gameSocket?.send(JSON.stringify(message));
-        // });
     }
 }
 
