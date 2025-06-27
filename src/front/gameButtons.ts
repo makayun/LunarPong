@@ -36,7 +36,7 @@ export function unsetGameButtons(buttons: GameButtons, type: GameType) {
 	buttons.forEach(btn => {
 		btn.disabled = true;
 		if (btn.id === type) {
-			btn.classList.add("relative","w-96","cursor-not-allowed");
+			btn.classList.add("relative","w-96","cursor-not-allowed","justify-center","items-center");
 		} else {
 			btn.classList.remove("flex");
 			btn.classList.add("hidden","absolute");
