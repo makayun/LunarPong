@@ -118,8 +118,62 @@
             style="background-size: cover; background-position: center; width: 100%; max-width: min(90vw, 80vh * 10/7); height: auto; aspect-ratio: 10/7; border-radius: 1rem;"
             width="1000" height="700">
     </canvas>
+    <div class="flex flex-wrap gap-4 justify-center mt-6 px-4">
+      <button id="createTournament" 
+              class="game-button-tw">
+          Create Tournament
+      </button>
+      <div id="tournamentDialog" class="dialog-overlay">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h2 class="dialog-title">Create Tournament</h2>
+        <button class="close-btn" id="btn-close">&times;</button>
+      </div>
+      <form id="tournamentForm">
+        <div class="form-group">
+          <label class="form-label">Tournament Name</label>
+          <input 
+            type="text" 
+            id="tournamentName" 
+            class="tournament-name-input" 
+            placeholder="Enter tournament name..."
+            required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Number of Players</label>
+          <div class="player-count-grid" id="playerCountOptions">
+            <div class="player-count-option" data-players="2">
+              <span class="player-number">2</span>
+              <span class="player-label">Players</span>
+            </div>
+            <div class="player-count-option" data-players="4">
+              <span class="player-number">4</span>
+              <span class="player-label">Players</span>
+            </div>
+            <div class="player-count-option" data-players="8">
+              <span class="player-number">8</span>
+              <span class="player-label">Players</span>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button type="button" class="dialog-btn btn-cancel" id="Cancel-btn">
+            Cancel
+          </button>
+          <button type="submit" class="dialog-btn btn-create" id="createBtn" disabled>
+            Create Tournament
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-  <div class="chat-main-div chat-bg">
+      <button id="joinTournament"
+              class="game-button-tw">
+          Join Tournament
+      </button>
+    </div>
+  </div>
+  <div class="chat-main-div">
     <div class="chat-head">
       <select id="recipient" class="chat-select">
         <option value="all" >👥 All Users</option>
@@ -128,7 +182,13 @@
       <button onclick="inviteUser()" class="chat-util-btn" data-i18n="game.invite-chat">Invite</button>
       <button onclick="viewProfile()" class="chat-util-btn" data-i18n="game.profile-chat">Profile</button>
     </div>
-    <div id="messages" class="msg-field">
+    <div id="messages" class="
+          msg-field 
+          bg-no-repeat 
+          bg-cover 
+          bg-center
+		      bg-[url('../../assets/term-back.jpg')]
+          [--tw-bg-opacity:0.5]">
     </div>
     <input type="text" id="chat-input" placeholder="Type here..." 
            class="chat-input" data-i18n="game.msg-input"/>
