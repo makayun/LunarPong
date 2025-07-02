@@ -9,6 +9,7 @@ import { jwtDecode } from 'jwt-decode';
 import { setUser, unsetUser } from "../helpers/helpers";
 
 export let user_f: User_f = {id: -1};
+let countdownInterval: ReturnType<typeof setInterval> | undefined;
 
 // function contentLoaded() {
 // 	const hash = location.hash.replace("#", "");
@@ -180,6 +181,8 @@ export async function login() {
 			console.error("[login] Login failed:", errorData.error);
 			return;
 		}
+		name.value = "";
+		password.value = "";
 		stopCountdown();
 		const data = await response.json();
 
@@ -291,8 +294,6 @@ export async function register() {
 	navigateTo(ViewState.LOGIN);
 }
 
-let countdownInterval: ReturnType<typeof setInterval> | undefined;
-
 export function startCountdown(seconds: number, onComplete: () => void) {
 	const countdownEl = document.querySelector<HTMLElement>(`.countdown[countdown-id="2fd"]`);
 	if (!countdownEl) return;
@@ -311,6 +312,10 @@ export function startCountdown(seconds: number, onComplete: () => void) {
 			onComplete();
 		}
 	}, 1000);
+}
+
+export function isCountdown(): boolean {
+	return countdownInterval !== undefined;
 }
 
 export function stopCountdown() {
