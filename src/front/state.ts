@@ -4,7 +4,7 @@
 
 import { updateI18nContent } from "./i18next"
 import { setDivLogin, setDiv2fa, setDivRegister } from "./div_login"
-import { user_f } from "./login"
+import { user_f, isCountdown } from "./login"
 
 // showDiv("div_logoff", false);
 
@@ -53,7 +53,7 @@ let current_state: ViewState | null = null;
  */
 export function set_view(state: ViewState) {
 	if (state === current_state) return; // Состояние не изменилось
-	if (state != ViewState.LOGIN && state != ViewState.REGISTER && user_f.id == -1) {
+	if (state != ViewState.LOGIN && state != ViewState.REGISTER && user_f.id == -1 && !isCountdown()) {
 		return;
 	}
 	const logoffElement = document.querySelector<HTMLElement>(`.div_logoff`);
