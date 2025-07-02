@@ -3,7 +3,7 @@ import '../styles/output.css';
 
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { PongFrontScene } from "../scenes/PongFrontScene";
-import { getUserId } from '../helpers/helpers';
+import { getUserId, getUserNickname } from '../helpers/helpers';
 import { aiInputHandler, localInputHandler, remoteInputHandler } from './gameInputVariants';
 import type { User, GameType, InitGameSuccess, MeshPositions, MeshesDict, WSMessage } from "../defines/types";
 import { initGameButtons, setGameButtons } from './gameButtons';
@@ -38,22 +38,18 @@ async function gameMain() {
 		setGameButtons(gameButtons, pongScene, player);
 	})
 
-	pongScene.socket.onmessage = async function(event: MessageEvent) {
-		const msg = JSON.parse(event.data);
-		if (msg.type === "InitGameSuccess") {
-			await gameInit(pongScene, player, msg);
-		}
-	}
+	setGameInitListener(pongScene, player);
 }
 
 async function gameInit(pongScene: PongFrontScene, player: User | null, opts: InitGameSuccess) : Promise<void> {
 	if (!player)
-		player = { id: await getUserId() };
+		player = { id: await getUserId(), nick: await getUserNickname() };
 	pongScene.score = [0,0];
 	pongScene.updateScore(pongScene.score);
 	pongScene.side = opts.playerSide;
 	pongScene.id = opts.gameId;
 	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType);
+	console.log(`Game initiated! Scene: [${pongScene.id}], player: [${player.nick}], input: ${window.onkeydown}`);
 
 	let meshPositions: MeshPositions = {
 		type: "MeshPositions",
@@ -80,7 +76,10 @@ async function gameInit(pongScene: PongFrontScene, player: User | null, opts: In
 					pongScene.animateHighlightIntensity(message.collidedWith);
 					break;
 				case "GameOver":
+					window.onkeydown = null;
 					setGameButtons(gameButtons, pongScene, player);
+					setGameInitListener(pongScene, player);
+					break;
 			}
 		} catch (error) {
 			console.error("Wrong WS message:", error);
@@ -106,6 +105,15 @@ function applyMeshPositions (meshes: MeshesDict, newPositions: MeshPositions) : 
 	meshes.ball.position = newPositions.ball;
 	meshes.paddleLeft.position = newPositions.paddleLeft;
 	meshes.paddleRight.position = newPositions.paddleRight;
+}
+
+function setGameInitListener(pongScene:  PongFrontScene, player: User) {
+	pongScene.socket.onmessage =  async function(event: MessageEvent) {
+		const msg = JSON.parse(event.data);
+		if (msg.type === "InitGameSuccess") {
+			await gameInit(pongScene, player, msg);
+		}
+	}
 }
 
 gameMain();
