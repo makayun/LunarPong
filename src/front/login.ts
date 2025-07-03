@@ -34,11 +34,20 @@ let countdownInterval: ReturnType<typeof setInterval> | undefined;
 function handleHashChange() {
 	const hash = location.hash.replace("#", "");
 
+	// checkLogin().then(() => {
+	// 	if (isViewState(hash)) {
+	// 		set_view(hash);
+	// 	} else {
+	// 		navigateTo(ViewState.LOGIN);
+	// 	}
+	// });
+
 	if (isViewState(hash)) {
 		set_view(hash);
 	} else {
 		// Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
-		navigateTo(ViewState.LOGIN);
+		checkLogin().then(() => {});
+		// navigateTo(ViewState.LOGIN);
 	}
 }
 
@@ -59,7 +68,8 @@ interface MyToken {
 }
 
 // export const baseUrl = window.location.origin;
-checkLogin();
+// checkLogin();
+checkLogin().then(() => {});
 
 export async function checkLogin() {
 	if (validateToken("twofaToken"))  {
@@ -191,9 +201,9 @@ export async function login() {
 		// qrImg.alt = "Scan with Google Authenticator";
 		// user_f.id = -2;
 
-		user_f.id = data.user.id;
-		user_f.name = data.user.username;
-		setUser(user_f);
+		// user_f.id = data.user.id;
+		// user_f.name = data.user.username;
+		// setUser(user_f);
 		console.log("[login] Login successful, User name = ", user_f.name);
 		console.log("[login] Login successful, User id =", user_f.id);
 		// 💾 Сохраняем токены (в localStorage или sessionStorage)
