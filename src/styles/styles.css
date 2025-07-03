@@ -471,13 +471,15 @@
 
   .game-button-tw {
     background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
-    margin: calc(var(--spacing) * 2);
+    margin: calc(var(--spacing) * 1);
     border: 2px solid var(--color-blue);
     @apply px-5 py-2 font-semibold text-white cursor-pointer 
            transition-all duration-300 ease-in-out rounded-full whitespace-nowrap;
     transform: scale(1) translateY(0);
     width: auto;
     min-width: fit-content;
+    justify-content: center;
+    align-items: center;
     &:hover {
       @media (hover: hover) {
         transform: scale(1.1) translateY(-4px);
@@ -718,6 +720,7 @@
     }
     .game-win{
       max-width: min(90vw, 80vh * 10/7);
+      padding-left: calc(var(--spacing) * 2);
     }
     .chat-main-div {
       min-width: 100%;
@@ -750,6 +753,7 @@
     }
     .game-win{
       max-width: min(90vw, 80vh * 10/7);
+      padding-left: calc(var(--spacing) * 2);
     }
     .game-button-tw {
       @apply w-full max-w-xs mx-auto;
