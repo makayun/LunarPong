@@ -32,32 +32,53 @@ export async function wsChatPlugin(server: FastifyInstance) {
 
         switch (msg.type) {
             case 'register': {
-                const rawUser = msg.user;
-                let nickname = (rawUser.nick && rawUser.nick.trim()) || `User-${rawUser.id.slice(0, 6)}`;
-                const isNickTaken = Array.from(users.values()).some(u => u.nick === nickname);
+              const rawUser = msg.user;
+              let nickname = (rawUser.nick && rawUser.nick.trim()) || `User-${rawUser.id.slice(0, 6)}`;
 
-                  if (isNickTaken) {
-                  let suffix = 1;
-                  let newNick: string;
-                  do {
-                    newNick = `${nickname}_${suffix++}`;  // никнейм_номер
-                  } while (Array.from(users.values()).some(u => u.nick === newNick));
-                  nickname = newNick;
+              const existingUser = users.get(rawUser.id);
+              if (existingUser) {
+                try {
+                  existingUser.chatSocket?.send(JSON.stringify({
+                    type: 'system',
+                    content: `you was wanished. New one replaced you.`,
+                  }));
+                  existingUser.chatSocket?.close(4000, 'Replaced by another connection');
+                } catch (e) {
+                  console.warn("error disconnecting previous user:", e);
                 }
-
-                currentUser = {
+                for (const u of users.values()) {
+                  if (u.id !== rawUser.id) {
+                    u.chatSocket?.send(JSON.stringify({
+                      type: 'system',
+                      content: `User ${existingUser.nick} was disconnected and replaced by a new session.`,
+                    }));
+                  }
+                }
+              }
+              const isNickTaken = Array.from(users.values()).some(u => u.nick === nickname);
+              if (isNickTaken) {
+                let suffix = 1;
+                let newNick: string;
+                do {
+                  newNick = `${nickname}_${suffix++}`;
+                } while (Array.from(users.values()).some(u => u.nick === newNick));
+                nickname = newNick;
+              }
+            
+              currentUser = {
                 ...rawUser,
                 nick: nickname,
                 chatSocket: socket,
                 blocked: new Set<GUID>(),
-            };
-
-            users.set(currentUser.id, currentUser);
-            socket.send(JSON.stringify({ type: 'system', content: `Welcome, ✨${currentUser.nick}✨` }));
-            broadcastUserList();
-            socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
-            break;
-          }
+              };
+            
+              users.set(currentUser.id, currentUser);
+            
+              socket.send(JSON.stringify({ type: 'system', content: `Welcome, ✨${currentUser.nick}✨` }));
+              socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
+              broadcastUserList();
+              break;
+            }
 
           case 'message': {
             if (!currentUser) return;
