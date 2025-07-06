@@ -1,57 +1,56 @@
-
-window.addEventListener("DOMContentLoaded", handleHashChange);
+window.addEventListener("DOMContentLoaded", handleContentLoaded);
 window.addEventListener("hashchange", handleHashChange);
 
-// import { setDivLogin, setDivLogged} from "./div_login"
+import { initHandlers } from "./initHandlers";
 import { isViewState, set_view, ViewState, navigateTo} from "./state"
 import type { User_f } from "../defines/types";
 import { jwtDecode } from 'jwt-decode';
 import { setUser, unsetUser } from "../helpers/helpers";
+import i18next from 'i18next';
 
 export let user_f: User_f = {id: -1};
 let countdownInterval: ReturnType<typeof setInterval> | undefined;
 
-// function contentLoaded() {
-// 	const hash = location.hash.replace("#", "");
+export function showErrorModal(messageKey: string) {
+	const backdrop = document.querySelector<HTMLElement>(`.modal-bg[modal-bg-id="modal-bg"]`) as HTMLElement;
+	const modal = document.querySelector<HTMLElement>(`.modal-err[modal-err-id="modal-err"]`) as HTMLElement;
+	const modalContent = document.querySelector<HTMLElement>(`.modal-msg[modal-msg-id="modal-err"]`) as HTMLElement;
+	const modalClose = document.querySelector<HTMLElement>(`.modal-btn[modal-btn-id="modal-err"]`) as HTMLElement;
 
-// 	if (isViewState(hash)) {
-// 		if (hash === ViewState.GAME && user_f.id === -1) {
-// 			// Если мы попали на страницу игры, проверяем авторизацию
+	if (backdrop && modal && modalContent && modalClose) {
+		modalContent.dataset.i18n = messageKey;
+		modalContent.textContent = i18next.t(modalContent.getAttribute('data-i18n')!);
 
-// 			checkLogin();
-// 			return;
-// 		}
-// 		set_view(hash);
-// 	} else {
-// 		// Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
-// 		navigateTo(ViewState.LOGIN);
-// 	}
-// }
+		backdrop.classList.remove("hidden");
+		modal.classList.remove("hidden");
 
-/**
-* Основная логика роутера. Срабатывает при смене хеша.
-*/
-function handleHashChange() {
-	const hash = location.hash.replace("#", "");
+		const closeHandler = () => {
+			backdrop.classList.add("hidden");
+			modal.classList.add("hidden");
+			modalClose.removeEventListener("click", closeHandler);
+		};
 
-	// checkLogin().then(() => {
-	// 	if (isViewState(hash)) {
-	// 		set_view(hash);
-	// 	} else {
-	// 		navigateTo(ViewState.LOGIN);
-	// 	}
-	// });
-
-	if (isViewState(hash)) {
-		set_view(hash);
-	} else {
-		// Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
-		checkLogin().then(() => {});
-		// navigateTo(ViewState.LOGIN);
+		modalClose.addEventListener("click", closeHandler);
 	}
 }
 
-function getCookie(name: string): string | null {
+function handleContentLoaded() {
+	initHandlers();
+	handleHashChange();
+}
+
+function handleHashChange() {
+	const hash = location.hash.replace("#", "");
+
+	checkLogin().then(() => {});
+	if (isViewState(hash)) {
+		set_view(hash);
+	} else {
+		
+	}
+}
+
+export function getCookie(name: string): string | null {
 	const value = `; ${document.cookie}`;
 	const parts = value.split(`; ${name}=`);
 	if (parts.length === 2) {
@@ -67,52 +66,21 @@ interface MyToken {
 	// add other fields here
 }
 
-// export const baseUrl = window.location.origin;
-// checkLogin();
-checkLogin().then(() => {});
-
 export async function checkLogin() {
-	if (validateToken("twofaToken"))  {
-		navigateTo(ViewState.TWOFA);
-		return;
-	}
-
-	const c_refreshToken = getCookie('refreshToken');
-	if (c_refreshToken) {
-		// console.log('Access token from cookie:', c_refreshToken);
-		localStorage.setItem("refreshToken", c_refreshToken);
-		document.cookie = `refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-	}
-
-	if (!await refreshToken()) {
-		navigateTo(ViewState.LOGIN);
-		return;
-	}
-
-	const accessToken =  localStorage.getItem("accessToken");
-	if (accessToken) {
-		try {
-			const response = await fetch(`/api/protected/profile`, {
-				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " + accessToken
-				}
-			});
-			if (!response.ok) {
-				const errorData = await response.json();
-				console.error("[login] Login check failed:", errorData.error);
-				navigateTo(ViewState.LOGIN);
+	if (validateToken("accessToken") > 0 || validateToken("refreshToken") > 0) {
+		localStorage.removeItem("accessToken");
+		refreshToken().then(() => {
+			if (validateToken("accessToken") == 0) {
+				showErrorModal("error.refersh_token_problem");
 				return;
 			}
-			const data = await response.json();
-			user_f.id = data.user.id;
-			user_f.name = data.user.username;
-			setUser(user_f);
+		});
+		getUserData().then(() => {});
+		if (user_f.id !== -1) {
 			const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
 			if (logoffBtn) {
 				logoffBtn.addEventListener("click", async () => {
-					console.log("[logoff] Login button clicked:");
+					console.log("[LOGOFF] Logoff button clicked:");
 					user_f.id = -1;
 					user_f.name = "";
 					unsetUser();
@@ -122,20 +90,22 @@ export async function checkLogin() {
 					navigateTo(ViewState.LOGIN);
 				}
 			)};
-			navigateTo(ViewState.GAME);
-			return;
-		}  catch (err) {
-			console.error("[login] Network error:", err);
 		}
+		return;
 	}
-	navigateTo(ViewState.LOGIN);
+
+	const timeLeft = validateToken("twofaToken");
+	if (timeLeft > 0) {
+		stopCountdown();
+		startCountdown(timeLeft, logoff);
+		return;
+	}
 }
 
 async function refreshToken() {
 	const refreshToken =  localStorage.getItem("refreshToken");
 	if (refreshToken) {
 		try {
-			//const response = await fetch(`${baseUrl}/api/refresh`, {
 			const response = await fetch(`/api/protected/refresh`, {
 				method: "POST",
 				headers: {
@@ -146,15 +116,11 @@ async function refreshToken() {
 					token: refreshToken
 				})
 			});
+			const data = await response.json();
 			if (!response.ok) {
-				const errorData = await response.json();
-				console.error("[refresh] Refresh failed:", errorData.error);
+				console.error("[refresh] Refresh failed:", data.error);
 				return false;
 			}
-			const data = await response.json();
-			user_f.id = data.user.id;
-			user_f.name = data.user.username;
-			setUser(user_f);
 			console.log("[refresh] Refresh accessToken:", data.accessToken);
 			localStorage.setItem("accessToken", data.accessToken);
 		}  catch (err) {
@@ -176,7 +142,8 @@ export async function login() {
 		return;
 	}
 	try {
-		const response = await fetch(`${window.location.origin}/api/login`, {
+		stopCountdown();
+		const response = await fetch(`/api/login`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -186,15 +153,14 @@ export async function login() {
 				password: password.value
 			})
 		});
+		const data = await response.json();
 		if (!response.ok) {
-			const errorData = await response.json();
-			console.error("[login] Login failed:", errorData.error);
+			showErrorModal("error.user_password_problem");
+			console.error("[login] Login failed:", data.error);
 			return;
 		}
 		name.value = "";
 		password.value = "";
-		stopCountdown();
-		const data = await response.json();
 
 		// const qrImg = document.getElementById("qr-img") as HTMLImageElement;
 		// qrImg.src = data.qr;
@@ -211,6 +177,29 @@ export async function login() {
 		navigateTo(ViewState.TWOFA);
 	} catch (err) {
 		console.error("[login] Network error:", err);
+	}
+}
+
+export async function getUserData() {
+	try {
+		const response = await fetch(`/api/protected/profile`, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": "Bearer " + localStorage.getItem("accessToken")
+			}
+		});
+		const data = await response.json();
+		if (!response.ok) {
+			console.error("[refresh] Refresh failed:", data.error);
+			return;
+		}
+		user_f.id = data.user.id;
+		user_f.name = data.user.username;
+		setUser(user_f);
+		console.log("[USER] Get user data:", data);
+	}  catch (err) {
+		console.error("[USER] Get user data:", err);
 	}
 }
 
@@ -234,14 +223,13 @@ export async function twofa() {
 					token: token.value
 				})
 			});
+			const data = await response.json();
 			if (!response.ok) {
-				const errorData = await response.json();
-				console.error("[2fa] 2FA check failed:", errorData.error);
+				console.error("[2fa] 2FA check failed:", data.error);
 				// navigateTo(ViewState.LOGIN);
 				return;
 			}
 			stopCountdown();
-			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
 			setUser(user_f);
@@ -259,7 +247,6 @@ export async function twofa() {
 }
 
 export async function logoff() {
-	console.log("[logoff] Login button clicked:");
 	stopCountdown();
 	localStorage.removeItem("twofaToken");
 	localStorage.removeItem("accessToken");
@@ -285,13 +272,12 @@ export async function register() {
 					"Authorization": "Bearer " + accessToken
 				}
 			});
+			const data = await response.json();
 			if (!response.ok) {
-				const errorData = await response.json();
-				console.error("[login] Login check failed:", errorData.error);
+				console.error("[login] Login check failed:", data.error);
 				navigateTo(ViewState.LOGIN);
 				return;
 			}
-			const data = await response.json();
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
 			setUser(user_f);
@@ -335,28 +321,38 @@ export function stopCountdown() {
 	}
 }
 
-export function validateToken(tokenName: string): boolean {
+export function validateToken(tokenName: string): number {
 	const token = localStorage.getItem(tokenName);
 	if (token) {
 		try {
 			const decoded = jwtDecode<MyToken>(token);
 			console.log("Decoded token:", decoded);
 
-			// Optional: check expiration manually
-			const now = Math.floor(Date.now() / 1000) + 10; // in seconds
-			if (decoded.exp && decoded.exp < now) {
+			const life_time = getTokenLife(token);
+			if (life_time <= 10) {
 				console.log("Token has expired");
 				localStorage.removeItem(tokenName);
-			} else {
-				console.log("Token is still valid (not expired)");
-				const timeLeft = decoded.exp - now;
-				stopCountdown();
-				startCountdown(timeLeft, logoff);
-				return true;
+				return 0;
+			}
+			return life_time;
+		} catch (err) {
+			console.error("Invalid token", err);
+		}
+	}
+	return 0;
+}
+
+export function getTokenLife(token: string): number {
+	if (token) {
+		try {
+			const decoded = jwtDecode<MyToken>(token);
+			if (decoded.exp) {
+				const now = Math.floor(Date.now() / 1000); // in seconds
+				return decoded.exp - now; // returns remaining time in seconds
 			}
 		} catch (err) {
 			console.error("Invalid token", err);
 		}
 	}
-	return false;
+	return 0; // if no valid token found
 }

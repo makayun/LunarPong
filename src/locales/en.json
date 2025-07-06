@@ -1,6 +1,15 @@
 {
   "or": "or",
     "hello": "Hello, {{name}}!",
+    "error": {
+      "title": "Error",
+      "button": "Close",
+      "default": "Something went wrong...",
+	  "user_password_problem": "Wrong username or password",
+	  "user_exist": "Username already exists",
+	  "refersh_token_problem": "Can't refresh token",
+	  "2fa_problem": "Two-factor authentication error"
+    },
     "login": {
       "title": "Welcome!",
       "label_name": "Username",

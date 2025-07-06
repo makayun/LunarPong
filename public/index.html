@@ -23,6 +23,18 @@
 		<button onclick="navigateTo('TWOFA')" class="btn">2FA</button>
 		<button onclick="navigateTo('GAME')" class="btn">Game</button>
 	</nav> -->
+	<!-- Backdrop -->
+	<div id="modalBackdrop" class="modal-bg fixed inset-0 bg-black bg-opacity-50 hidden z-40" modal-bg-id="modal-bg"></div>
+	<!-- Modal -->
+	<div id="errorModal" class="modal-err hidden fixed inset-0 z-50 flex items-center justify-center" modal-err-id="modal-err">
+		<div class="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 border border-red-500">
+			<h2 class="modal-titel text-lg font-semibold text-red-600 mb-4" modal-titel-id="modal-err" data-i18n="error.title"></h2>
+			<p id="modalMessage" class="modal-msg text-gray-700 mb-6" modal-msg-id="modal-err" data-i18n="error.default"></p>
+			<div class="flex justify-end">
+				<button class="modal-btn btn_click bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded" modal-btn-id="modal-err" data-i18n="error.button"></button>
+			</div>
+		</div>
+	</div>
       <div class="div_logoff hidden" data-view-id="logoff" id="div_logoff">
   	    <button class="logoff-btn btn_click" data-btn-id="logoff" data-i18n="logoff.button"></button>
       </div>
