@@ -8,12 +8,15 @@ const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
 const socket = new WebSocket(`wss://${window.location.host}/ws-chat`);
 
+let isDuplicateSession = false;
+let userMap = new Map<GUID, string>();
+
 async function chatMain() {
   let user = {
     id: await getUserId(),
     nick: await getUserNickname()
   };
-
+  
   const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
 	if (logoffBtn) {
 		logoffBtn.addEventListener("click", async function() {
@@ -30,6 +33,22 @@ async function chatMain() {
     console.log('Received:', event.data);
     try {
       const data = JSON.parse(event.data);
+      
+      if (data.type === 'duplicate-session') {
+        isDuplicateSession = true;
+        disableUserInterface();
+        showDuplicateSessionWarning();
+        return;
+      }
+      
+      if (data.type === 'session-activated') {
+        isDuplicateSession = false;
+        enableUserInterface();
+        showSessionReactivatedMessage();
+        sessionStorage.setItem('pong-nickname', data.nick);
+        return;
+      }
+      
       if (data.type === 'nick-confirm') {
         if (data.nick !== user.nick) {
           user.nick = data.nick;
@@ -37,6 +56,7 @@ async function chatMain() {
           addMessage(`[System] Your nickname was changed to ${data.nick} because the previous one was taken.`);
         }
       }
+      
       switch (data.type) {
         case 'message': {
           let direction = 'all';
@@ -58,7 +78,7 @@ async function chatMain() {
         case 'invite':
           const fromNick = userMap.get(data.from as GUID) || data.from;
           addMessage(`[Invite] ${fromNick} invited you to play ${data.game} 👤🏓👤`);
-        break;
+          break;
       }
     } catch {
       addMessage(event.data);
@@ -81,32 +101,37 @@ async function chatMain() {
     console.log('userMap after update:', Array.from(userMap.entries()));
   }
 
-input.addEventListener('keydown', (e: KeyboardEvent) => {
-  if (e.key === 'Enter') {
-    const text = input.value.trim();
-    if (text !== '') {
-      let payload;
-      if (recipient.value === 'all') {
-        payload = {
-          type: 'broadcast',
-          content: text,
-        };
-      } else {
-        payload = {
-          type: 'message',
-          to: { id: recipient.value },
-          content: text,
-        };
+  function handleInputKeydown(e: KeyboardEvent) {
+    
+    if (e.key === 'Enter') {
+      const text = input.value.trim();
+      if (text !== '') {
+        let payload;
+        if (recipient.value === 'all') {
+          payload = {
+            type: 'broadcast',
+            content: text,
+          };
+        } else {
+          payload = {
+            type: 'message',
+            to: { id: recipient.value },
+            content: text,
+          };
+        }
+        socket.send(JSON.stringify(payload));
+        const nick = recipient.value === 'all' ? 'all' : userMap.get(recipient.value as GUID);
+        const direction = nick || recipient.value;
+        console.log('Sending to:', { id: recipient.value, nick });
+        addMessage(`[You -> ${direction}] ${text}`);
+        input.value = '';
       }
-      socket.send(JSON.stringify(payload));
-      const nick = recipient.value === 'all' ? 'all' : userMap.get(recipient.value as GUID);
-      const direction = nick || recipient.value;
-      console.log('Sending to:', { id: recipient.value, nick });
-      addMessage(`[You -> ${direction}] ${text}`);
-      input.value = '';
     }
   }
-});
+  input.addEventListener('keydown', handleInputKeydown);
+
+  (window as any).handleInputKeydown = handleInputKeydown;
+}
 
 function addMessage(msg: string) {
   const div = document.createElement('div');
@@ -116,11 +141,12 @@ function addMessage(msg: string) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-let userMap = new Map<GUID, string>();
-
-
-
 function blockUser() {
+  if (isDuplicateSession) {
+    showActionBlockedMessage();
+    return;
+  }
+  
   const target = recipient.value;
   if (target !== 'all') {
     socket.send(JSON.stringify({ type: 'block', user: { id: target } }));
@@ -130,6 +156,11 @@ function blockUser() {
 }
 
 function inviteUser() {
+  if (isDuplicateSession) {
+    showActionBlockedMessage();
+    return;
+  }
+  
   const recipientElement = document.getElementById('recipient') as HTMLSelectElement | null;
   if (!recipientElement) {
     console.error('Recipient element not found');
@@ -144,6 +175,7 @@ function inviteUser() {
 }
 
 function viewProfile() {
+  
   const target = recipient.value;
   if (target !== 'all') {
     const playerNick = userMap.get(target as GUID) || target;
@@ -185,9 +217,201 @@ function viewProfile() {
   }
 }
 
+function disableUserInterface() {
+  if (input) {
+    input.disabled = true;
+    input.placeholder = "Chat disabled - User logged in elsewhere";
+    input.style.backgroundColor = '#f5f5f5';
+    input.style.color = '#999';
+  }
+  
+  if (recipient) {
+    recipient.disabled = true;
+    recipient.style.backgroundColor = '#f5f5f5';
+    recipient.style.color = '#999';
+  }
+  
+  const buttons = document.querySelectorAll('button');
+  buttons.forEach(button => {
+    const buttonElement = button as HTMLButtonElement;
+    if (buttonElement.onclick || buttonElement.getAttribute('onclick')) {
+      buttonElement.disabled = true;
+      buttonElement.style.backgroundColor = '#f5f5f5';
+      buttonElement.style.color = '#999';
+      buttonElement.style.cursor = 'not-allowed';
+    }
+  });
+  addDisabledOverlay();
+}
+
+function showDuplicateSessionWarning() {
+  const warningDiv = document.createElement('div');
+  warningDiv.id = 'duplicate-session-warning';
+  warningDiv.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ff4444;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-weight: bold;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideDown 0.3s ease-out;
+    ">
+      This account is already logged in from another location. 
+      <br>You can view messages but cannot perform any actions.
+      <br><small>Close the other session to regain control.</small>
+    </div>
+  `;
+  
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes slideDown {
+      from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+      to { transform: translateX(-50%) translateY(0); opacity: 1; }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  document.body.appendChild(warningDiv);
+  setTimeout(() => {
+    if (warningDiv.parentNode) {
+      warningDiv.parentNode.removeChild(warningDiv);
+    }
+  }, 5000);
+  addMessage(`[System] DUPLICATE SESSION DETECTED - Interface disabled. This account is logged in elsewhere.`);
+}
+
+function addDisabledOverlay() {
+  const overlay = document.createElement('div');
+  overlay.id = 'disabled-overlay';
+  overlay.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.1);
+      z-index: 500;
+      pointer-events: none;
+    "></div>
+  `;
+  document.body.appendChild(overlay);
+  
+}
+
+function enableUserInterface() {
+
+  if (input) {
+    input.disabled = false;
+    input.placeholder = "Type your message...";
+    input.style.backgroundColor = '';
+    input.style.color = '';
+    
+    input.focus();
+  }
+  
+
+  if (recipient) {
+    recipient.disabled = false;
+    recipient.style.backgroundColor = '';
+    recipient.style.color = '';
+  }
+  
+
+  const buttons = document.querySelectorAll('button');
+  buttons.forEach(button => {
+    const buttonElement = button as HTMLButtonElement;
+    if (buttonElement.disabled) {
+      buttonElement.disabled = false;
+      buttonElement.style.backgroundColor = '';
+      buttonElement.style.color = '';
+      buttonElement.style.cursor = '';
+    }
+  });
+  
+  const overlay = document.getElementById('disabled-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+  
+  const warning = document.getElementById('duplicate-session-warning');
+  if (warning) {
+    warning.remove();
+  }
+  
+  if ((window as any).handleInputKeydown) {
+    input.removeEventListener('keydown', (window as any).handleInputKeydown);
+    input.addEventListener('keydown', (window as any).handleInputKeydown);
+  }
+}
+
+function showSessionReactivatedMessage() {
+  const successDiv = document.createElement('div');
+  successDiv.id = 'session-reactivated-banner';
+  successDiv.innerHTML = `
+    <div style="
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #28a745;
+      color: white;
+      padding: 15px 25px;
+      border-radius: 8px;
+      font-weight: bold;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: slideDown 0.3s ease-out;
+    ">
+      Session reactivated! You can now perform actions again.
+    </div>
+  `;
+  
+  document.body.appendChild(successDiv);
+  
+  setTimeout(() => {
+    if (successDiv.parentNode) {
+      successDiv.parentNode.removeChild(successDiv);
+    }
+  }, 5000);
+  addMessage(`[System] SESSION REACTIVATED - You are now the active session and can perform actions.`);
+}
+
+function showActionBlockedMessage() {
+  addMessage(`[System] Action blocked: User already logged in from another location.`);
+  
+  const popup = document.createElement('div');
+  popup.style.cssText = `
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #ff4444;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  `;
+  popup.textContent = 'Action blocked - User logged in elsewhere';
+  document.body.appendChild(popup);
+  
+  setTimeout(() => {
+    if (popup.parentNode) {
+      popup.parentNode.removeChild(popup);
+    }
+  }, 3000);
+}
+
 (window as any).blockUser = blockUser;
 (window as any).inviteUser = inviteUser;
 (window as any).viewProfile = viewProfile;
-}
 
 chatMain();
