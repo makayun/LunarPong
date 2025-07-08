@@ -29,7 +29,7 @@ export class PongBaseScene extends Scene {
 	public camera: ArcRotateCamera;
 	public pongMeshes: MeshesDict;
 	public score: [number, number];
-	public state: GameState;
+	public state: GameState = "init";
 
 	constructor (inEngine: AbstractEngine) {
 		super(inEngine);

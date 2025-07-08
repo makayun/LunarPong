@@ -3,7 +3,7 @@ import '../styles/output.css';
 
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { PongFrontScene } from "../scenes/PongFrontScene";
-import { getUserId, getUserNickname } from '../helpers/helpers';
+import { getUserId, getUserNickname, unsetUser } from '../helpers/helpers';
 import { aiInputHandler, localInputHandler, remoteInputHandler } from './gameInputVariants';
 import type { User, GameType, InitGameSuccess, MeshPositions, MeshesDict, WSMessage } from "../defines/types";
 import { initGameButtons, setGameButtons } from './gameButtons';
@@ -19,6 +19,7 @@ async function gameMain() {
 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
 	if (logoffBtn) {
 		logoffBtn.addEventListener("click", async function() {
+			unsetUser();
 			player = null;
 		})
 	}
@@ -107,7 +108,7 @@ function applyMeshPositions (meshes: MeshesDict, newPositions: MeshPositions) : 
 	meshes.paddleRight.position = newPositions.paddleRight;
 }
 
-function setGameInitListener(pongScene:  PongFrontScene, player: User) {
+async function setGameInitListener(pongScene:  PongFrontScene, player: User) {
 	pongScene.socket.onmessage =  async function(event: MessageEvent) {
 		const msg = JSON.parse(event.data);
 		if (msg.type === "InitGameSuccess") {

@@ -1,3 +1,5 @@
+// import { User } from "../defines/types";
+// import { PongBackEngine, PongBackScene } from "../scenes/PongBackScene";
 
 let selectedPlayerCount: number | null = null;
 
@@ -24,47 +26,47 @@ function initTournamentDialog(): void {
 function setupEventListeners(): void {
 
   createBtn.addEventListener('click', openDialog);
-  
+
 
   closeBtn.addEventListener('click', closeDialog);
   cancelBtn.addEventListener('click', closeDialog);
-  
+
 
   dialog.addEventListener('click', (e: MouseEvent) => {
     if (e.target === dialog) {
       closeDialog();
     }
   });
-  
+
 
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Escape' && dialog.classList.contains('active')) {
       closeDialog();
     }
   });
-  
+
 
   playerOptions.forEach((option: HTMLDivElement) => {
     option.addEventListener('click', () => selectPlayerCount(option));
-    
+
     option.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         selectPlayerCount(option);
       }
     });
-    
+
     option.setAttribute('tabindex', '0');
   });
-  
+
   nameInput.addEventListener('input', validateForm);
-  
+
   form.addEventListener('submit', handleSubmit);
 }
 
 function openDialog(): void {
   dialog.classList.add('active');
-  
+
   setTimeout(() => {
     nameInput.focus();
   }, 300);
@@ -72,7 +74,7 @@ function openDialog(): void {
 
 function closeDialog(): void {
   dialog.classList.remove('active');
-  
+
   setTimeout(() => {
     resetForm();
   }, 300);
@@ -83,36 +85,36 @@ function selectPlayerCount(option: HTMLDivElement): void {
   playerOptions.forEach((opt: HTMLDivElement) => {
     opt.classList.remove('selected');
   });
-  
+
   option.classList.add('selected');
-  
+
   const players = option.dataset.players;
   selectedPlayerCount = players ? parseInt(players) : null;
-  
+
   validateForm();
 }
 
 function validateForm(): void {
   const hasName = nameInput.value.trim().length > 0;
   const hasPlayerCount = selectedPlayerCount !== null;
-  
+
   createSubmitBtn.disabled = !(hasName && hasPlayerCount);
 }
 
 function handleSubmit(e: Event): void {
   e.preventDefault();
-  
+
   if (!selectedPlayerCount) return;
-  
+
   const tournamentData = {
     name: nameInput.value.trim(),
     playerCount: selectedPlayerCount
   };
-  
+
   console.log('Tournament created:', tournamentData);
-  
+
   showSuccessMessage(tournamentData);
-  
+
   closeDialog();
 }
 
@@ -131,14 +133,14 @@ function showSuccessMessage(data: { name: string; playerCount: number }): void {
       transition-transform duration-300 ease-out
     `;
   successDiv.textContent = `Tournament "${data.name}" created for ${data.playerCount} players!`;
-  
+
   document.body.appendChild(successDiv);
-  
+
   setTimeout(() => {
     successDiv.classList.remove('translate-x-full');
     successDiv.classList.add('translate-x-0');
   }, 100);
-  
+
   setTimeout(() => {
     successDiv.classList.add('translate-x-full');
     setTimeout(() => {
@@ -171,3 +173,4 @@ export {
   closeDialog,
   resetForm
 };
+
