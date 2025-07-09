@@ -34,6 +34,7 @@ export function getUserId(timeoutMs = 5 * 60000): Promise<GUID> {
 		const check = () => {
 			const userId = sessionStorage.getItem("pong-client-id");
 			if (userId && userId !== "-1") {
+				sessionStorage.setItem('pong-client-id', userId);
 				resolve(userId as GUID);
 			} else if (Date.now() - start > timeoutMs) {
 				alert("The login takes too long, try to reload the page");

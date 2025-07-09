@@ -471,13 +471,15 @@
 
   .game-button-tw {
     background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
-    margin: calc(var(--spacing) * 2);
+    margin: calc(var(--spacing) * 1);
     border: 2px solid var(--color-blue);
     @apply px-5 py-2 font-semibold text-white cursor-pointer 
            transition-all duration-300 ease-in-out rounded-full whitespace-nowrap;
     transform: scale(1) translateY(0);
     width: auto;
     min-width: fit-content;
+    justify-content: center;
+    align-items: center;
     &:hover {
       @media (hover: hover) {
         transform: scale(1.1) translateY(-4px);
@@ -718,6 +720,7 @@
     }
     .game-win{
       max-width: min(90vw, 80vh * 10/7);
+      padding-left: calc(var(--spacing) * 2);
     }
     .chat-main-div {
       min-width: 100%;
@@ -750,6 +753,7 @@
     }
     .game-win{
       max-width: min(90vw, 80vh * 10/7);
+      padding-left: calc(var(--spacing) * 2);
     }
     .game-button-tw {
       @apply w-full max-w-xs mx-auto;
@@ -909,3 +913,207 @@
     font-size: 1.125rem;
   }
 }
+
+
+.chat-message {
+      margin: 12px 0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border-left: 4px solid;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(4px);
+      font-family: var(--font-mono, monospace);
+      animation: slideInFromRight 300ms ease-out;
+    }
+
+    .chat-message.info-message {
+      border-left-color: var(--color-blue);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .chat-message.success-message {
+      border-left-color: var(--color-green);
+      background: rgba(34, 197, 94, 0.1);
+      animation: slideInFromRight 300ms ease-out, pulse 2s ease-in-out 3;
+    }
+
+    .chat-message.error-message {
+      border-left-color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .chat-message.warning-message {
+      border-left-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.1);
+    }
+
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    .sender {
+      font-weight: 600;
+      color: var(--color-blue);
+    }
+
+    .timestamp {
+      color: var(--color-white);
+      opacity: 0.6;
+    }
+
+    .message-content {
+      color: var(--color-white);
+      line-height: 1.5;
+    }
+
+    .tournament-option-message {
+      margin: 16px 0;
+      padding: 16px;
+      background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(0, 0, 0, 0.98));
+      border: 2px solid var(--color-blue);
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(8px);
+      transition: all 300ms var(--ease-in-out);
+      animation: slideInFromRight 300ms ease-out;
+    }
+
+    .tournament-option-message:hover {
+      border-color: var(--color-white);
+      box-shadow: 0 0 16px rgba(59, 130, 246, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .tournament-info {
+      flex: 1;
+    }
+
+    .tournament-details {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .tournament-details strong {
+      color: var(--color-white);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .player-count {
+      color: var(--color-blue);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .join-tournament-btn {
+      background: linear-gradient(135deg, var(--color-purple), var(--color-green));
+      color: var(--color-white);
+      border: 2px solid var(--color-white);
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 300ms var(--ease-in-out);
+      font-size: 0.9rem;
+      min-width: 80px;
+    }
+
+    .join-tournament-btn:hover {
+      box-shadow: 0 0 16px var(--color-green);
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, var(--color-green), var(--color-purple));
+    }
+
+    .tournament-bracket {
+      margin: 20px 0;
+      padding: 20px;
+      background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(0, 0, 0, 0.98));
+      border: 2px solid var(--color-green);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      animation: slideInFromRight 300ms ease-out;
+    }
+
+    .bracket-header {
+      text-align: center;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--color-green);
+      padding-bottom: 12px;
+    }
+
+    .bracket-header h3 {
+      color: var(--color-white);
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .bracket-players {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .bracket-player {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid var(--color-blue);
+      padding: 12px;
+      border-radius: 8px;
+      color: var(--color-white);
+      text-align: center;
+      font-weight: 500;
+      transition: all 200ms;
+    }
+
+    .bracket-player:hover {
+      border-color: var(--color-white);
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .start-tournament-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--color-green), var(--color-blue));
+      color: var(--color-white);
+      border: 2px solid var(--color-white);
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 300ms var(--ease-in-out);
+    }
+
+    .start-tournament-btn:hover {
+      box-shadow: 0 0 20px var(--color-green);
+      transform: translateY(-2px);
+    }
+
+    /* Animations */
+    @keyframes slideInFromRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 8px rgba(34, 197, 94, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.6);
+      }
+    }

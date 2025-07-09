@@ -22,6 +22,7 @@ export function localInputHandler(scene: PongFrontScene): () => void {
 
 			switch (ev.key) {
 				case "ArrowUp":
+					ev.preventDefault();
 					inputMessage.side = "right";
 					inputMessage.direction = 1;
 					scene.socket.send(JSON.stringify(inputMessage));
@@ -32,6 +33,7 @@ export function localInputHandler(scene: PongFrontScene): () => void {
 					scene.socket.send(JSON.stringify(inputMessage));
 					break;
 				case "ArrowDown":
+					ev.preventDefault();
 					inputMessage.side = "right";
 					inputMessage.direction = -1;
 					scene.socket.send(JSON.stringify(inputMessage));
