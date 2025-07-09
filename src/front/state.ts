@@ -1,6 +1,6 @@
 import { updateI18nContent } from "./i18next"
-import { setDivLogin, setDiv2fa, setDivRegister } from "./div_login"
-import { user_f } from "./login"
+import { setDivLogin, setDiv2fa, setDivRegister, setDivQRcode } from "./div_login"
+import { user_f, clearQRcode } from "./login"
 
 // Enum теперь содержит более чистые имена, соответствующие data-view-id
 export enum ViewState {
@@ -8,6 +8,7 @@ export enum ViewState {
 	REGISTER = "register",
 	TWOFA = "2fa",
 	GAME = "game",
+	QRCODE = "qrcode",
 }
 
 // Функция-предохранитель (Type Guard)
@@ -26,6 +27,15 @@ export function set_view(state: ViewState) {
 	// if (state != ViewState.LOGIN && state != ViewState.REGISTER && user_f.id == -1 && !isCountdown()) {
 	// 	console.log(`[VIEW] return`);
 	// }
+
+	if (current_state === ViewState.QRCODE) {
+		clearQRcode();
+		const img = document.querySelector<HTMLElement>(`.qrcode_img`) as HTMLImageElement;
+		if (img) {
+			img.src = `assets/logo_168.png`;
+		}
+	}
+
 	const logoffElement = document.querySelector<HTMLElement>(`.div-logoff`);
 	if (logoffElement) {
 		if (user_f.id !== -1) {
@@ -82,6 +92,9 @@ export function set_view(state: ViewState) {
 			break;
 		case ViewState.REGISTER:
 			setDivRegister();
+			break;
+		case ViewState.QRCODE:
+			setDivQRcode();
 			break;
 		case ViewState.GAME:
 			break;

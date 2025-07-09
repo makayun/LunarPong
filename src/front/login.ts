@@ -23,6 +23,7 @@ import { jwtDecode } from 'jwt-decode';
 import { setUser, unsetUser } from "../helpers/helpers";
 import i18next from 'i18next';
 
+export let qrcode: string = "";
 export let user_f: User_f = {id: -1};
 let countdownInterval: ReturnType<typeof setInterval> | undefined;
 
@@ -33,7 +34,7 @@ export function showErrorModal(messageKey: string) {
 	const modalClose = document.querySelector<HTMLElement>(`.modal-btn[modal-btn-id="modal-err"]`) as HTMLElement;
 
 	if (backdrop && modal && modalContent && modalClose) {
-		modalContent.dataset.i18n = messageKey;
+		modalContent.dataset.i18n = "error." + messageKey;
 		modalContent.textContent = i18next.t(modalContent.getAttribute('data-i18n')!);
 
 		backdrop.classList.remove("hidden");
@@ -97,7 +98,7 @@ export async function checkLogin() {
 		localStorage.removeItem("accessToken");
 		await refreshToken();
 		if (validateToken("accessToken") == 0) {
-			showErrorModal("error.refersh_token_problem");
+			showErrorModal("refersh_token_problem");
 			return;
 		}
 		await getUserData("accessToken");
@@ -111,7 +112,7 @@ export async function checkLogin() {
 		if (user_f.id !== -1) {
 			startCountdown(timeLeft, logoff);
 		} else {
-			showErrorModal("error.2fa_token");
+			showErrorModal("2fa_token");
 		}
 		return;
 	}
@@ -170,7 +171,7 @@ export async function login() {
 		});
 		const data = await response.json();
 		if (!response.ok) {
-			showErrorModal("error.user_password_problem");
+			showErrorModal("user_password_problem");
 			console.error("[login] Login failed:", data.error);
 			return;
 		}
@@ -245,7 +246,7 @@ export async function twofa() {
 			const data = await response.json();
 			if (!response.ok) {
 				console.error("[2FA] Check failed:", data.error);
-				showErrorModal("error.2fa_invalid_code");
+				showErrorModal("2fa_invalid_code");
 				// navigateTo(ViewState.LOGIN);
 				return;
 			}
@@ -278,37 +279,87 @@ export async function logoff() {
 	navigateTo(ViewState.LOGIN);
 }
 
+function isStrongPassword(password: string): boolean {
+	return (
+		password.length >= 8 &&
+		/[A-Z]/.test(password) &&
+		/[a-z]/.test(password) &&
+		/[0-9]/.test(password) &&
+		/[^A-Za-z0-9]/.test(password) // special character
+	);
+}
+
+function isUsernameOK(username: string): boolean {
+	return (
+		username.length > 3 // &&
+		// /[A-Z]/.test(username) &&
+		// /[a-z]/.test(username) &&
+		// /[0-9]/.test(username) &&
+		// /[^A-Za-z0-9]/.test(username) // special character
+	);
+}
+
 export async function register() {
-	if (!await refreshToken()) {
-		navigateTo(ViewState.LOGIN);
+	const username = document.querySelector<HTMLElement>(`.data_input[data-input-id="register_username"]`) as HTMLInputElement;
+
+	if (!isUsernameOK(username.value)) {
+		console.error("[REGISTER] Username is short.");
+		showErrorModal("register_username_short");
 		return;
 	}
-	const accessToken =  localStorage.getItem("accessToken");
-	if (accessToken) {
-		try {
-			const response = await fetch(`/api/protected/profile`, {
-				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " + accessToken
-				}
-			});
-			const data = await response.json();
-			if (!response.ok) {
-				console.error("[login] Login check failed:", data.error);
-				navigateTo(ViewState.LOGIN);
-				return;
-			}
-			user_f.id = data.user.id;
-			user_f.name = data.user.username;
-			setUser(user_f);
-			navigateTo(ViewState.GAME);
-			return;
-		}  catch (err) {
-			console.error("[login] Network error:", err);
-		}
+
+	const password1 = document.querySelector<HTMLElement>(`.data_input[data-input-id="register_password1"]`) as HTMLInputElement;
+	const password2 = document.querySelector<HTMLElement>(`.data_input[data-input-id="register_password2"]`) as HTMLInputElement;
+
+	if (password1.value !== password2.value) {
+		console.error("[REGISTER] Passwords do not match.");
+		showErrorModal("register_password");
+		return;
 	}
-	navigateTo(ViewState.LOGIN);
+
+	if (!isStrongPassword(password1.value)) {
+		console.error("[REGISTER] Password is weak.");
+		showErrorModal("register_password_weak");
+		return;
+	}
+
+	const check_agreement = document.querySelector<HTMLElement>(`.data_input[data-input-id="check_agreement"]`) as HTMLInputElement;
+	if (!check_agreement.checked) {
+		showErrorModal("check_agreemnt");
+		return;
+	}
+
+	try {
+		const response = await fetch(`/api/register`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				username: username.value,
+				password: password1.value
+			})
+		});
+		const data = await response.json();
+		if (!response.ok) {
+			console.error("[REGISTER] Register failed:", data.error);
+			console.error("[REGISTER] cli_error:", data.cli_error);
+			showErrorModal(data.cli_error);
+			return;
+		}
+		console.log("[REGISTER] User registered.");
+		qrcode = data.qr;
+		username.value= "";
+		password1.value = "";
+		password2.value = "";
+		navigateTo(ViewState.QRCODE);
+	}  catch (err) {
+		console.error("[REGISTER] Network error:", err);
+	}
+}
+
+export function clearQRcode() {
+	qrcode = "";
 }
 
 export function startCountdown(seconds: number, onComplete: () => void) {

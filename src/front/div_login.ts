@@ -1,5 +1,5 @@
 // import { ViewState, navigateTo } from "./state"
-import { user_f, isCountdown } from "./login"
+import { user_f, isCountdown, qrcode } from "./login"
 
 function disableDiv(divName: string) {
 	const container = document.querySelector<HTMLElement>(`.` + divName);
@@ -71,4 +71,18 @@ export function setDivRegister() {
 	} else {
 		disableDiv("div-register");
 	}
+}
+
+export function setDivQRcode() {
+	if (qrcode !== "") {
+		const img = document.querySelector<HTMLElement>(`.qrcode_img`) as HTMLImageElement;
+		if (img) {
+			img.src = qrcode;
+		}
+	}
+	// if (user_f.id === -1) {
+	// 	enableDiv("div-qr-code");
+	// } else {
+	// 	disableDiv("div-qr-code");
+	// }
 }

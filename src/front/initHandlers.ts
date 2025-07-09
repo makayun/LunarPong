@@ -1,4 +1,5 @@
-import { login, logoff, twofa } from "./login"
+import { login, logoff, twofa, register } from "./login"
+import { ViewState, navigateTo } from "./state"
 
 export function initHandlers() {
 	const loginInput = document.querySelector<HTMLElement>('.input[data-input-id="login_password"]');
@@ -41,10 +42,19 @@ export function initHandlers() {
 		}
 	)};
 
-	const registerBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login_register"]`);
+	const login_registerBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login_register"]`);
+	if (login_registerBtn) {
+		login_registerBtn.addEventListener("click", () => {
+			console.debug("[LOGIN] Register button clicked");
+			navigateTo(ViewState.REGISTER);
+		}
+	)};
+	
+	const registerBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="register"]`);
 	if (registerBtn) {
 		registerBtn.addEventListener("click", () => {
 			console.debug("[REGISTER] Button clicked");
+			register();
 		}
 	)};
 

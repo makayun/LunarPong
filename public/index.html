@@ -35,6 +35,7 @@
 			</div>
 		</div>
 	</div>
+
     <div class="div-logoff hidden" data-view-id="logoff" id="div_logoff">
   	  <button class="logoff-btn btn_click" data-btn-id="logoff" data-i18n="logoff.button"></button>
     </div>
@@ -71,45 +72,67 @@
       </div>
     </div>
 
-<div data-view-id="2fa" class="div-2fa page-view hidden">
-  <div id="countdown" class="countdown" countdown-id="2fd"></div>
-  <div class="twofa-container">
-    <h1 class="twofa-title" data-i18n="2fa.title"></h1>
-    <div class="input-group">
-      <input class="input data_input" 
-        type="text" 
-        data-input-id="2fa_token" 
-        placeholder="" />
-      <label data-i18n="2fa.label_token" class="input-label"></label><br>
+    <div data-view-id="2fa" class="div-2fa page-view hidden">
+      <div id="countdown" class="countdown" countdown-id="2fd"></div>
+      <div class="twofa-container">
+        <h1 class="twofa-title" data-i18n="2fa.title"></h1>
+        <div class="input-group">
+          <input class="input data_input" 
+            type="text" 
+            data-input-id="2fa_token" 
+            placeholder="" />
+          <label data-i18n="2fa.label_token" class="input-label"></label><br>
+        </div>
+        <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
+      </div>
     </div>
-    <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
-  </div>
-</div>
+    
+    <div data-view-id="register" class="div-register page-view hidden">
+      <div class="register-container">
+        <h1 class="register-title" data-i18n="register.title"></h1>
+        <div class="input-group">
+          <input type="text" class="input data_input" data-input-id="register_username" placeholder=""/>
+          <label data-i18n="register.label_name" class="input-label"></label>
+        </div>
+        <div class="input-group">
+          <input type="password" class="input data_input" data-input-id="register_password1" placeholder=""/>
+          <label data-i18n="register.label_password1" class="input-label"></label>
+        </div>
+        <div class="input-group">
+          <input type="password" class="input data_input" data-input-id="register_password2" placeholder=""/>
+          <label data-i18n="register.label_password2" class="input-label"></label>
+        </div>
+        <!-- <div class="input-group">
+          <input type="email" class="input" placeholder=""/>
+          <label data-i18n="register.label_email" class="input-label"></label>
+        </div> -->
+    	<h3 style="color: white;" data-i18n="agreement.notice"></h3>
+        <div style="color: white; border: 1px solid #ccc; padding: 1em; max-height: 200px; overflow-y: auto;">
+          <p data-i18n="agreement.p1"></p>
+          <p data-i18n="agreement.p2"></p>
+          <p data-i18n="agreement.p3"></p>
+        </div>
+        <input id="gdpr_checkbox" class="input data_input" data-input-id="check_agreement" type="checkbox" name="gdpr_consent" required>
+        <label style="color: white;" for="gdpr_checkbox" data-i18n="agreement.checkbox"></label>
+        <button data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
+      </div>
+      <br>
+      <button data-btn-id="back" class="back-btn btn_click" data-i18n="back.button"></button>
+    </div>
+    
+    <div data-view-id="qrcode" class="div-qrcode page-view hidden flex flex-col items-center gap-4">
+	<!-- <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; background-color: #222;">
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 137.6 96.6" fill="#fff" stroke="transparent" width="200" height="160">
+        <path d="M229.2 443.9h50.7v25.4h25.3v-45.9h-50.6l50.6-50.7h-25.3l-50.7 50.7zM316.1 398.1l25.3-25.4h-25.3z" fill="#fff" transform="translate(-229.2 -372.7)"></path>
+        <path d="m341.4 398.1-25.3 25.3v25.3h25.3v-25.3l25.4-25.3v-25.4h-25.4zM366.8 423.4l-25.4 25.3h25.4z" fill="#fff" transform="translate(-229.2 -372.7)"></path>
+      </svg>
+    </div> -->
+    <img class="qrcode_img" src="<%= require('../assets/logo_168.png') %>" alt="42 logo">
+    <h2 style="color: red;" data-i18n="register.qrcode"></h2>
+    <a href="/#login" class="btn" data-i18n="login.button"></a>
+    </div>
 
-<div data-view-id="register" class="div-register page-view hidden">
-  <div class="register-container">
-    <h1 class="register-title" data-i18n="register.title"></h1>
-    <div class="input-group">
-      <input type="text" class="input" placeholder=""/>
-      <label data-i18n="register.label_name" class="input-label"></label>
-    </div>
-    <div class="input-group">
-      <input type="password" class="input" placeholder=""/>
-      <label data-i18n="register.label_password1" class="input-label"></label>
-    </div>
-    <div class="input-group">
-      <input type="password" class="input" placeholder=""/>
-      <label data-i18n="register.label_password2" class="input-label"></label>
-    </div>
-    <div class="input-group">
-      <input type="email" class="input" placeholder=""/>
-      <label data-i18n="register.label_email" class="input-label"></label>
-    </div>
-    <button data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
-  </div>
-  <br>
-  <button data-btn-id="back" class="back-btn btn_click" data-i18n="back.button"></button>
-</div>
+
   <div data-view-id="game" class="page-view hidden game-div" id="div_container">
     <div class="game-screen-div">
       <h1 class="game-name" data-i18n="game.title">
