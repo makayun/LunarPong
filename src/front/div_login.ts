@@ -1,93 +1,74 @@
 // import { ViewState, navigateTo } from "./state"
-import { user_f } from "./login"
+import { user_f, isCountdown } from "./login"
+
+function disableDiv(divName: string) {
+	const container = document.querySelector<HTMLElement>(`.` + divName);
+	if (!container) {
+		console.error(`Container with class .` + divName + ` not found.`);
+		return;
+	}
+	const elements = container.querySelectorAll("input, button, select, textarea");
+
+	elements?.forEach(el => {
+		if ('disabled' in el) {
+			(el as HTMLInputElement).disabled = true;
+		}
+	});
+
+	const links = container.querySelectorAll("a");
+	links.forEach(link => {
+		link.addEventListener("click", function (event) {
+			event.preventDefault(); // отменяет переход
+			console.log("Ссылка отключена:", link.href);
+		});
+	});
+}
+
+function enableDiv(divName: string) {
+	const container = document.querySelector<HTMLElement>(`.` + divName);
+	if (!container) {
+		console.error(`Container with class .` + divName + ` not found.`);
+		return;
+	}
+	const elements = container.querySelectorAll("input, button, select, textarea");
+
+	elements?.forEach(el => {
+		if ('disabled' in el) {
+			(el as HTMLInputElement).disabled = false;
+		}
+	});
+
+	const links = container.querySelectorAll("a");
+	links.forEach(link => {
+		// Удаляем обработчик события (если он был добавлен)
+		link.replaceWith(link.cloneNode(true));
+	});
+}
 
 export function setDivLogin() {
-	// initLoginHandlers();
+	if (user_f.id === -1) {
+		enableDiv("div-login");
+	} else {
+		disableDiv("div-login");
+	}
 }
-
-// function initLoginHandlers() {
-// 	const loginBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login"]`);
-// 	const loginInput = document.querySelector<HTMLElement>('.input[data-input-id="login_password"]');
-// 	if(loginInput)
-// 	{
-// 		document.addEventListener('keydown', (e) => {
-// 		const currentView = document.querySelector('[data-view-id="login"]:not(.hidden)');
-//     	if ((e.key) === "Enter" && currentView) {
-// 			login();
-// 		}
-// 		}); 
-// 	}
-// 	if (loginBtn) {
-// 		loginBtn.addEventListener("click", async () => {
-// 			console.log("[login] Login button clicked");
-// 			login();
-// 		});
-// 	}
-// 	const registerBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login_register"]`);
-// 	if (registerBtn) {
-// 		registerBtn.addEventListener("click", () => {
-// 			console.log("[login] Register button clicked");
-// 			navigateTo(ViewState.REGISTER);
-// 		}
-// 	)};
-// }
 
 export function setDiv2fa() {
-	const el = document.querySelector('[data-i18n="logged.title"]');
-	if (el) {
-		el.setAttribute('data-i18n-args', JSON.stringify({ name: user_f.name, id: user_f.id }));
+	if (isCountdown()) {
+		enableDiv("div-2fa");
+	} else {
+		disableDiv("div-2fa");
 	}
-	// if (!validateToken("twofaToken"))  {
-	// 	navigateTo(ViewState.LOGIN);
-	// 	return;
+	// const el = document.querySelector('[data-i18n="logged.title"]');
+	// if (el) {
+	// 	el.setAttribute('data-i18n-args', JSON.stringify({ name: user_f.name, id: user_f.id }));
 	// }
-	// startCountdown(300, logoff);
-	// initLoggedHandlers();
 }
-
-// function initLoggedHandlers() {
-// 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
-// 	const twofaInput = document.querySelector<HTMLInputElement>('.input[data-input-id="2fa_token"]');
-// 	if (logoffBtn) {
-// 		logoffBtn.addEventListener("click", async () => {
-// 			logoff();
-// 		}
-// 	)};
-	
-// 	if(twofaInput)
-// 	{
-// 		document.addEventListener('keydown', (e) => {
-// 		const currentView = document.querySelector('[data-view-id="2fa"]:not(.hidden)');
-//     	if ((e.key) === 'Enter' && currentView) {
-// 			twofa();
-// 		}
-// 		}); 
-// 	}
-// 	const continueBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="2fa_continue"]`);
-// 	if (continueBtn) {
-// 		continueBtn.addEventListener("click", async () => {
-// 			console.log("[logged] Continue button clicked:");
-// 			twofa();
-// 			// navigateTo(ViewState.GAME);
-// 		}
-// 	)};
-// }
 
 export function setDivRegister() {
-	// initRegisterHandlers();
+	if (user_f.id === -1) {
+		enableDiv("div-register");
+	} else {
+		disableDiv("div-register");
+	}
 }
-
-// function initRegisterHandlers() {
-// 	const continueBtn = document.querySelector(".register-btn");
-// 	const backBtn = document.querySelector('.btn_click[data-btn-id="back"]') as HTMLButtonElement;
-// 	if (backBtn) {
-// 		backBtn.addEventListener("click", async () => {
-// 			console.log("[register] Back button clicked");
-// 			navigateTo(ViewState.LOGIN);
-// 	})};
-// 	if (continueBtn) {
-// 		continueBtn.addEventListener("click", async () => {
-// 			console.log("[register] Register button clicked:");
-// 		}
-// 	)};
-// }

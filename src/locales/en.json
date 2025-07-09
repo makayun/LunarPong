@@ -8,7 +8,10 @@
 	  "user_password_problem": "Wrong username or password",
 	  "user_exist": "Username already exists",
 	  "refersh_token_problem": "Can't refresh token",
-	  "2fa_problem": "Two-factor authentication error"
+	  "2fa_problem": "Two-factor authentication error",
+	  "2fa_required": "Two-factor authentication is required",
+	  "2fa_invalid_code": "Invalid two-factor authentication code",
+	  "2fa_token": "Invalid two-factor token"
     },
     "login": {
       "title": "Welcome!",

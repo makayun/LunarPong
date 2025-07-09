@@ -1,5 +1,20 @@
-window.addEventListener("DOMContentLoaded", handleContentLoaded);
-window.addEventListener("hashchange", handleHashChange);
+window.addEventListener("DOMContentLoaded", () => {
+	console.log("[WINDOW] Page loaded");
+	initHandlers();
+	handleHashChange();
+});
+// window.addEventListener("pageshow", (event) => {
+// 	if (event.persisted) {
+// 		console.log("[WINDOW] Page loaded from bfcache");
+// 	} else {
+// 		console.log("[WINDOW] Fresh page load (F5 or Ctrl+F5)");
+// 		handleHashChange();
+// 	}
+// });
+window.addEventListener("hashchange", () => {
+	console.log("[WINDOW] Page hash changed");
+	handleHashChange();
+});
 
 import { initHandlers } from "./initHandlers";
 import { isViewState, set_view, ViewState, navigateTo} from "./state"
@@ -34,19 +49,23 @@ export function showErrorModal(messageKey: string) {
 	}
 }
 
-function handleContentLoaded() {
-	initHandlers();
-	handleHashChange();
-}
-
-function handleHashChange() {
+async function handleHashChange() {
 	const hash = location.hash.replace("#", "");
 
-	checkLogin().then(() => {});
+	await checkLogin();
 	if (isViewState(hash)) {
 		set_view(hash);
 	} else {
-		
+		if (user_f.id === -1) {
+			console.log(`[view] User not logged in, redirecting to LOGIN`);
+			navigateTo(ViewState.LOGIN);
+		} else if (isCountdown()) {
+			console.log(`[view] User not logged in, but countdown is active, redirecting to 2FA`);
+			navigateTo(ViewState.TWOFA);
+		} else {
+			console.log(`[view] User logged in, redirecting to GAME`);
+			navigateTo(ViewState.GAME);
+		}
 	}
 }
 
@@ -67,37 +86,33 @@ interface MyToken {
 }
 
 export async function checkLogin() {
+	const newRefreshToken = getCookie("refreshToken");
+	if (newRefreshToken) {
+		console.log("[LOGIN] New refresh token found in cookies, updating localStorage");
+		localStorage.setItem("refreshToken", newRefreshToken);
+		document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	}
+
 	if (validateToken("accessToken") > 0 || validateToken("refreshToken") > 0) {
 		localStorage.removeItem("accessToken");
-		refreshToken().then(() => {
-			if (validateToken("accessToken") == 0) {
-				showErrorModal("error.refersh_token_problem");
-				return;
-			}
-		});
-		getUserData().then(() => {});
-		if (user_f.id !== -1) {
-			const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
-			if (logoffBtn) {
-				logoffBtn.addEventListener("click", async () => {
-					console.log("[LOGOFF] Logoff button clicked:");
-					user_f.id = -1;
-					user_f.name = "";
-					unsetUser();
-					localStorage.removeItem("twofaToken");
-					localStorage.removeItem("accessToken");
-					localStorage.removeItem("refreshToken");
-					navigateTo(ViewState.LOGIN);
-				}
-			)};
+		await refreshToken();
+		if (validateToken("accessToken") == 0) {
+			showErrorModal("error.refersh_token_problem");
+			return;
 		}
+		await getUserData("accessToken");
 		return;
 	}
 
 	const timeLeft = validateToken("twofaToken");
 	if (timeLeft > 0) {
 		stopCountdown();
-		startCountdown(timeLeft, logoff);
+		await getUserData("twofaToken");
+		if (user_f.id !== -1) {
+			startCountdown(timeLeft, logoff);
+		} else {
+			showErrorModal("error.2fa_token");
+		}
 		return;
 	}
 }
@@ -167,10 +182,10 @@ export async function login() {
 		// qrImg.alt = "Scan with Google Authenticator";
 		// user_f.id = -2;
 
-		// user_f.id = data.user.id;
+		user_f.id = data.user.id;
 		// user_f.name = data.user.username;
 		// setUser(user_f);
-		console.log("[login] Login successful, User name = ", user_f.name);
+		// console.log("[login] Login successful, User name = ", user_f.name);
 		console.log("[login] Login successful, User id =", user_f.id);
 		// 💾 Сохраняем токены (в localStorage или sessionStorage)
 		localStorage.setItem("twofaToken", data.twofaToken);
@@ -180,33 +195,37 @@ export async function login() {
 	}
 }
 
-export async function getUserData() {
-	try {
-		const response = await fetch(`/api/protected/profile`, {
-			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-				"Authorization": "Bearer " + localStorage.getItem("accessToken")
+export async function getUserData(tokenName: string) {
+	const token =  localStorage.getItem(tokenName);
+	console.debug("[USER] ",  tokenName, ":", token);
+	if (token) {
+		try {
+			const response = await fetch(`/api/protected/profile`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + token
+				}
+			});
+			const data = await response.json();
+			if (!response.ok) {
+				console.error("[USER] Refresh failed:", data.error);
+				return;
 			}
-		});
-		const data = await response.json();
-		if (!response.ok) {
-			console.error("[refresh] Refresh failed:", data.error);
-			return;
+			user_f.id = data.user.id;
+			user_f.name = data.user.username;
+			setUser(user_f);
+			console.log("[USER] Get user data:", data);
+		}  catch (err) {
+			console.error("[USER] Get user data:", err);
 		}
-		user_f.id = data.user.id;
-		user_f.name = data.user.username;
-		setUser(user_f);
-		console.log("[USER] Get user data:", data);
-	}  catch (err) {
-		console.error("[USER] Get user data:", err);
 	}
 }
 
 export async function twofa() {
 	const token = document.querySelector<HTMLElement>(`.data_input[data-input-id="2fa_token"]`) as HTMLInputElement;
 	if (!token.value) {
-		console.log("[2fa] Code is empty");
+		console.log("[2FA] Code is empty");
 		return;
 	}
 	const twofaToken =  localStorage.getItem("twofaToken");
@@ -225,11 +244,13 @@ export async function twofa() {
 			});
 			const data = await response.json();
 			if (!response.ok) {
-				console.error("[2fa] 2FA check failed:", data.error);
+				console.error("[2FA] Check failed:", data.error);
+				showErrorModal("error.2fa_invalid_code");
 				// navigateTo(ViewState.LOGIN);
 				return;
 			}
 			stopCountdown();
+			token.value = "";
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
 			setUser(user_f);
@@ -239,10 +260,10 @@ export async function twofa() {
 			navigateTo(ViewState.GAME);
 			return;
 		}  catch (err) {
-			console.error("[2fa] Network error:", err);
+			console.error("[2FA] Network error:", err);
 		}
 	}
-	console.log("[2fa] Code is expired or bad");
+	console.log("[2FA] Code is expired or bad");
 	navigateTo(ViewState.LOGIN);
 }
 
