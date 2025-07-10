@@ -35,7 +35,12 @@ export function set_view(state: ViewState) {
 			img.src = `assets/logo_168.png`;
 		}
 	}
-
+	const backBtn = document.querySelector('.btn_click[data-btn-id="back"]') as HTMLButtonElement;
+	if (backBtn) {
+		backBtn.addEventListener("click", async () => {
+			console.log("[register] Back button clicked");
+			navigateTo(ViewState.LOGIN);
+	})};
 	const logoffElement = document.querySelector<HTMLElement>(`.div-logoff`);
 	if (logoffElement) {
 		if (user_f.id !== -1) {
