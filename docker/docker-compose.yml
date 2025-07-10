@@ -40,6 +40,7 @@ services:
     # volumes:
     #   - ms_log:/var/log/modsec
     environment:
+      BACKEND: https://node_sqlite:12800
       PORT: 8080
       SSL_PORT: 8443
       SERVER_NAME: localhost
@@ -52,7 +53,7 @@ services:
       SSL_PREFER_CIPHERS: on
       SSL_VERIFY: off
       SSL_VERIFY_DEPTH: 1
-      PROXY_PASS: https://node_sqlite:12800
+      # PROXY_PASS: https://node_sqlite:12800
       PROXY_SSL_PROTOCOLS: "TLSv1.2 TLSv1.3"
       PROXY_SSL_CIPHERS: "HIGH:!aNULL:!MD5"
       PROXY_SSL_VERIFY: off
