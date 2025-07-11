@@ -9,3 +9,4 @@ output\.css
 /src/styles/output.css
 .env
 docker/nginx_modsecurity/rules
+docker/node_sqlite/build-context

@@ -2,13 +2,16 @@ ARGUMENTS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 name = microservices
 
-all:
+all: prepare
 	@printf "Up ${name}:\n"
 	@COMPOSE_BAKE=true docker compose -f docker-compose.yml up -d
 
-build:
+build: prepare
 	@printf "Build ${name}:\n"
 	@COMPOSE_BAKE=true docker compose --build
+
+prepare:
+	@ cd ./node_sqlite && ./prepare-build-context.sh
 
 down:
 	@printf "Down ${name} (stop and remove containers, networks):\n"
@@ -46,4 +49,4 @@ mc:
 help:
 	@echo "Help will here!";
 
-.PHONY:	all build down re clean env bash mc help
+.PHONY:	all build prepare down re clean env bash mc help

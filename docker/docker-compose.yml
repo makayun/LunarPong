@@ -8,7 +8,7 @@ services:
       - NODE_ENV=developmen
       # - NODE_ENV=production
     volumes:
-      - fp_data:/var/fp_data/
+      # - fp_data:/var/fp_data/
       - sqlite_data:/var/sqlite_data/
     # restart: always
     expose:
@@ -20,7 +20,8 @@ services:
       - "8001:8001"
       - "12800:12800"
     # user: "node"
-    working_dir: /var/fp_data/
+    # working_dir: /var/fp_data/
+    working_dir: /home/node/Pong
     command: "/home/node/run.sh"
     networks:
       - front-tier
@@ -74,11 +75,11 @@ services:
   #     - front-tier
 
 volumes:
-  fp_data:
-    driver_opts:
-      o: bind
-      type: none
-      device: /home/${USER}/GitHub/Pong
+  # fp_data:
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: /home/${USER}/GitHub/Pong
   sqlite_data:
     driver_opts:
       o: bind
