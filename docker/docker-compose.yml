@@ -5,14 +5,14 @@ services:
       dockerfile: Dockerfile
     container_name: postgres
     environment:
-      POSTGRES_USER: "${USER_ID}"
+      # POSTGRES_USER: "${USER_ID}"
       POSTGRES_PASSWORD: vaultpass
       POSTGRES_DB: vaultdb
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     networks:
       - back-tier
 
@@ -31,7 +31,7 @@ services:
     cap_add:
       - IPC_LOCK
     volumes:
-      - ./vault-data:/vault/file
+      - vdata:/vault/file
     networks:
       - back-tier
 
@@ -45,9 +45,9 @@ services:
     environment:
       - NODE_ENV=developmen
       # - NODE_ENV=production
-    volumes:
+    # volumes:
       # - fp_data:/var/fp_data/
-      - sqlite_data:/var/sqlite_data/
+      # - sqlite_data:/var/sqlite_data/
     # restart: always
     expose:
       - "8081"
@@ -114,31 +114,26 @@ services:
   #     - front-tier
 
 volumes:
-  pong_data:
-    driver_opts:
-      o: bind
-      type: none
-      device: /home/${USER}/GitHub/Pong
   pgdata:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}/GitHub/Pong/docker/postgres/pgdata
-  vault-data:
+      device: /home/${USER}/GitHub/Pong/docker/postgres/data
+  vdata:
     driver_opts:
       o: bind
       type: none
-      device: /home/${USER}/GitHub/Pong/docker/vault/vault-data
-  sqlite_data:
-    driver_opts:
-      o: bind
-      type: none
-      device: /home/${USER}/GitHub/Pong/data/sqlite
-  ms_log:
-    driver_opts:
-      o: bind
-      type: none
-      device: /home/${USER}/GitHub/Pong/docker/node_sqlite/log
+      device: /home/${USER}/GitHub/Pong/docker/vault/data
+  # sqlite_data:
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: /home/${USER}/GitHub/Pong/data/sqlite
+  # ms_log:
+  #   driver_opts:
+  #     o: bind
+  #     type: none
+  #     device: /home/${USER}/GitHub/Pong/docker/node_sqlite/log
 
 networks:
   front-tier: {}

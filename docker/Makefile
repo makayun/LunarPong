@@ -25,7 +25,7 @@ re: down
 
 clean: down
 	@printf "Clean ${name}:\n"
-	@docker system prune -a
+	@docker system prune -a -f --filter "label=keep"
 
 env:
 	@printf "Show ENV ${name}:\n"
