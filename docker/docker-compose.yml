@@ -1,9 +1,47 @@
 services:
+  postgres:
+    build:
+      context: postgres/
+      dockerfile: Dockerfile
+    container_name: postgres
+    environment:
+      POSTGRES_USER: "${USER_ID}"
+      POSTGRES_PASSWORD: vaultpass
+      POSTGRES_DB: vaultdb
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    networks:
+      - back-tier
+
+  vault:
+    build:
+      context: vault/
+      dockerfile: Dockerfile
+    container_name: vault
+    depends_on:
+      - postgres
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "root"
+      VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./vault-data:/vault/file
+    networks:
+      - back-tier
+
   node_sqlite:
     build:
       context: node_sqlite/
       dockerfile: Dockerfile
     container_name: node_sqlite
+    depends_on:
+      - vault
     environment:
       - NODE_ENV=developmen
       # - NODE_ENV=production
@@ -25,6 +63,7 @@ services:
     command: "/home/node/run.sh"
     networks:
       - front-tier
+      - back-tier
 
   nginx_modsecurity:
     build:
@@ -75,11 +114,21 @@ services:
   #     - front-tier
 
 volumes:
-  # fp_data:
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: /home/${USER}/GitHub/Pong
+  pong_data:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/GitHub/Pong
+  pgdata:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/GitHub/Pong/docker/postgres/pgdata
+  vault-data:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/GitHub/Pong/docker/vault/vault-data
   sqlite_data:
     driver_opts:
       o: bind

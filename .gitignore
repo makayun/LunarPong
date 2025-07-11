@@ -7,6 +7,6 @@ tmp
 docs
 output\.css
 /src/styles/output.css
-.env
+/.env
 docker/nginx_modsecurity/rules
 docker/node_sqlite/build-context
