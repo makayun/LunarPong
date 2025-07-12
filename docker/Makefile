@@ -23,9 +23,27 @@ re: down
 	@printf "Rebuild ${name}:\n"
 	@COMPOSE_BAKE=true docker compose -f docker-compose.yml up -d --build
 
-clean: down
-	@printf "Clean ${name}:\n"
-	@docker system prune -a -f --filter "label=keep"
+clean:
+	@echo "🧼 Cleaning Docker resources except those labeled 'keep=true'"
+	@echo "🛑 Stopping and removing containers"
+	@for id in $$(docker ps -aq); do \
+		if [ "$$(docker inspect -f '{{ index .Config.Labels "keep" }}' $$id)" != "true" ]; then \
+			echo "Removing container $$id"; \
+			docker stop $$id >/dev/null 2>&1 && docker rm $$id; \
+		fi; \
+	done
+	@echo "🗑️ Removing images"
+	@for img in $$(docker images -q | sort -u); do \
+		if [ "$$(docker inspect -f '{{ index .Config.Labels "keep" }}' $$img 2>/dev/null)" != "true" ]; then \
+			echo "Removing image $$img"; \
+			docker rmi -f $$img; \
+		fi; \
+	done
+	@echo "📦 Removing unused volumes"
+	@docker volume prune -f
+	@echo "🌐 Removing unused networks"
+	@docker network prune -f
+	@echo "✅ Done!"
 
 env:
 	@printf "Show ENV ${name}:\n"
