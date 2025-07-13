@@ -35,7 +35,9 @@
 - из корня проекта "cd ./docker/vault"
 - распаковываем архив "tar -xzf data.tar.gz" и проверяем что есть папка data с содержимым
 - переходим в nginx_modsecurity "cd ../nginx_modsecurity"
-- скачиваем правила "./rules.sh" (CRS), проверяем наличие папки rules с содержимым (нас будет интересовать rules/rules) 
+- скачиваем правила "./rules.sh" (CRS), проверяем наличие папки rules с содержимым (нас будет интересовать rules/rules)
+- переходим в node_sqlite "cd ../node_sqlite"
+- копируем исходники для контейнера "./prepare-build-context.sh", проверяем папку build-context (там должны быть все наши исходники и все что нужно для приложения)
 - переходим в docker "cd .."
 - "make"
 - проверяем что все поднялось "docker container ls"
