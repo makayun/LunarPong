@@ -73,7 +73,7 @@ services:
     #   - ms_log:/var/log/modsec
     environment:
       BACKEND: https://node_sqlite:12800
-      PORT: 8080
+      # PORT: 8080
       SSL_PORT: 8443
       SERVER_NAME: localhost
       SERVER_TOKENS: off
