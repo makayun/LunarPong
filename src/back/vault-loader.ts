@@ -2,7 +2,7 @@ import chalk							from 'chalk';
 
 const vault = require('node-vault')({
 	endpoint: 'http://vault:8200',
-	token: 'hvs.gjND6NGC8I1zoYCUy9RDyzVT'
+	token: process.env.VAULT_TOKEN
 });
 
 export async function loadSecretsIntoEnv(vault_env: string){

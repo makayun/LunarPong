@@ -7,6 +7,7 @@ services:
     environment:
       - VAULT_LOG_LEVEL=debug
       - VAULT_ADDR=http://vault:8200
+      # УДАЛИТЬ ТОКЕН ПРИ ЗАПУСКЕ В GIT !!!!!
       - VAULT_TOKEN=hvs.gjND6NGC8I1zoYCUy9RDyzVT
     ports:
       - "8200:8200"
@@ -32,19 +33,21 @@ services:
     environment:
       - NODE_ENV=developmen
       # - NODE_ENV=production
-      - DATABASE_PATH=./data/sqlite/fp.db
-    # volumes:
+      - DATABASE_PATH=/var/sqlite_data/fp.db
+      # УДАЛИТЬ ТОКЕН ПРИ ЗАПУСКЕ В GIT !!!!!
+      - VAULT_TOKEN=hvs.gjND6NGC8I1zoYCUy9RDyzVT
+    volumes:
       # - fp_data:/var/fp_data/
-      # - sqlite_data:/var/sqlite_data/
+      - sqlite_data:/var/sqlite_data/
     # restart: always
-    expose:
-      - "8081"
-      - "22"
-      - "12800"
-    ports:
-      - "2201:22"
-      - "8001:8001"
-      - "12800:12800"
+    # expose:
+    #   - "8081"
+    #   - "22"
+    #   - "12800"
+    # ports:
+    #   - "2201:22"
+    #   - "8001:8001"
+    #   - "12800:12800"
     # user: "node"
     # working_dir: /var/fp_data/
     working_dir: /home/node/Pong
@@ -60,11 +63,12 @@ services:
     container_name: nginx_modsecurity
     ports:
       - "8443:8443"
-      - "8080:8080"
+      # - "8080:8080"
     depends_on:
       - node_sqlite
     networks:
       - front-tier
+      - back-tier
     # volumes:
     #   - ms_log:/var/log/modsec
     environment:
@@ -107,11 +111,11 @@ volumes:
       o: bind
       type: none
       device: /home/${USER}/GitHub/Pong/docker/vault/data
-  # sqlite_data:
-  #   driver_opts:
-  #     o: bind
-  #     type: none
-  #     device: /home/${USER}/GitHub/Pong/data/sqlite
+  sqlite_data:
+    driver_opts:
+      o: bind
+      type: none
+      device: /home/${USER}/GitHub/Pong/data/sqlite
   # ms_log:
   #   driver_opts:
   #     o: bind
@@ -120,4 +124,4 @@ volumes:
 
 networks:
   front-tier: {}
-  back-tier: {}
+  back-tier: {internal: true}

@@ -1,23 +1,34 @@
-/ # vault operator init
-Unseal Key 1: DwJVcusnvm6YG+e6H6gkLPLLfKhx6DMTDeiBiiYjIVQ9
-Unseal Key 2: +ZLiDG/SzoH1EdYRdzPHlqKgiZhgtqS8bs+3F7nirLpI
-Unseal Key 3: y/gH/0ofn6DFgY2b0rj7mGEKK1zLueCYLAex4ajXk93B
-Unseal Key 4: bvNo2vpeusss4hWa8EMY9NcBiOYlfNp9tdi/PKvgSJFJ
-Unseal Key 5: p6eU5EQNoEQ0buRjcNM+VEN5r/rkqtMMneKE67b7G2Xt
+vault operator init
 
-Initial Root Token: hvs.gjND6NGC8I1zoYCUy9RDyzVT
+vault operator unseal
+vault operator unseal
+vault operator unseal
 
-Vault initialized with 5 key shares and a key threshold of 3. Please securely
-distribute the key shares printed above. When the Vault is re-sealed,
-restarted, or stopped, you must supply at least 3 of these keys to unseal it
-before it can start servicing requests.
+vault kv delete env/google;
 
-Vault does not store the generated root key. Without at least 3 keys to
-reconstruct the root key, Vault will remain permanently sealed!
+vault kv put env/google \
+GOOGLE_CLIENT_ID= \
+GOOGLE_CLIENT_SECRET= \
+GOOGLE_REDIRECT_URI= \
+GOOGLE_STATE_CODE=
 
-It is possible to generate new unseal keys, provided you have a quorum of
-existing unseal keys shares. See "vault operator rekey" for more information.
-/ #
+vault kv delete env/jwt
 
+vault kv put env/jwt \
+JWT_SECRET=your_secret_key
 
-vault operator unseal DwJVcusnvm6YG+e6H6gkLPLLfKhx6DMTDeiBiiYjIVQ9; vault operator unseal +ZLiDG/SzoH1EdYRdzPHlqKgiZhgtqS8bs+3F7nirLpI; vault operator unseal y/gH/0ofn6DFgY2b0rj7mGEKK1zLueCYLAex4ajXk93B;
+modsecurity (nginx) блокирует ответ редирект аввторизации google:
+https://localhost:8443/api/auth/google/callback?state=your_state_value&code=4%2F0AVMBOwVnSlJA&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid&authuser=0&prompt=consent
+<html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
+<!-- a padding to disable MSIE and Chrome friendly error page -->
