@@ -1,42 +1,71 @@
 {
   "or": "或",
-    "hello": "你好，{{name}}！",
-    "login": {
-      "title": "欢迎！",
-      "label_name": "用户名",
-      "name": "用户名",
-      "label_password": "密码",
-      "password": "密码",
-      "button": "登录"
-    },
-    "logged": {
-      "title": "你好，{{name}}！(id: {{id}})"
-    },
-    "logoff": {
-      "button": "登出"
-    },
-    "register": {
-      "title": "注册",
-      "label_name": "用户名",
-      "label_password1": "密码",
-      "label_password2": "重复密码",
-      "label_email": "邮箱",
-      "button": "注册"
-    },
-    "continue": "继续",
-    "game": {
-      "title": "月球乒乓",
-      "local-btn": "本地游戏",
-      "remote-btn": "远程游戏",
-      "versusai-btn": "对战AI",
-      "block-chat": "屏蔽",
-      "invite-chat": "邀请",
-      "profile-chat": "个人资料",
-      "msg-input": "在此输入..."
-    },
-    "2fa": {
-      "title": "输入双因素认证密钥",
-      "label_token": "在此输入验证码...",
-      "continue": "继续"
-    }
+  "hello": "你好, {{name}}!",
+  "error": {
+    "title": "错误",
+    "button": "关闭",
+    "server": "哎呀! 我们这边出了点问题。请稍后再试。",
+    "default": "发生错误...",
+    "user_password_problem": "用户名或密码错误",
+    "user_exist": "用户名已存在",
+    "refersh_token_problem": "无法刷新令牌",
+    "2fa_problem": "双重验证错误",
+    "2fa_required": "需要进行双重验证",
+    "2fa_invalid_code": "无效的双重验证码",
+    "2fa_token": "无效的双重验证令牌",
+    "check_agreemnt": "请阅读并接受我们的隐私声明后再继续。",
+    "register_password": "密码不匹配，请重试。",
+    "register_password_weak": "密码必须至少包含8个字符, 包括一个大写字母, 一个小写字母, 一个数字和一个特殊字符.",
+	"register_username_short": "用户名太短! 至少需要4个字符.",
+    "register_username_duplicate": "该用户名已被使用，请尝试另一个。"
+  },
+  "login": {
+    "title": "欢迎!",
+    "label_name": "用户名",
+    "name": "用户名",
+    "label_password": "密码",
+    "password": "密码",
+    "button": "登录"
+  },
+  "logged": {
+    "title": "你好, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+    "button": "退出登录"
+  },
+  "register": {
+    "title": "注册",
+    "label_name": "用户名",
+    "label_password1": "密码",
+    "label_password2": "重复密码",
+    "label_email": "电子邮件",
+    "button": "注册",
+    "qrcode": "重要提示：您必须立即使用 Google 或 Microsoft 身份验证器扫描二维码。如果跳过此步骤，您的注册将丢失且无法恢复。"
+  },
+  "agreement": {
+    "notice": "隐私声明",
+    "p1": "我们仅为联系您和提供服务而收集您的个人数据（如姓名、电子邮件）。除非法律要求，未经您明确同意，我们不会向第三方分享您的数据。",
+    "p2": "您有权随时访问、更正或删除您的数据。请通过 [your-email@example.com] 联系我们。",
+    "p3": "勾选下方框表示您同意根据通用数据保护条例 (GDPR) (EU) 2016/679 处理您的个人数据。",
+    "checkbox": "我已阅读并同意上述隐私声明。"
+  },
+  "continue": "继续",
+  "game": {
+    "title": "月球乒乓",
+    "local-btn": "本地游戏",
+    "remote-btn": "远程游戏",
+    "versusai-btn": "对战 AI",
+    "block-chat": "屏蔽",
+    "invite-chat": "邀请",
+    "profile-chat": "资料",
+    "msg-input": "在此输入..."
+  },
+  "2fa": {
+    "title": "输入双重验证码",
+    "label_token": "请输入验证码...",
+    "continue": "继续"
+  },
+  "back": {
+    "button": "返回"
+  }
 }

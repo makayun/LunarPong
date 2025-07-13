@@ -98,7 +98,7 @@ export async function checkLogin() {
 		localStorage.removeItem("accessToken");
 		await refreshToken();
 		if (validateToken("accessToken") == 0) {
-			showErrorModal("refersh_token_problem");
+			showErrorModal("refresh_token_problem");
 			return;
 		}
 		await getUserData("accessToken");
