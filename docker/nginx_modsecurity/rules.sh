@@ -1,5 +1,6 @@
 #! /bin/bash
 
+rm -rf rules
 mkdir -p rules
 cd rules/
 curl -LO https://github.com/coreruleset/coreruleset/archive/refs/tags/v4.0.0.tar.gz

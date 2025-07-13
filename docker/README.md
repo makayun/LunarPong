@@ -34,7 +34,9 @@
 
 - из корня проекта "cd ./docker/vault"
 - распаковываем архив "tar -xzf data.tar.gz" и проверяем что есть папка data с содержимым
-- переходим в ./docker "cd .."
+- переходим в nginx_modsecurity "cd ../nginx_modsecurity"
+- скачиваем правила "./rules.sh" (CRS), проверяем наличие папки rules с содержимым (нас будет интересовать rules/rules) 
+- переходим в docker "cd .."
 - "make"
 - проверяем что все поднялось "docker container ls"
 	..	IMAGE                      COMMAND                  PORTS                                           NAMES
