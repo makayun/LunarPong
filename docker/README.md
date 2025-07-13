@@ -16,7 +16,7 @@
 - Основное веб-приложение.
 - Использует SQLite как встроенную базу данных.
 - Переменные окружения для GOOGLE & JWT получаются из Vault.
-- Приложение полноценно запускается только после успешного получения конфигурации из Vault.
+- Приложение полноценно запускается только после успешного получения данных из Vault.
 
 ### 3. **HashiCorp Vault**
 
@@ -32,17 +32,19 @@
 
 ## Сборка всего
 
-- из корня проекта "cd ./docker"
+- из корня проекта "cd ./docker/vault"
+- распаковываем архив "tar -xzf data.tar.gz" и проверяем что есть папка data с содержимым
+- переходим в ./docker "cd .."
 - "make"
 - проверяем что все поднялось "docker container ls"
-	..	IMAGE                      COMMAND                  PORTS                                                   NAMES
-		docker-node_sqlite         "/home/node/run.sh"      														node_sqlite
-		docker-nginx_modsecurity   "/docker-entrypoint.…"	0.0.0.0:8443->8443/tcp, [::]:8443->8443/tcp   nginx_modsecurity
-		docker-vault               "docker-entrypoint.s…"															vault
+	..	IMAGE                      COMMAND                  PORTS                                           NAMES
+		docker-node_sqlite         "/home/node/run.sh"														node_sqlite
+		docker-nginx_modsecurity   "/docker-entrypoint.…"	0.0.0.0:8443->8443/tcp, [::]:8443->8443/tcp		nginx_modsecurity
+		docker-vault               "docker-entrypoint.s…"													vault
 
 ## Распечатываем Vault
 
-- make sh Vault
+- make sh vault
 - в шеле выполнить (ключи в репозитории не сохранены!):
 	vault operator unseal первый ключ
 	vault operator unseal второй ключ
@@ -58,7 +60,7 @@
 		...
 - exit
 
-## Перезапускаем приложенеи
+## Перезапускаем приложение
 
 - docker container restart node_sqlite
 - смотрим логи что приложение запустилось (содержимое лога в части "Server listening at" может отличаться!):
