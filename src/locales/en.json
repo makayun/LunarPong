@@ -8,6 +8,7 @@
     "default": "Something went wrong...",
     "user_password_problem": "Wrong username or password.",
     "user_exist": "Username already exists.",
+    "pass_same_username": "Password same as username. Wanna be hacked?",
     "refresh_token_problem": "Can't refresh token.",
     "2fa_problem": "Two-factor authentication error.",
     "2fa_required": "Two-factor authentication is required.",
