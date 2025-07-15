@@ -15,7 +15,7 @@ const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 const engine = new Engine(canvas, true);
 export const pongScene = new PongFrontScene(engine);
 
-async function gameMain() {
+export async function gameMain() {
 	// const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 	// const engine = new Engine(canvas, true);
 	// const pongScene = new PongFrontScene(engine);
@@ -121,4 +121,4 @@ function setGameInitListener(pongScene:  PongFrontScene, player: User) {
 	}
 }
 
-gameMain();
+// gameMain();
