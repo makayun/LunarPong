@@ -31,7 +31,7 @@ import { GLOW_MAX, GLOW_MIN } from "../defines/constants";
 export class PongFrontScene extends PongBaseScene {
 	public id?: GUID;
 	public side?: PlayerSide;
-	public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-game`);
+	public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-page`);
 
 	private hl = new HighlightLayer("hl", this);
 

@@ -6,7 +6,9 @@ import '../styles/output.css';
 const input = document.getElementById('chat-input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
-const socket = new WebSocket(`wss://${window.location.host}/ws-chat`);
+// const socket = new WebSocket(`wss://${window.location.host}/ws-page`);
+import { pongScene } from "./game";
+
 
 async function chatMain() {
   let user = {
@@ -21,12 +23,12 @@ async function chatMain() {
 		})
 	}
 
-  socket.addEventListener('open', () => {
-    socket.send(JSON.stringify({ type: 'register', user }));
+  pongScene.socket.addEventListener('open', () => {
+    pongScene.socket.send(JSON.stringify({ type: 'register', user }));
     // addMessage(`[System] You are ${user.nick}`);
   });
 
-  socket.addEventListener('message', (event) => {
+  pongScene.socket.addEventListener('message', (event) => {
     console.log('Received:', event.data);
     try {
       const data = JSON.parse(event.data);
@@ -98,7 +100,7 @@ input.addEventListener('keydown', (e: KeyboardEvent) => {
           content: text,
         };
       }
-      socket.send(JSON.stringify(payload));
+      pongScene.socket.send(JSON.stringify(payload));
       const nick = recipient.value === 'all' ? 'all' : userMap.get(recipient.value as GUID);
       const direction = nick || recipient.value;
       console.log('Sending to:', { id: recipient.value, nick });
@@ -123,7 +125,7 @@ let userMap = new Map<GUID, string>();
 function blockUser() {
   const target = recipient.value;
   if (target !== 'all') {
-    socket.send(JSON.stringify({ type: 'block', user: { id: target } }));
+    pongScene.socket.send(JSON.stringify({ type: 'block', user: { id: target } }));
     const targetNick = userMap.get(target as GUID) || target;
     addMessage(`[System] 👿 Blocked user ${targetNick}`);
   }
@@ -137,7 +139,7 @@ function inviteUser() {
   }
   const target = recipientElement.value;
   if (target !== 'all') {
-    socket.send(JSON.stringify({ type: 'invite', to: { id: target }, game: 'pong' }));
+    pongScene.socket.send(JSON.stringify({ type: 'invite', to: { id: target }, game: 'pong' }));
     const targetNick = userMap.get(target as GUID) || target;
     addMessage(`[System] Invited ${targetNick} to play pong`);
   }
@@ -148,7 +150,7 @@ function viewProfile() {
   if (target !== 'all') {
     const playerNick = userMap.get(target as GUID) || target;
 
-    socket.send(JSON.stringify({
+    pongScene.socket.send(JSON.stringify({
       type: 'profile',
       user: { id: target }
     }));
@@ -157,7 +159,7 @@ function viewProfile() {
       try {
         const data = JSON.parse(event.data);
         if (data.type === 'profile' && data.user.id === target) {
-          socket.removeEventListener('message', profileHandler);
+          pongScene.socket.removeEventListener('message', profileHandler);
 
           const profileHTML = `
             <div class="player-profile">
@@ -181,7 +183,7 @@ function viewProfile() {
       } catch {}
     };
 
-    socket.addEventListener('message', profileHandler);
+    pongScene.socket.addEventListener('message', profileHandler);
   }
 }
 

@@ -8,12 +8,17 @@ import { aiInputHandler, localInputHandler, remoteInputHandler } from './gameInp
 import type { User, GameType, InitGameSuccess, MeshPositions, MeshesDict, WSMessage } from "../defines/types";
 import { initGameButtons, setGameButtons } from './gameButtons';
 
+
 const gameButtons = initGameButtons();
 
+const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
+const engine = new Engine(canvas, true);
+export const pongScene = new PongFrontScene(engine);
+
 async function gameMain() {
-	const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
-	const engine = new Engine(canvas, true);
-	const pongScene = new PongFrontScene(engine);
+	// const canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
+	// const engine = new Engine(canvas, true);
+	// const pongScene = new PongFrontScene(engine);
 	let player: User | null = { id: await getUserId() };
 
 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);

@@ -13,8 +13,8 @@ import type { FastifyListenOptions }	from "fastify";
 
 import cookie							from '@fastify/cookie'
 
-import { wsGamePlugin }			from "./ws-game";
-import { wsChatPlugin }			from "./ws-chat"; // ✅ импорт чата
+// import { wsGamePlugin }			from "./ws-game";
+import { wsPagePlugin }			from "./ws-page"; // ✅ импорт чата
 import { PongBackEngine }		from "../scenes/PongBackScene";
 import { startRenderLoop }		from "../scenes/PongBackScene";
 import type { User }			from "../defines/types";
@@ -57,8 +57,7 @@ async function main() {
 	server.register(cookie);
 	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 	server.register(websocket);
-	await server.register(wsGamePlugin, { engine, users });
-	await server.register(wsChatPlugin, { users });
+	await server.register(wsPagePlugin, { engine, users });
 
 	server.register(authRoutes);
 	server.register(protectedRoutes, { prefix: '/api/protected' });
