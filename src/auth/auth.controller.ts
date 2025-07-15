@@ -25,6 +25,8 @@ export interface getUser {
 	otp: string;
 	g_id: number;
 	g_username: string;
+	ft_id: number;
+	ft_username: string;
 }
 
 export const login = async (
