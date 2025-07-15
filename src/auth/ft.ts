@@ -2,6 +2,7 @@ import { getDB } from '../back/db';
 import { getUser } from './auth.controller'
 import { signRefreshToken } from './auth.utils';
 import { FastifyRequest, FastifyReply } from 'fastify';
+// import { writeFileSync } from 'fs';
 
 const simpleOauth2 = require('simple-oauth2');
 const { AuthorizationCode } = simpleOauth2;
@@ -18,9 +19,9 @@ export const ft_check_user = (userInfo: any) => {
 		console.log(`[db] user isn't exist`);
 		try {
 			db.prepare(`INSERT INTO users (username, ft_id, ft_username) VALUES (?, ?, ?)`).run(
-				userInfo.name,
+				userInfo.displayname,
 				userInfo.id,
-				userInfo.name
+				userInfo.displayname
 			);
 			console.log(`[db.run] insert - OK`);
 		} catch (err) {
@@ -38,7 +39,7 @@ export const ft_check_user = (userInfo: any) => {
 }
 
 function getFTOAuthClient() {
-	if (!process.env.FT_UID || !process.env.FT_SECRET || !process.env.FT_SECRET) {
+	if (!process.env.FT_UID || !process.env.FT_SECRET || !process.env.FT_REDIRECT_URI) {
 		throw new Error('FT env vars not loaded');
 	}
 
@@ -48,9 +49,8 @@ function getFTOAuthClient() {
 			secret: process.env.FT_SECRET,
 		},
 		auth: {
-			tokenHost: 'https://api.intra.42.fr',
-			authorizePath: 'https://accounts.google.com/o/oauth2/v2/auth',
-			tokenPath: '/token',
+			tokenHost: process.env.FT_REDIRECT_URI,
+			authorizePath: 'https://api.intra.42.fr/oauth/authorize'
 		},
 	});
 }
@@ -59,32 +59,68 @@ export const ft_auth = async (_: FastifyRequest, reply: FastifyReply) => {
 	const client = getFTOAuthClient();
 	const authorizationUri = client.authorizeURL({
 		redirect_uri: process.env.FT_REDIRECT_URI,
-		scope: ['profile', 'email'],
+		scope: ['public'],
 	});
 	console.log("[authorizationUri]", authorizationUri);
 	return reply.redirect(authorizationUri);
 };
 
-export const ft_auth_cb = async (req: FastifyRequest, reply: FastifyReply) => {
-	const client = getFTOAuthClient();
-	const { code } = req.query as { code: string };
-
-	const options = {
+async function getAccessToken(code: string) {
+	const tokenParams = {
 		code,
-		redirect_uri: process.env.GOOGLE_REDIRECT_URI,
+		redirect_uri: process.env.FT_REDIRECT_URI,
+		scope: 'public',
 	};
 
+	const client = new AuthorizationCode({
+	client: {
+		id: process.env.FT_UID,
+		secret: process.env.FT_SECRET,
+	},
+	auth: {
+		tokenHost: process.env.FT_REDIRECT_URI,
+		authorizePath: 'https://api.intra.42.fr/oauth/authorize',
+		tokenPath: 'https://api.intra.42.fr/oauth/token',
+		},
+	});
 	try {
-		const accessToken = await client.getToken(options);
-		const token = accessToken.token;
+		const accessToken = await client.getToken(tokenParams);
+		console.log('Token received:', accessToken.token);
 
-		const res = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
+		// accessToken.token содержит:
+		// {
+		//   access_token: '...',
+		//   token_type: 'bearer',
+		//   expires_in: 7200,
+		//   refresh_token: '...'
+		// }
+		return accessToken.token;
+	} catch (error) {
+		console.error('Access Token Error', error);
+	}
+}
+
+export const ft_auth_cb = async (req: FastifyRequest, reply: FastifyReply) => {
+	const { code } = req.query as { code: string };
+	console.log('Code:', code);
+	if (!code) {
+		return reply.status(400).send({ error: 'Code is required' });
+	}
+
+	const token = await getAccessToken(code as string);
+	if (!token) {
+		return reply.status(500).send({ error: 'Failed to obtain access token' });
+	}
+
+	try {
+		const res = await fetch('https://api.intra.42.fr/v2/me?fields=id,login', {
 			headers: {
 				Authorization: `Bearer ${token.access_token}`,
 			},
 		});
 		const userInfo = await res.json();
-		console.log('User info:', userInfo);
+		// writeFileSync('user_data.json', JSON.stringify(userInfo, null, 2), 'utf8'); // удалить после отладки
+		console.log('User info id:', userInfo.id, 'displayname:', userInfo.displayname);
 
 		const user = ft_check_user(userInfo) as any;
 
