@@ -10,7 +10,7 @@ const recipient = document.getElementById('recipient') as HTMLSelectElement;
 import { pongScene } from "./game";
 
 
-async function chatMain() {
+export async function chatMain() {
   let user = {
     id: await getUserId(),
     nick: await getUserNickname()
@@ -192,4 +192,4 @@ function viewProfile() {
 (window as any).viewProfile = viewProfile;
 }
 
-chatMain();
+// chatMain();
