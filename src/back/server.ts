@@ -26,9 +26,7 @@ import authRoutes from '../auth/auth.routes';
 async function main() {
 	// await loadSecretsIntoEnv("env/google");
 	// await loadSecretsIntoEnv("env/jwt");
-	await loadSecretsIntoEnv("env/google");
-	await loadSecretsIntoEnv("env/jwt");
-	await loadSecretsIntoEnv("env/ft");
+	// await loadSecretsIntoEnv("env/ft");
 
 	const users: User[] = [];
 	const appDir: string = fs.realpathSync(process.cwd());
