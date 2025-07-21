@@ -2,10 +2,17 @@ import type { GUID, PlayerInput, PlayerSide/*, MeshPositions*/ } from "../define
 import type { PongFrontScene } from "../scenes/PongFrontScene";
 // import { AIOpponent } from "../back/aiOpponent";
 
+function isChatInputFocused(): boolean {
+	const chatInput = document.querySelector('.chat-input') as HTMLInputElement;
+	return chatInput && document.activeElement === chatInput;
+}
+
 export function localInputHandler(scene: PongFrontScene): () => void {
 	return () => {
 		window.onkeydown = (ev) => {
 			if (ev.repeat) return;
+
+			if (isChatInputFocused()) return;
 
 			const inputMessage: PlayerInput = {
 				type: "PlayerInput",
@@ -16,20 +23,24 @@ export function localInputHandler(scene: PongFrontScene): () => void {
 
 			switch (ev.key) {
 				case "ArrowUp":
+					ev.preventDefault();
 					inputMessage.side = "right";
 					inputMessage.direction = 1;
 					scene.socket.send(JSON.stringify(inputMessage));
 					break;
 				case "w":
+				case "W":
 					inputMessage.direction = 1;
 					scene.socket.send(JSON.stringify(inputMessage));
 					break;
 				case "ArrowDown":
+					ev.preventDefault();
 					inputMessage.side = "right";
 					inputMessage.direction = -1;
 					scene.socket.send(JSON.stringify(inputMessage));
 					break;
 				case "s":
+				case "S":
 					inputMessage.direction = -1;
 					scene.socket.send(JSON.stringify(inputMessage));
 					break;
@@ -48,6 +59,8 @@ export function remoteInputHandler(scene: PongFrontScene): () => void {
 		window.onkeydown = (ev) => {
 			if (ev.repeat) return;
 
+			if (isChatInputFocused()) return;
+
 			const inputMessage: PlayerInput = {
 				type: "PlayerInput",
 				gameId: scene.id as GUID,
@@ -57,10 +70,12 @@ export function remoteInputHandler(scene: PongFrontScene): () => void {
 
 			switch (ev.key) {
 				case "w":
+				case "W":
 					inputMessage.direction = 1;
 					scene.socket.send(JSON.stringify(inputMessage));
 					break;
 				case "s":
+				case "S":
 					inputMessage.direction = -1;
 					scene.socket.send(JSON.stringify(inputMessage));
 					break;

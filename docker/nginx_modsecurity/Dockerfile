@@ -31,6 +31,11 @@ RUN mkdir -p /var/log/modsec \
  && chown nginx:nginx /var/log/modsec/*.log \
  && chmod 644 /var/log/modsec/*.log
 
+COPY --chown=root:root default.conf.template /etc/nginx/templates/conf.d/default.conf.template
+ENV CUSTOM_LOCATION_BLOCK="location = /api/auth/google/callback { modsecurity_rules \"SecRuleRemoveById 930120\"; include includes/cors.conf; include includes/proxy_backend.conf; }"
+
+
+
 # RUN find /var/log/modsec -name '*.log' -exec chown nginx:nginx {} \; \
 #  && find /var/log/modsec -name '*.log' -exec chmod 644 {} \;
 # RUN chown nginx:nginx /var/log/modsec/*.log \

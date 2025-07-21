@@ -4,13 +4,15 @@ COPY ./ssl/ssh_host_ed25519_key.pub /etc/ssh/
 COPY --chmod=0600 ./ssl/ssh_host_ed25519_key /etc/ssh/
 RUN useradd -m -u 1000 -d /home/node -s /bin/bash node
 COPY --chmod=777 run_deb.sh /home/node/run.sh
+COPY --chown=node ./build-context/ /home/node/Pong
 RUN apt-get update && apt-get install -y curl ca-certificates gnupg; \
 	curl -fsSL https://deb.nodesource.com/setup_22.x | bash -; \
 	apt-get install -y npm; \
 	apt-get install -y nodejs; \
 	apt-get install -y sqlite3 libsqlite3-dev; \
 	apt-get install -y mc; \
-	rm -rf /var/lib/apt/lists/*;
+	rm -rf /var/lib/apt/lists/*; \
+	mkdir -p /home/node/Pong;
 
 ############### -----===== FROM alpine =====----- ###############
 # FROM alpine

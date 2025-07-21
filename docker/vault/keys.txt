@@ -1,0 +1,25 @@
+vault operator init
+
+vault operator unseal
+vault operator unseal
+vault operator unseal
+
+vault kv delete env/google;
+
+vault kv put env/google \
+GOOGLE_CLIENT_ID= \
+GOOGLE_CLIENT_SECRET= \
+GOOGLE_REDIRECT_URI= \
+GOOGLE_STATE_CODE=
+
+vault kv delete env/jwt
+
+vault kv put env/jwt \
+JWT_SECRET=your_secret_key
+
+vault kv delete env/ft
+
+vault kv put env/ft \
+FT_UID= \
+FT_SECRET= \
+FT_REDIRECT_URI=

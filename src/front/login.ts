@@ -1,47 +1,76 @@
+window.addEventListener("DOMContentLoaded", () => {
+	console.log("[WINDOW] Page loaded");
+	initHandlers();
+	handleHashChange();
+});
+// window.addEventListener("pageshow", (event) => {
+// 	if (event.persisted) {
+// 		console.log("[WINDOW] Page loaded from bfcache");
+// 	} else {
+// 		console.log("[WINDOW] Fresh page load (F5 or Ctrl+F5)");
+// 		handleHashChange();
+// 	}
+// });
+window.addEventListener("hashchange", () => {
+	console.log("[WINDOW] Page hash changed");
+	handleHashChange();
+});
 
-window.addEventListener("DOMContentLoaded", handleHashChange);
-window.addEventListener("hashchange", handleHashChange);
-
-// import { setDivLogin, setDivLogged} from "./div_login"
+import { initHandlers } from "./initHandlers";
 import { isViewState, set_view, ViewState, navigateTo} from "./state"
 import type { User_f } from "../defines/types";
 import { jwtDecode } from 'jwt-decode';
 import { setUser, unsetUser } from "../helpers/helpers";
+import i18next from 'i18next';
 
+export let qrcode: string = "";
 export let user_f: User_f = {id: -1};
+let countdownInterval: ReturnType<typeof setInterval> | undefined;
 
-// function contentLoaded() {
-// 	const hash = location.hash.replace("#", "");
+export function showErrorModal(messageKey: string) {
+	const backdrop = document.querySelector<HTMLElement>(`.modal-bg[modal-bg-id="modal-bg"]`) as HTMLElement;
+	const modal = document.querySelector<HTMLElement>(`.modal-err[modal-err-id="modal-err"]`) as HTMLElement;
+	const modalContent = document.querySelector<HTMLElement>(`.modal-msg[modal-msg-id="modal-err"]`) as HTMLElement;
+	const modalClose = document.querySelector<HTMLElement>(`.modal-btn[modal-btn-id="modal-err"]`) as HTMLElement;
 
-// 	if (isViewState(hash)) {
-// 		if (hash === ViewState.GAME && user_f.id === -1) {
-// 			// Если мы попали на страницу игры, проверяем авторизацию
+	if (backdrop && modal && modalContent && modalClose) {
+		modalContent.dataset.i18n = "error." + messageKey;
+		modalContent.textContent = i18next.t(modalContent.getAttribute('data-i18n')!);
 
-// 			checkLogin();
-// 			return;
-// 		}
-// 		set_view(hash);
-// 	} else {
-// 		// Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
-// 		navigateTo(ViewState.LOGIN);
-// 	}
-// }
+		backdrop.classList.remove("hidden");
+		modal.classList.remove("hidden");
 
-/**
-* Основная логика роутера. Срабатывает при смене хеша.
-*/
-function handleHashChange() {
-	const hash = location.hash.replace("#", "");
+		const closeHandler = () => {
+			backdrop.classList.add("hidden");
+			modal.classList.add("hidden");
+			modalClose.removeEventListener("click", closeHandler);
+		};
 
-	if (isViewState(hash)) {
-		set_view(hash);
-	} else {
-		// Если в URL нет хеша или он некорректный, устанавливаем состояние по умолчанию
-		navigateTo(ViewState.LOGIN);
+		modalClose.addEventListener("click", closeHandler);
 	}
 }
 
-function getCookie(name: string): string | null {
+async function handleHashChange() {
+	const hash = location.hash.replace("#", "");
+
+	await checkLogin();
+	if (isViewState(hash)) {
+		set_view(hash);
+	} else {
+		if (user_f.id === -1) {
+			console.log(`[view] User not logged in, redirecting to LOGIN`);
+			navigateTo(ViewState.LOGIN);
+		} else if (isCountdown()) {
+			console.log(`[view] User not logged in, but countdown is active, redirecting to 2FA`);
+			navigateTo(ViewState.TWOFA);
+		} else {
+			console.log(`[view] User logged in, redirecting to GAME`);
+			navigateTo(ViewState.GAME);
+		}
+	}
+}
+
+export function getCookie(name: string): string | null {
 	const value = `; ${document.cookie}`;
 	const parts = value.split(`; ${name}=`);
 	if (parts.length === 2) {
@@ -57,74 +86,42 @@ interface MyToken {
 	// add other fields here
 }
 
-// export const baseUrl = window.location.origin;
-checkLogin();
-
 export async function checkLogin() {
-	if (validateToken("twofaToken"))  {
-		navigateTo(ViewState.TWOFA);
-		return;
+	const newRefreshToken = getCookie("refreshToken");
+	if (newRefreshToken) {
+		console.log("[LOGIN] New refresh token found in cookies, updating localStorage");
+		localStorage.setItem("refreshToken", newRefreshToken);
+		document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 	}
 
-	const c_refreshToken = getCookie('refreshToken');
-	if (c_refreshToken) {
-		// console.log('Access token from cookie:', c_refreshToken);
-		localStorage.setItem("refreshToken", c_refreshToken);
-		document.cookie = `refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-	}
-
-	if (!await refreshToken()) {
-		navigateTo(ViewState.LOGIN);
-		return;
-	}
-
-	const accessToken =  localStorage.getItem("accessToken");
-	if (accessToken) {
-		try {
-			const response = await fetch(`/api/protected/profile`, {
-				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " + accessToken
-				}
-			});
-			if (!response.ok) {
-				const errorData = await response.json();
-				console.error("[login] Login check failed:", errorData.error);
-				navigateTo(ViewState.LOGIN);
-				return;
-			}
-			const data = await response.json();
-			user_f.id = data.user.id;
-			user_f.name = data.user.username;
-			setUser(user_f);
-			const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
-			if (logoffBtn) {
-				logoffBtn.addEventListener("click", async () => {
-					console.log("[logoff] Login button clicked:");
-					user_f.id = -1;
-					user_f.name = "";
-					unsetUser();
-					localStorage.removeItem("twofaToken");
-					localStorage.removeItem("accessToken");
-					localStorage.removeItem("refreshToken");
-					navigateTo(ViewState.LOGIN);
-				}
-			)};
-			navigateTo(ViewState.GAME);
+	if (validateToken("accessToken") > 0 || validateToken("refreshToken") > 0) {
+		localStorage.removeItem("accessToken");
+		await refreshToken();
+		if (validateToken("accessToken") == 0) {
+			showErrorModal("refresh_token_problem");
 			return;
-		}  catch (err) {
-			console.error("[login] Network error:", err);
 		}
+		await getUserData("accessToken");
+		return;
 	}
-	navigateTo(ViewState.LOGIN);
+
+	const timeLeft = validateToken("twofaToken");
+	if (timeLeft > 0) {
+		stopCountdown();
+		await getUserData("twofaToken");
+		if (user_f.id !== -1) {
+			startCountdown(timeLeft, logoff);
+		} else {
+			showErrorModal("2fa_token");
+		}
+		return;
+	}
 }
 
 async function refreshToken() {
 	const refreshToken =  localStorage.getItem("refreshToken");
 	if (refreshToken) {
 		try {
-			//const response = await fetch(`${baseUrl}/api/refresh`, {
 			const response = await fetch(`/api/protected/refresh`, {
 				method: "POST",
 				headers: {
@@ -135,15 +132,11 @@ async function refreshToken() {
 					token: refreshToken
 				})
 			});
+			const data = await response.json();
 			if (!response.ok) {
-				const errorData = await response.json();
-				console.error("[refresh] Refresh failed:", errorData.error);
+				console.error("[refresh] Refresh failed:", data.error);
 				return false;
 			}
-			const data = await response.json();
-			user_f.id = data.user.id;
-			user_f.name = data.user.username;
-			setUser(user_f);
 			console.log("[refresh] Refresh accessToken:", data.accessToken);
 			localStorage.setItem("accessToken", data.accessToken);
 		}  catch (err) {
@@ -165,7 +158,8 @@ export async function login() {
 		return;
 	}
 	try {
-		const response = await fetch(`${window.location.origin}/api/login`, {
+		stopCountdown();
+		const response = await fetch(`/api/login`, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json"
@@ -175,13 +169,14 @@ export async function login() {
 				password: password.value
 			})
 		});
+		const data = await response.json();
 		if (!response.ok) {
-			const errorData = await response.json();
-			console.error("[login] Login failed:", errorData.error);
+			showErrorModal("user_password_problem");
+			console.error("[login] Login failed:", data.error);
 			return;
 		}
-		stopCountdown();
-		const data = await response.json();
+		name.value = "";
+		password.value = "";
 
 		// const qrImg = document.getElementById("qr-img") as HTMLImageElement;
 		// qrImg.src = data.qr;
@@ -189,9 +184,9 @@ export async function login() {
 		// user_f.id = -2;
 
 		user_f.id = data.user.id;
-		user_f.name = data.user.username;
-		setUser(user_f);
-		console.log("[login] Login successful, User name = ", user_f.name);
+		// user_f.name = data.user.username;
+		// setUser(user_f);
+		// console.log("[login] Login successful, User name = ", user_f.name);
 		console.log("[login] Login successful, User id =", user_f.id);
 		// 💾 Сохраняем токены (в localStorage или sessionStorage)
 		localStorage.setItem("twofaToken", data.twofaToken);
@@ -201,10 +196,37 @@ export async function login() {
 	}
 }
 
+export async function getUserData(tokenName: string) {
+	const token =  localStorage.getItem(tokenName);
+	console.debug("[USER] ",  tokenName, ":", token);
+	if (token) {
+		try {
+			const response = await fetch(`/api/protected/profile`, {
+				method: "GET",
+				headers: {
+					"Content-Type": "application/json",
+					"Authorization": "Bearer " + token
+				}
+			});
+			const data = await response.json();
+			if (!response.ok) {
+				console.error("[USER] Refresh failed:", data.error);
+				return;
+			}
+			user_f.id = data.user.id;
+			user_f.name = data.user.username;
+			setUser(user_f);
+			console.log("[USER] Get user data:", data);
+		}  catch (err) {
+			console.error("[USER] Get user data:", err);
+		}
+	}
+}
+
 export async function twofa() {
 	const token = document.querySelector<HTMLElement>(`.data_input[data-input-id="2fa_token"]`) as HTMLInputElement;
 	if (!token.value) {
-		console.log("[2fa] Code is empty");
+		console.log("[2FA] Code is empty");
 		return;
 	}
 	const twofaToken =  localStorage.getItem("twofaToken");
@@ -221,14 +243,15 @@ export async function twofa() {
 					token: token.value
 				})
 			});
+			const data = await response.json();
 			if (!response.ok) {
-				const errorData = await response.json();
-				console.error("[2fa] 2FA check failed:", errorData.error);
+				console.error("[2FA] Check failed:", data.error);
+				showErrorModal("2fa_invalid_code");
 				// navigateTo(ViewState.LOGIN);
 				return;
 			}
 			stopCountdown();
-			const data = await response.json();
+			token.value = "";
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
 			setUser(user_f);
@@ -238,15 +261,14 @@ export async function twofa() {
 			navigateTo(ViewState.GAME);
 			return;
 		}  catch (err) {
-			console.error("[2fa] Network error:", err);
+			console.error("[2FA] Network error:", err);
 		}
 	}
-	console.log("[2fa] Code is expired or bad");
+	console.log("[2FA] Code is expired or bad");
 	navigateTo(ViewState.LOGIN);
 }
 
 export async function logoff() {
-	console.log("[logoff] Login button clicked:");
 	stopCountdown();
 	localStorage.removeItem("twofaToken");
 	localStorage.removeItem("accessToken");
@@ -257,41 +279,88 @@ export async function logoff() {
 	navigateTo(ViewState.LOGIN);
 }
 
-export async function register() {
-	if (!await refreshToken()) {
-		navigateTo(ViewState.LOGIN);
-		return;
-	}
-	const accessToken =  localStorage.getItem("accessToken");
-	if (accessToken) {
-		try {
-			const response = await fetch(`/api/protected/profile`, {
-				method: "GET",
-				headers: {
-					"Content-Type": "application/json",
-					"Authorization": "Bearer " + accessToken
-				}
-			});
-			if (!response.ok) {
-				const errorData = await response.json();
-				console.error("[login] Login check failed:", errorData.error);
-				navigateTo(ViewState.LOGIN);
-				return;
-			}
-			const data = await response.json();
-			user_f.id = data.user.id;
-			user_f.name = data.user.username;
-			setUser(user_f);
-			navigateTo(ViewState.GAME);
-			return;
-		}  catch (err) {
-			console.error("[login] Network error:", err);
-		}
-	}
-	navigateTo(ViewState.LOGIN);
+function isStrongPassword(password: string): boolean {
+	return (
+		password.length >= 8 &&
+		/[A-Z]/.test(password) &&
+		/[a-z]/.test(password) &&
+		/[0-9]/.test(password) &&
+		/[^A-Za-z0-9]/.test(password) // special character
+	);
 }
 
-let countdownInterval: ReturnType<typeof setInterval> | undefined;
+function isUsernameOK(username: string): boolean {
+	return (
+		username.length > 3 // &&
+		// /[A-Z]/.test(username) &&
+		// /[a-z]/.test(username) &&
+		// /[0-9]/.test(username) &&
+		// /[^A-Za-z0-9]/.test(username) // special character
+	);
+}
+
+export async function register() {
+	const username = document.querySelector<HTMLElement>(`.data_input[data-input-id="register_username"]`) as HTMLInputElement;
+
+	if (!isUsernameOK(username.value)) {
+		console.error("[REGISTER] Username is short.");
+		showErrorModal("register_username_short");
+		return;
+	}
+
+	const password1 = document.querySelector<HTMLElement>(`.data_input[data-input-id="register_password1"]`) as HTMLInputElement;
+	const password2 = document.querySelector<HTMLElement>(`.data_input[data-input-id="register_password2"]`) as HTMLInputElement;
+
+	if (password1.value !== password2.value) {
+		console.error("[REGISTER] Passwords do not match.");
+		showErrorModal("register_password");
+		return;
+	}
+
+	if (!isStrongPassword(password1.value)) {
+		console.error("[REGISTER] Password is weak.");
+		showErrorModal("register_password_weak");
+		return;
+	}
+
+	const check_agreement = document.querySelector<HTMLElement>(`.data_input[data-input-id="check_agreement"]`) as HTMLInputElement;
+	if (!check_agreement.checked) {
+		showErrorModal("check_agreemnt");
+		return;
+	}
+
+	try {
+		const response = await fetch(`/api/register`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({
+				username: username.value,
+				password: password1.value
+			})
+		});
+		const data = await response.json();
+		if (!response.ok) {
+			console.error("[REGISTER] Register failed:", data.error);
+			console.error("[REGISTER] cli_error:", data.cli_error);
+			showErrorModal(data.cli_error);
+			return;
+		}
+		console.log("[REGISTER] User registered.");
+		qrcode = data.qr;
+		username.value= "";
+		password1.value = "";
+		password2.value = "";
+		navigateTo(ViewState.QRCODE);
+	}  catch (err) {
+		console.error("[REGISTER] Network error:", err);
+	}
+}
+
+export function clearQRcode() {
+	qrcode = "";
+}
 
 export function startCountdown(seconds: number, onComplete: () => void) {
 	const countdownEl = document.querySelector<HTMLElement>(`.countdown[countdown-id="2fd"]`);
@@ -313,6 +382,10 @@ export function startCountdown(seconds: number, onComplete: () => void) {
 	}, 1000);
 }
 
+export function isCountdown(): boolean {
+	return countdownInterval !== undefined;
+}
+
 export function stopCountdown() {
 	if (countdownInterval !== undefined) {
 		clearInterval(countdownInterval);
@@ -320,28 +393,38 @@ export function stopCountdown() {
 	}
 }
 
-export function validateToken(tokenName: string): boolean {
+export function validateToken(tokenName: string): number {
 	const token = localStorage.getItem(tokenName);
 	if (token) {
 		try {
 			const decoded = jwtDecode<MyToken>(token);
 			console.log("Decoded token:", decoded);
 
-			// Optional: check expiration manually
-			const now = Math.floor(Date.now() / 1000) + 10; // in seconds
-			if (decoded.exp && decoded.exp < now) {
+			const life_time = getTokenLife(token);
+			if (life_time <= 10) {
 				console.log("Token has expired");
 				localStorage.removeItem(tokenName);
-			} else {
-				console.log("Token is still valid (not expired)");
-				const timeLeft = decoded.exp - now;
-				stopCountdown();
-				startCountdown(timeLeft, logoff);
-				return true;
+				return 0;
+			}
+			return life_time;
+		} catch (err) {
+			console.error("Invalid token", err);
+		}
+	}
+	return 0;
+}
+
+export function getTokenLife(token: string): number {
+	if (token) {
+		try {
+			const decoded = jwtDecode<MyToken>(token);
+			if (decoded.exp) {
+				const now = Math.floor(Date.now() / 1000); // in seconds
+				return decoded.exp - now; // returns remaining time in seconds
 			}
 		} catch (err) {
 			console.error("Invalid token", err);
 		}
 	}
-	return false;
+	return 0; // if no valid token found
 }

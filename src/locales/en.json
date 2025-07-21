@@ -1,45 +1,71 @@
 {
   "or": "or",
-    "hello": "Hello, {{name}}!",
-    "login": {
-      "title": "Welcome!",
-      "label_name": "Username",
-      "name": "Username",
-      "label_password": "Password",
-      "password": "Password",
-      "button": "Login"
-    },
-    "logged": {
-      "title": "Hello, {{name}}! (id: {{id}})"
-    },
-    "logoff": {
-      "button": "Logout"
-    },
-    "register": {
-      "title": "Registration",
-      "label_name": "Username",
-      "label_password1": "Password",
-      "label_password2": "Repeat Password",
-      "label_email": "Email",
-      "button": "Register"
-    },
-    "continue": "Continue",
-    "game": {
-      "title": "Lunar Pong",
-      "local-btn": "Local Game",
-      "remote-btn": "Remote Game",
-      "versusai-btn": "Versus AI",
-      "block-chat": "Block",
-      "invite-chat": "Invite",
-      "profile-chat": "Profile",
-      "msg-input": "Type here..."
-    },
-    "2fa": {
-      "title": "Enter two-factor authentication key",
-      "label_token": "Enter code here...",
-      "continue": "Continue"
-    },
-    "back": {
-      "button": "Back"
-    }
+  "hello": "Hello, {{name}}!",
+  "error": {
+    "title": "Error",
+    "button": "Close",
+    "server": "Oops! Something went wrong on our end. Please try again in a moment.",
+    "default": "Something went wrong...",
+    "user_password_problem": "Wrong username or password.",
+    "user_exist": "Username already exists.",
+    "refresh_token_problem": "Can't refresh token.",
+    "2fa_problem": "Two-factor authentication error.",
+    "2fa_required": "Two-factor authentication is required.",
+    "2fa_invalid_code": "Invalid two-factor authentication code.",
+    "2fa_token": "Invalid two-factor token.",
+    "check_agreemnt": "Please read and accept our Privacy Notice before proceeding.",
+    "register_password": "Passwords do not match. Please try again.",
+    "register_password_weak": "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+    "register_username_short": "Too short! Your username must be at least 4 characters.",
+    "register_username_duplicate": "Oops! That username is already in use. Try a different one."
+  },
+  "login": {
+    "title": "Welcome!",
+    "label_name": "Username",
+    "name": "Username",
+    "label_password": "Password",
+    "password": "Password",
+    "button": "Login"
+  },
+  "logged": {
+    "title": "Hello, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+    "button": "Logout"
+  },
+  "register": {
+    "title": "Registration",
+    "label_name": "Username",
+    "label_password1": "Password",
+    "label_password2": "Repeat Password",
+    "label_email": "Email",
+    "button": "Register",
+    "qrcode": "Important: You must scan the QR code using Google Authenticator or Microsoft Authenticator now. If you skip this step, your registration will be lost and cannot be recovered."
+  },
+  "agreement": {
+    "notice": "Privacy Notice",
+    "p1": "We collect your personal data (e.g., name, email) solely for the purpose of contacting you and providing our services. Your data will not be shared with third parties without your explicit consent, unless required by law.",
+    "p2": "You have the right to access, correct, or delete your data at any time. To do so, please contact us at [your-email@example.com].",
+    "p3": "By ticking the box below, you agree to the processing of your personal data in accordance with the General Data Protection Regulation (GDPR) (EU) 2016/679.",
+    "checkbox": "I have read and agree to the above Privacy Notice."
+  },
+  "continue": "Continue",
+  "game": {
+    "title": "Lunar Pong",
+    "local-btn": "Local Game",
+    "remote-btn": "Remote Game",
+    "versusai-btn": "Versus AI",
+    "block-chat": "Block",
+    "invite-chat": "Invite",
+    "profile-chat": "Profile",
+    "msg-input": "Type here..."
+  },
+  "2fa": {
+    "title": "Enter two-factor authentication key",
+    "label_token": "Enter code here...",
+    "continue": "Continue"
+  },
+  "back": {
+    "button": "Back"
+  }
 }

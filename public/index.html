@@ -23,81 +23,118 @@
 		<button onclick="navigateTo('TWOFA')" class="btn">2FA</button>
 		<button onclick="navigateTo('GAME')" class="btn">Game</button>
 	</nav> -->
-      <div class="div_logoff hidden" data-view-id="logoff" id="div_logoff">
-  	    <button class="logoff-btn btn_click" data-btn-id="logoff" data-i18n="logoff.button"></button>
-      </div>
-      <div class="div-login page-view hidden" data-view-id="login">
-  <div class="login-container">
-    <div class="login-background"></div>
-    <div class="login-form">
-      <h1 class="login-title" data-i18n="login.title"></h1>
-      <div class="input-group">
-        <input data-input-id="login_name" 
-               autocomplete="off" 
-               id="name" 
-               name="name" 
-               type="text" 
-               class="input data_input" 
-               placeholder="" />
-        <label for="name" data-i18n="login.label_name" class="input-label"></label>
-      </div>
-      <div class="input-group">
-        <input data-input-id="login_password" 
-               autocomplete="off" 
-               id="password" 
-               name="password" 
-               type="password" 
-               class="input data_input" 
-               placeholder="" />
-        <label for="password" data-i18n="login.label_password" class="input-label"></label>
-      </div>
-      <button data-btn-id="login" data-i18n="login.button" class="login-btn btn_click"></button>
-	   <a href="/api/auth/google" class="btn">Login with Google</a>
-     <p data-i18n="or"></p>
-      <button data-btn-id="login_register" data-i18n="register.button" class="register-button btn_click"></button>
-    </div>
-  </div>
-</div>
+	<!-- Backdrop -->
+	<div id="modalBackdrop" class="modal-bg fixed inset-0 bg-black bg-opacity-50 hidden z-40" modal-bg-id="modal-bg"></div>
+	<!-- Modal -->
+	<div id="errorModal" class="modal-err hidden fixed inset-0 z-50 flex items-center justify-center" modal-err-id="modal-err">
+		<div class="bg-white rounded-lg shadow-xl max-w-sm w-full p-6 border border-red-500">
+			<h2 class="modal-titel text-lg font-semibold text-red-600 mb-4" modal-titel-id="modal-err" data-i18n="error.title"></h2>
+			<p id="modalMessage" class="modal-msg text-gray-700 mb-6" modal-msg-id="modal-err" data-i18n="error.default"></p>
+			<div class="flex justify-end">
+				<button class="modal-btn btn_click bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded" modal-btn-id="modal-err" data-i18n="error.button"></button>
+			</div>
+		</div>
+	</div>
 
-<div data-view-id="2fa" class="div-2fa page-view hidden">
-  <div id="countdown" class="countdown" countdown-id="2fd"></div>
-  <div class="twofa-container">
-    <h1 class="twofa-title" data-i18n="2fa.title"></h1>
-    <div class="input-group">
-      <input class="input data_input" 
-             type="text" 
-             data-input-id="2fa_token" 
-             placeholder="" />
-      <label data-i18n="2fa.label_token" class="input-label"></label><br>
+    <div class="div-logoff hidden" data-view-id="logoff" id="div_logoff">
+  	  <button class="logoff-btn btn_click" data-btn-id="logoff" data-i18n="logoff.button"></button>
     </div>
-    <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
-  </div>
-</div>
+    <div class="div-login page-view hidden" data-view-id="login">
+  	  <div class="login-container">
+        <div class="login-background"></div>
+        <div class="login-form">
+          <h1 class="login-title" data-i18n="login.title"></h1>
+          <div class="input-group">
+            <input data-input-id="login_name" 
+              autocomplete="off" 
+              id="name" 
+              name="name" 
+              type="text" 
+              class="input data_input" 
+              placeholder="" />
+            <label for="name" data-i18n="login.label_name" class="input-label"></label>
+          </div>
+          <div class="input-group">
+            <input data-input-id="login_password" 
+              autocomplete="off" 
+              id="password" 
+              name="password" 
+              type="password" 
+              class="input data_input" 
+              placeholder="" />
+            <label for="password" data-i18n="login.label_password" class="input-label"></label>
+          </div>
+          <button data-btn-id="login" data-i18n="login.button" class="login-btn btn_click"></button>
+	      <a href="/api/auth/google" class="btn">Login with Google</a>
+	      <a href="/api/auth/ft" class="btn">Login with 42</a>
+          <p data-i18n="or"></p>
+          <button data-btn-id="login_register" data-i18n="register.button" class="register-button btn_click"></button>
+        </div>
+      </div>
+    </div>
 
-<div data-view-id="register" class="div-main page-view hidden">
-  <div class="register-container">
-    <h1 class="register-title" data-i18n="register.title"></h1>
-    <div class="input-group">
-      <input type="text" class="input" placeholder=""/>
-      <label data-i18n="register.label_name" class="input-label"></label>
+    <div data-view-id="2fa" class="div-2fa page-view hidden">
+      <div id="countdown" class="countdown" countdown-id="2fd"></div>
+      <div class="twofa-container">
+        <h1 class="twofa-title" data-i18n="2fa.title"></h1>
+        <div class="input-group">
+          <input class="input data_input" 
+            type="text" 
+            data-input-id="2fa_token" 
+            placeholder="" />
+          <label data-i18n="2fa.label_token" class="input-label"></label><br>
+        </div>
+        <button class="continue-btn btn_click" data-btn-id="2fa_continue" data-i18n="2fa.continue"></button>
+      </div>
     </div>
-    <div class="input-group">
-      <input type="password" class="input" placeholder=""/>
-      <label data-i18n="register.label_password1" class="input-label"></label>
+    
+    <div data-view-id="register" class="div-register page-view hidden">
+      <div class="register-container">
+        <h1 class="register-title" data-i18n="register.title"></h1>
+        <div class="input-group">
+          <input type="text" class="input data_input" data-input-id="register_username" placeholder=""/>
+          <label data-i18n="register.label_name" class="input-label"></label>
+        </div>
+        <div class="input-group">
+          <input type="password" class="input data_input" data-input-id="register_password1" placeholder=""/>
+          <label data-i18n="register.label_password1" class="input-label"></label>
+        </div>
+        <div class="input-group">
+          <input type="password" class="input data_input" data-input-id="register_password2" placeholder=""/>
+          <label data-i18n="register.label_password2" class="input-label"></label>
+        </div>
+        <!-- <div class="input-group">
+          <input type="email" class="input" placeholder=""/>
+          <label data-i18n="register.label_email" class="input-label"></label>
+        </div> -->
+    	<h3 style="color: white;" data-i18n="agreement.notice"></h3>
+        <div style="color: white; border: 1px solid #ccc; padding: 1em; max-height: 200px; overflow-y: auto;">
+          <p data-i18n="agreement.p1"></p>
+          <p data-i18n="agreement.p2"></p>
+          <p data-i18n="agreement.p3"></p>
+        </div>
+        <input id="gdpr_checkbox" class="input data_input" data-input-id="check_agreement" type="checkbox" name="gdpr_consent" required>
+        <label style="color: white;" for="gdpr_checkbox" data-i18n="agreement.checkbox"></label>
+        <button data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
+        <br>
+        <button data-btn-id="back" class="back-btn btn_click mt-4 mx-auto m-auto block" data-i18n="back.button"></button>
+      </div>
+      
     </div>
-    <div class="input-group">
-      <input type="password" class="input" placeholder=""/>
-      <label data-i18n="register.label_password2" class="input-label"></label>
+    
+    <div data-view-id="qrcode" class="div-qrcode page-view hidden flex flex-col items-center gap-4">
+	<!-- <div style="width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; background-color: #222;">
+      <svg xmlns="http://www.w3.org/2000/svg" xml:space="preserve" viewBox="0 0 137.6 96.6" fill="#fff" stroke="transparent" width="200" height="160">
+        <path d="M229.2 443.9h50.7v25.4h25.3v-45.9h-50.6l50.6-50.7h-25.3l-50.7 50.7zM316.1 398.1l25.3-25.4h-25.3z" fill="#fff" transform="translate(-229.2 -372.7)"></path>
+        <path d="m341.4 398.1-25.3 25.3v25.3h25.3v-25.3l25.4-25.3v-25.4h-25.4zM366.8 423.4l-25.4 25.3h25.4z" fill="#fff" transform="translate(-229.2 -372.7)"></path>
+      </svg>
+    </div> -->
+    <img class="qrcode_img" src="<%= require('../assets/logo_168.png') %>" alt="42 logo">
+    <h2 style="color: red;" data-i18n="register.qrcode"></h2>
+    <a href="/#login" class="btn" data-i18n="login.button"></a>
     </div>
-    <div class="input-group">
-      <input type="email" class="input" placeholder=""/>
-      <label data-i18n="register.label_email" class="input-label"></label>
-    </div>
-    <button data-btn-id="register" class="register-btn btn_click" data-i18n="register.button"></button>
-  </div>
-  <br>
-  <button data-btn-id="back" class="back-btn btn_click" data-i18n="back.button"></button>
-</div>
+
+
   <div data-view-id="game" class="page-view hidden game-div" id="div_container">
     <div class="game-screen-div">
       <h1 class="game-name" data-i18n="game.title">
@@ -118,8 +155,62 @@
             style="background-size: cover; background-position: center; width: 100%; max-width: min(90vw, 80vh * 10/7); height: auto; aspect-ratio: 10/7; border-radius: 1rem;"
             width="1000" height="700">
     </canvas>
+    <div class="flex flex-wrap gap-4 justify-center mt-6 px-4">
+      <button id="createTournament" 
+              class="game-button-tw">
+          Create Tournament
+      </button>
+      <div id="tournamentDialog" class="dialog-overlay">
+    <div class="dialog">
+      <div class="dialog-header">
+        <h2 class="dialog-title">Create Tournament</h2>
+        <button class="close-btn" id="btn-close">&times;</button>
+      </div>
+      <form id="tournamentForm">
+        <div class="form-group">
+          <label class="form-label">Tournament Name</label>
+          <input 
+            type="text" 
+            id="tournamentName" 
+            class="tournament-name-input" 
+            placeholder="Enter tournament name..."
+            required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Number of Players</label>
+          <div class="player-count-grid" id="playerCountOptions">
+            <div class="player-count-option" data-players="2">
+              <span class="player-number">2</span>
+              <span class="player-label">Players</span>
+            </div>
+            <div class="player-count-option" data-players="4">
+              <span class="player-number">4</span>
+              <span class="player-label">Players</span>
+            </div>
+            <div class="player-count-option" data-players="8">
+              <span class="player-number">8</span>
+              <span class="player-label">Players</span>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button type="button" class="dialog-btn btn-cancel" id="Cancel-btn">
+            Cancel
+          </button>
+          <button type="submit" class="dialog-btn btn-create" id="createBtn" disabled>
+            Create Tournament
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
-  <div class="chat-main-div chat-bg">
+      <button id="joinTournament"
+              class="game-button-tw">
+          Join Tournament
+      </button>
+    </div>
+  </div>
+  <div class="chat-main-div">
     <div class="chat-head">
       <select id="recipient" class="chat-select">
         <option value="all" >👥 All Users</option>
@@ -128,7 +219,13 @@
       <button onclick="inviteUser()" class="chat-util-btn" data-i18n="game.invite-chat">Invite</button>
       <button onclick="viewProfile()" class="chat-util-btn" data-i18n="game.profile-chat">Profile</button>
     </div>
-    <div id="messages" class="msg-field">
+    <div id="messages" class="
+          msg-field 
+          bg-no-repeat 
+          bg-cover 
+          bg-center
+		      bg-[url('../../assets/term-back.jpg')]
+          [--tw-bg-opacity:0.5]">
     </div>
     <input type="text" id="chat-input" placeholder="Type here..." 
            class="chat-input" data-i18n="game.msg-input"/>

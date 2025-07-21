@@ -7,5 +7,8 @@ tmp
 docs
 output\.css
 /src/styles/output.css
-.env
+/.env
 docker/nginx_modsecurity/rules
+docker/node_sqlite/build-context
+docker/nginx_modsecurity/modsec_test_results
+user_data.json
