@@ -1,6 +1,7 @@
 import { updateI18nContent } from "./i18next"
 import { setDivLogin, setDiv2fa, setDivRegister, setDivQRcode } from "./div_login"
 import { user_f, clearQRcode } from "./login"
+import { User_f } from "../defines/types";
 
 // Enum теперь содержит более чистые имена, соответствующие data-view-id
 export enum ViewState {
@@ -88,23 +89,29 @@ export function set_view(state: ViewState) {
 	current_state = state;
 
 	// Вызов специфичных для состояния функций...
-	switch (state) {
-		case ViewState.LOGIN:
-			setDivLogin();
-			break;
-		case ViewState.TWOFA:
-			setDiv2fa();
-			break;
-		case ViewState.REGISTER:
-			setDivRegister();
-			break;
-		case ViewState.QRCODE:
-			setDivQRcode();
-			break;
-		case ViewState.GAME:
-			break;
-	}
-	updateI18nContent();
+	 switch (state) {
+  case ViewState.LOGIN:
+   setDivLogin();
+   break;
+  case ViewState.TWOFA:
+   setDiv2fa();
+   break;
+  case ViewState.REGISTER:
+   setDivRegister();
+   break;
+  case ViewState.QRCODE:
+   setDivQRcode();
+   break;
+  case ViewState.GAME:
+   triggerLoginEvent(user_f);
+   break;
+ }
+ updateI18nContent();
+}
+
+function triggerLoginEvent(user: User_f) : void {
+ const loginEvent = new CustomEvent("login", {detail: JSON.stringify(user)});
+ window.dispatchEvent(loginEvent);
 }
 
 /**
