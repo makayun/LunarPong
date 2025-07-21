@@ -59,10 +59,11 @@ export function initHandlers() {
 	)};
 
 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
-	if (logoffBtn) {
-		logoffBtn.addEventListener("click", async () => {
-			console.debug("[LOGOFF] Button clicked:");
-			logoff();
-		}
-	)};
+ if (logoffBtn) {
+  logoffBtn.addEventListener("click", async () => {
+   window.dispatchEvent(new Event("logoff"));
+   console.debug("[LOGOFF] Button clicked:");
+   logoff();
+  }
+ )};
 }
