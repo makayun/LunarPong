@@ -84,14 +84,25 @@ export function test_db(n: int) {
 	// ===== GAMES =====
 
 	try {
-		g_id = TrnmntSrv.createGame(t_id, 1, 2);
+		g_id = TrnmntSrv.createGame(0, 1, 2);
 		if (g_id) {
-			console.debug("addUser(", t_id, ", 1)", g_id, "✅");
+			console.debug("createGame(0, 1, 2)", g_id, "✅", "No tournament");
 		} else {
-			console.debug("addUser(", t_id, ", 1)", "❌");	
+			console.debug("createGame(0, 1, 2)", "❌", "No tournament");
 		}
 	} catch (err) {
-		console.debug("addUser(", t_id, ", 1)", "❌", err);
+		console.debug("createGame(0, 1, 2)", "❌", "No tournament", err);
+	}
+
+	try {
+		g_id = TrnmntSrv.createGame(t_id, 1, 2);
+		if (g_id) {
+			console.debug("createGame(", t_id, ", 1, 2)", g_id, "✅");
+		} else {
+			console.debug("createGame(", t_id, ", 1, 2)", "❌");	
+		}
+	} catch (err) {
+		console.debug("createGame(", t_id, ", 1, 2)", "❌", err);
 	}
 
 	try {

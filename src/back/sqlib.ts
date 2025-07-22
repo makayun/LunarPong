@@ -1,5 +1,5 @@
 import type { Database as DatabaseType } from 'better-sqlite3';
-import { getDB } from '../back/db';
+import { getDB } from './db';
 import { int } from '@babylonjs/core';
 
 export class TournamentService {
@@ -84,7 +84,7 @@ export class TournamentService {
 				`UPDATE tournament_users SET position = ? WHERE tournament = ? and user = ?`
 			);
 			const result = stmt.run(position, tournament, user);
-			return result.changes > 0;;
+			return result.changes > 0;
 		} catch (e) {
 			console.error('updateUser error:', e);
 			return false;
@@ -107,10 +107,14 @@ export class TournamentService {
 
 	createGame(tournamentId: int, user1: int, user2: int): int {
 		try {
+			let result;
 			const stmt = this.db.prepare(
 				`INSERT INTO games (tournament, user1, user2)  VALUES (?, ?, ?)`
 			);
-			const result = stmt.run(tournamentId, user1, user2);
+			if (tournamentId == 0)
+				result = stmt.run(null, user1, user2);
+			else
+				result = stmt.run(tournamentId, user1, user2);
 			return result.lastInsertRowid as int;
 		} catch (e) {
 			console.error('createGame error:', e);
