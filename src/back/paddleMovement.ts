@@ -5,11 +5,11 @@ import { PADDLE_MIN_Z,
 		PADDLE_MAX_Z,
 		FPS }				from "../defines/constants";
 
-function clampPaddleX(x: number): number {
-	return Math.max(PADDLE_MIN_Z, Math.min(PADDLE_MAX_Z, x));
+function clampPaddleX(z: number): number {
+	return Math.max(PADDLE_MIN_Z, Math.min(PADDLE_MAX_Z, z));
 }
 
-export function animatePaddleToX(mesh: Mesh, targetX: number, duration: number = 200): void {
+export function animatePaddleToX(mesh: Mesh, targetZ: number, duration: number = 200): void {
 	const animation = new Animation(
 		"paddleMove",
 		"position.z",
@@ -18,11 +18,11 @@ export function animatePaddleToX(mesh: Mesh, targetX: number, duration: number =
 		Animation.ANIMATIONLOOPMODE_CONSTANT
 	);
 
-	const x = clampPaddleX(targetX);
+	const z = clampPaddleX(targetZ);
 
 	const keys = [
 		{ frame: 0, value: mesh.position.z },
-		{ frame: FPS * (duration / 1000), value: x }
+		{ frame: FPS * (duration / 1000), value: z }
 	];
 
 	animation.setKeys(keys);

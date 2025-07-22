@@ -3,7 +3,7 @@ import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
 import type { WebSocket } from "@fastify/websocket";
 import { PongBaseScene } from "./PongBaseScene";
 import { generateGuid } from "../helpers/helpers";
-import type { User, Game, GUID, MeshPositions, GameState, GameOver } from "../defines/types";
+import type { User, Game, GUID, MeshPositions, GameOver } from "../defines/types";
 import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 import { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";
@@ -17,7 +17,6 @@ export class PongBackScene extends PongBaseScene implements Game {
     private ballVelocity: Vector3 = new Vector3(10, 0, -2);
     private ballSpeed: number = 18;
     private isFalling: boolean = false;
-    public gameState: GameState = "init"; // state
 
     private fieldWidth: number;
     private fieldHeight: number;
@@ -34,10 +33,22 @@ export class PongBackScene extends PongBaseScene implements Game {
         this.paddleHeight = paddleBounds.maximum.z - paddleBounds.minimum.z;
     }
 
+    private sendGameState(): void {
+        const stateMessage = {
+            type: "GameState",
+            state: this.state
+        };
+
+        this.players.forEach(player => {
+            player.gameSocket?.send(JSON.stringify(stateMessage));
+        });
+    }
+
     enablePongPhysics(): void {
         this.pongMeshes.ball.position = new Vector3(0, 25, 0); // 💥средняя цифра - высота на старте. меняем как хотим)
         this.isFalling = true;
-        this.gameState = "running"; // state
+        this.state = "running"; // state
+        this.sendGameState();
         this.onBeforeRenderObservable.add(() => {
             this.updateBall();
         });
@@ -129,7 +140,8 @@ export class PongBackScene extends PongBaseScene implements Game {
     }
 
     private endGame(): void {
-        this.gameState = "over";
+        this.state = "over";
+        this.sendGameState();
 
         const winnerIndex = this.score[0] >= 7 ? 0 : 1;
         const message : GameOver = {
@@ -197,7 +209,7 @@ export class PongBackEngine extends NullEngine {
 export function startRenderLoop(engine: PongBackEngine) {
     engine.runRenderLoop(() => {
         engine.scenes.forEach(scene => {
-            if (scene.gameState !== "running") return; // state
+            if (scene.state !== "running") return; // state
             scene.render();
 
             const posMessage: MeshPositions = {
