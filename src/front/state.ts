@@ -71,7 +71,7 @@ export function set_view(state: ViewState) {
 
 	// Находим и отображаем целевой контейнер по data-атрибуту
 	const target = document.querySelector<HTMLElement>(`.page-view[data-view-id="${state}"]`);
-	
+
 	if (target) {
 		target.classList.remove("hidden");
 		target.classList.add("flex");
