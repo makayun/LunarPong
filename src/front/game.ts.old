@@ -17,16 +17,6 @@ async function gameMain() {
 	let player: User | null = { id: await getUserId() };
 
 	pongScene.executeWhenReady(() => {
-		engine.runRenderLoop(() => pongScene.render());
-
-		window.addEventListener("resize", function () {
-			engine.resize();
-			pongScene.camera.zoomOn([
-				pongScene.pongMeshes.edgeBottom,
-				pongScene.pongMeshes.edgeLeft,
-				pongScene.pongMeshes.edgeRight
-			]);
-		});
 
 		setGameButtons(gameButtons, pongScene, player);
 	})
