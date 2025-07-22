@@ -1,5 +1,5 @@
 import type { GameType, GameButtons, User, InitGameRequest} from "../defines/types";
-import { getUserId } from "../helpers/helpers";
+// import { getUserId } from "../helpers/helpers";
 import type { PongFrontScene } from "../scenes/PongFrontScene";
 
 export function initGameButtons() : GameButtons {

@@ -1,4 +1,4 @@
-import { getUserId, getUserNickname } from "../helpers/helpers";
+// import { getUserId, getUserNickname } from "../helpers/helpers";
 import type { GUID } from "../defines/types";
 // import '../styles/styles.css';
 import '../styles/output.css';

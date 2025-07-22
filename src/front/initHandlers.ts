@@ -11,7 +11,7 @@ export function initHandlers() {
 			console.debug("[LOGIN] Enter key pressed");
 			login();
 		}
-		}); 
+		});
 	}
 
 	const loginBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login"]`);
@@ -31,7 +31,7 @@ export function initHandlers() {
 			console.debug("[2FA] Enter key pressed");
 			twofa();
 		}
-		}); 
+		});
 	}
 
 	const continueBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="2fa_continue"]`);
@@ -49,7 +49,7 @@ export function initHandlers() {
 			navigateTo(ViewState.REGISTER);
 		}
 	)};
-	
+
 	const registerBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="register"]`);
 	if (registerBtn) {
 		registerBtn.addEventListener("click", () => {
