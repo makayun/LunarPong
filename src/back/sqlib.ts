@@ -1,5 +1,6 @@
 import type { Database as DatabaseType } from 'better-sqlite3';
 import { getDB } from '../back/db';
+import { int } from '@babylonjs/core';
 
 export class TournamentService {
 	private db: DatabaseType;
@@ -10,20 +11,20 @@ export class TournamentService {
 
 	// ===== TOURNAMENT =====
 
-	createTournament(name: string, user_count: number): number {
+	createTournament(name: string, user_count: int): int {
 		try {
 			const stmt = this.db.prepare(
 				`INSERT INTO tournaments (status, name, user_count) VALUES (1, ?, ?)`
 			);
 			const result = stmt.run(name, user_count);
-			return result.lastInsertRowid as number;
+			return result.lastInsertRowid as int;
 		} catch (e) {
 			console.error('createTournament error:', e);
 			return -1;
 		}
 	}
 
-	startTournament(id: number): boolean {
+	startTournament(id: int): boolean {
 		try {
 			const stmt = this.db.prepare(
 				`UPDATE tournaments SET status = 2, end_at = datetime('now') WHERE id = ?`
@@ -31,12 +32,12 @@ export class TournamentService {
 			const result = stmt.run(id);
 			return result.changes > 0;
 		} catch (e) {
-			console.error('updateTournament error:', e);
+			console.error('startTournament error:', e);
 			return false;
 		}
 	}
 
-	endTournament(id: number): boolean {
+	endTournament(id: int): boolean {
 		try {
 			const stmt = this.db.prepare(
 				`UPDATE tournaments SET status = 3, end_at = datetime('now') WHERE id = ?`
@@ -64,39 +65,38 @@ export class TournamentService {
 
 	// ===== USERS =====
 
-	addUser(tournament: number, player: number): number {
+	addUser(tournament: int, user: int): int {
 		try {
 			const stmt = this.db.prepare(
-				`INSERT INTO ournament_users (tournament, user) 
-				 VALUES (?, ?)`
+				`INSERT INTO tournament_users (tournament, user) VALUES (?, ?)`
 			);
-			const result = stmt.run(tournament, player);
-			return result.lastInsertRowid as number;
+			const result = stmt.run(tournament, user);
+			return result.lastInsertRowid as int;
 		} catch (e) {
-			console.error('createGame error:', e);
+			console.error('addUser error:', e);
 			return -1;
 		}
 	}
 
-	updateUser(tournament: number, player: number, position: number): boolean {
+	updateUser(tournament: int, user: int, position: int): boolean {
 		try {
 			const stmt = this.db.prepare(
-				`UPDATE ournament_users SET position = ? WHERE tournament = ?, user = ?)`
+				`UPDATE tournament_users SET position = ? WHERE tournament = ? and user = ?`
 			);
-			const result = stmt.run(position, tournament, player);
+			const result = stmt.run(position, tournament, user);
 			return result.changes > 0;;
 		} catch (e) {
-			console.error('createGame error:', e);
+			console.error('updateUser error:', e);
 			return false;
 		}
 	}
 
-	getUsers(tournamentId: number): Array<{ user: number, position: number }> {
+	getUsers(tournamentId: int): Array<{ user: int, position: int }> {
 		try {
 			const stmt = this.db.prepare(
 				`SELECT user, position FROM tournament_users WHERE tournament = ?`
 			);
-			return stmt.all(tournamentId) as Array<{ user: number, position: number }>;
+			return stmt.all(tournamentId) as Array<{ user: int, position: int }>;
 		} catch (e) {
 			console.error('getUsers error:', e);
 			return [];
@@ -105,21 +105,20 @@ export class TournamentService {
 
 	// ===== GAMES =====
 
-	createGame(tournamentId: number, player1: string, player2: string): number {
+	createGame(tournamentId: int, user1: int, user2: int): int {
 		try {
 			const stmt = this.db.prepare(
-				`INSERT INTO games (tournament_id, player1, player2, status, created_at) 
-				 VALUES (?, ?, ?, 'active', datetime('now'))`
+				`INSERT INTO games (tournament, user1, user2)  VALUES (?, ?, ?)`
 			);
-			const result = stmt.run(tournamentId, player1, player2);
-			return result.lastInsertRowid as number;
+			const result = stmt.run(tournamentId, user1, user2);
+			return result.lastInsertRowid as int;
 		} catch (e) {
 			console.error('createGame error:', e);
 			return -1;
 		}
 	}
 
-	updateGame(id: number, score1: number, score2: number): boolean {
+	updateGame(id: int, score1: int, score2: int): boolean {
 		try {
 			const stmt = this.db.prepare(`UPDATE games SET score1 = ?, score2 = ? WHERE id = ?`);
 			const result = stmt.run(score1, score2, id);
@@ -130,16 +129,27 @@ export class TournamentService {
 		}
 	}
 
-	endGame(id: number): boolean {
+	updateGameScore(id: int, score1: int, score2: int): boolean {
 		try {
-			const stmt = this.db.prepare(
-				`UPDATE games SET status = 'finished', ended_at = datetime('now') WHERE id = ?`
-			);
-			const result = stmt.run(id);
+			const stmt = this.db.prepare(`UPDATE games SET score1 = score1 + ?, score2 = score2 + ? WHERE id = ?`);
+			const result = stmt.run(score1, score2, id);
 			return result.changes > 0;
 		} catch (e) {
-			console.error('endGame error:', e);
+			console.error('updateGame error:', e);
 			return false;
 		}
 	}
+
+	// endGame(id: int): boolean {
+	// 	try {
+	// 		const stmt = this.db.prepare(
+	// 			`UPDATE games SET status = 3, end_at = datetime('now') WHERE id = ?`
+	// 		);
+	// 		const result = stmt.run(id);
+	// 		return result.changes > 0;
+	// 	} catch (e) {
+	// 		console.error('endGame error:', e);
+	// 		return false;
+	// 	}
+	// }
 }
