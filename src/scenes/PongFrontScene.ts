@@ -22,11 +22,11 @@ import { Color3 } from "@babylonjs/core/Maths";
 
 
 import { GLOW_MAX, GLOW_MIN } from "../defines/constants";
-import { AIOpponent } from "../back/aiOpponent";
+// import { AIOpponent } from "../back/aiOpponent";
 
 export class PongFrontScene extends PongBaseScene {
 	public id?: GUID;
-	aiOpponent?: AIOpponent;
+	// aiOpponent?: AIOpponent;
 	public side?: PlayerSide;
 	public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-game`);
 

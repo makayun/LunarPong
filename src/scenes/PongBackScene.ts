@@ -3,7 +3,7 @@ import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
 import type { WebSocket } from "@fastify/websocket";
 import { PongBaseScene } from "./PongBaseScene";
 import { generateGuid } from "../helpers/helpers";
-import type { User, Game, GUID, MeshPositions, GameState, GameOver } from "../defines/types";
+import type { User, Game, GUID, MeshPositions, GameOver } from "../defines/types";
 // import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 import { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";

@@ -28,50 +28,50 @@ export function getAccessToken() : string {
 	return token;
 }
 
-// export function getUserId(timeoutMs = 5 * 60000): Promise<GUID> {
-// 	return new Promise((resolve, reject) => {
-// 		const start = Date.now();
-// 		const check = () => {
-// 			const userId = sessionStorage.getItem("pong-client-id");
-// 			if (userId && userId !== "-1") {
-// 				sessionStorage.setItem('pong-client-id', userId);
-// 				resolve(userId as GUID);
-// 			} else if (Date.now() - start > timeoutMs) {
-// 				alert("The login takes too long, try to reload the page");
-// 				reject(new Error("Timed out waiting for user ID"));
-// 			} else {
-// 				setTimeout(check, 500);
-// 			}
-// 		};
-// 		check();
-// 	});
-// }
+export function getUserId(timeoutMs = 5 * 60000): Promise<GUID> {
+	return new Promise((resolve, reject) => {
+		const start = Date.now();
+		const check = () => {
+			const userId = sessionStorage.getItem("pong-client-id");
+			if (userId && userId !== "-1") {
+				sessionStorage.setItem('pong-client-id', userId);
+				resolve(userId as GUID);
+			} else if (Date.now() - start > timeoutMs) {
+				alert("The login takes too long, try to reload the page");
+				reject(new Error("Timed out waiting for user ID"));
+			} else {
+				setTimeout(check, 500);
+			}
+		};
+		check();
+	});
+}
 
-// export function getUserNickname(timeoutMs = 5 * 60000): Promise<string> {
-// 	return new Promise((resolve, reject) => {
-// 		const start = Date.now();
-// 		const check = () => {
-// 			const userNick = sessionStorage.getItem("pong-nickname");
-// 			if (userNick) {
-// 				resolve(userNick);
-// 			} else if (Date.now() - start > timeoutMs) {
-// 				alert("The login takes too long, try to reload the page");
-// 				reject(new Error("Timed out waiting for user nickname"));
-// 			} else {
-// 				setTimeout(check, 500);
-// 			}
-// 		};
-// 		check();
-// 	});
-// }
+export function getUserNickname(timeoutMs = 5 * 60000): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const start = Date.now();
+		const check = () => {
+			const userNick = sessionStorage.getItem("pong-nickname");
+			if (userNick) {
+				resolve(userNick);
+			} else if (Date.now() - start > timeoutMs) {
+				alert("The login takes too long, try to reload the page");
+				reject(new Error("Timed out waiting for user nickname"));
+			} else {
+				setTimeout(check, 500);
+			}
+		};
+		check();
+	});
+}
 
-// export function setUser(user: User_f) {
-// 	sessionStorage.setItem("pong-client-id", user.id.toString());
-// 	sessionStorage.setItem("pong-nickname", user.name && user.name?.length !== 0  ? user.name : generateNickname())
-// }
+export function setUser(user: User_f) {
+	sessionStorage.setItem("pong-client-id", user.id.toString());
+	sessionStorage.setItem("pong-nickname", user.name && user.name?.length !== 0  ? user.name : generateNickname())
+}
 
-// export function unsetUser() {
-// 	sessionStorage.removeItem("pong-client-id");
-// 	sessionStorage.removeItem("pong-nickname");
-// }
+export function unsetUser() {
+	sessionStorage.removeItem("pong-client-id");
+	sessionStorage.removeItem("pong-nickname");
+}
 
