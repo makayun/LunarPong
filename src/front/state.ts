@@ -72,7 +72,7 @@ export function set_view(state: ViewState) {
 
 	// Находим и отображаем целевой контейнер по data-атрибуту
 	const target = document.querySelector<HTMLElement>(`.page-view[data-view-id="${state}"]`);
-	
+
 	if (target) {
 		target.classList.remove("hidden");
 		target.classList.add("flex");
@@ -89,29 +89,26 @@ export function set_view(state: ViewState) {
 	current_state = state;
 
 	// Вызов специфичных для состояния функций...
-	 switch (state) {
-  case ViewState.LOGIN:
-   setDivLogin();
-   break;
-  case ViewState.TWOFA:
-   setDiv2fa();
-   break;
-  case ViewState.REGISTER:
-   setDivRegister();
-   break;
-  case ViewState.QRCODE:
-   setDivQRcode();
-   break;
-  case ViewState.GAME:
-   triggerLoginEvent(user_f);
-   break;
- }
- updateI18nContent();
-}
 
-function triggerLoginEvent(user: User_f) : void {
- const loginEvent = new CustomEvent("login", {detail: JSON.stringify(user)});
- window.dispatchEvent(loginEvent);
+	switch (state) {
+		case ViewState.LOGIN:
+			setDivLogin();
+			break;
+		case ViewState.TWOFA:
+			setDiv2fa();
+			break;
+		case ViewState.REGISTER:
+			setDivRegister();
+			break;
+		case ViewState.QRCODE:
+			setDivQRcode();
+			break;
+		case ViewState.GAME:
+			window.dispatchEvent(new CustomEvent("pongLogin", {detail: user_f}))
+			break;
+	}
+	updateI18nContent();
+
 }
 
 /**

@@ -2,12 +2,14 @@ import Sqlite = require("better-sqlite3");
 import Database from 'better-sqlite3';
 // const db = new Database('foobar.db', options);
 // const db: Sqlite.Database = require('better-sqlite3')(process.env.DATABASE_PATH, { verbose: console.log });
+// import { test_db } from "./sqlib_test";
 
 let db: Sqlite.Database;
 
 try {
 	db = new Database(process.env.DATABASE_PATH!, { verbose: console.log });
 	console.log("✅ Database opened successfully");
+	// test_db(8);
 } catch (error) {
 	console.error("❌ Failed to open database:", error);
 	process.exit(1); // or handle accordingly

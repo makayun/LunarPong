@@ -37,7 +37,7 @@ const messagesContainer = document.getElementById('messages') as HTMLDivElement;
 async function initTournamentDialog(): Promise<void> {
 
   await initCurrentUser();
-  
+
   if (!dialog || !createBtn || !closeBtn || !cancelBtn || !form || !nameInput || !createSubmitBtn) {
     console.error('Tournament dialog elements not found');
     return;
@@ -49,39 +49,39 @@ function setupEventListeners(): void {
   createBtn.addEventListener('click', openDialog);
   closeBtn.addEventListener('click', closeDialog);
   cancelBtn.addEventListener('click', closeDialog);
-  
+
   dialog.addEventListener('click', (e: MouseEvent) => {
     if (e.target === dialog) {
       closeDialog();
     }
   });
-  
+
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     if (e.key === 'Escape' && dialog.classList.contains('active')) {
       closeDialog();
     }
   });
-  
+
   playerOptions.forEach((option: HTMLDivElement) => {
     option.addEventListener('click', () => selectPlayerCount(option));
-    
+
     option.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         selectPlayerCount(option);
       }
     });
-    
+
     option.setAttribute('tabindex', '0');
   });
-  
+
   nameInput.addEventListener('input', validateForm);
   form.addEventListener('submit', handleSubmitUpdated);
 }
 
 function openDialog(): void {
   dialog.classList.add('active');
-  
+
   setTimeout(() => {
     nameInput.focus();
   }, 300);
@@ -89,7 +89,7 @@ function openDialog(): void {
 
 function closeDialog(): void {
   dialog.classList.remove('active');
-  
+
   setTimeout(() => {
     resetForm();
   }, 300);
@@ -99,30 +99,30 @@ function selectPlayerCount(option: HTMLDivElement): void {
   playerOptions.forEach((opt: HTMLDivElement) => {
     opt.classList.remove('selected');
   });
-  
+
   option.classList.add('selected');
-  
+
   const players = option.dataset.players;
   selectedPlayerCount = players ? parseInt(players) : null;
-  
+
   validateForm();
 }
 
 function validateForm(): void {
   const hasName = nameInput.value.trim().length > 0;
   const hasPlayerCount = selectedPlayerCount !== null;
-  
+
   createSubmitBtn.disabled = !(hasName && hasPlayerCount);
 }
 
 async function handleSubmitUpdated(e: Event): Promise<void> {
   e.preventDefault();
-  
+
   if (!selectedPlayerCount || !currentUser) {
     console.error('Missing required data for tournament creation');
     return;
   }
-  
+
   const tournamentData: Tournament = {
     id: Date.now().toString(),
     name: nameInput.value.trim(),
@@ -132,21 +132,21 @@ async function handleSubmitUpdated(e: Event): Promise<void> {
     createdBy: currentUser,
     createdAt: new Date()
   };
-  
+
   tournaments.push(tournamentData);
   console.log('Tournament created:', tournamentData);
-  
+
   showSuccessMessage(tournamentData);
-  
-  displayChatMessage('system', 
-    `Tournament "${tournamentData.name}" created! You (${currentUser}) are automatically enrolled. Waiting for ${tournamentData.playerCount - 1} more players to join.`, 
+
+  displayChatMessage('system',
+    `Tournament "${tournamentData.name}" created! You (${currentUser}) are automatically enrolled. Waiting for ${tournamentData.playerCount - 1} more players to join.`,
     'success'
   );
-  
+
   setTimeout(() => {
     checkAndSuggestTournaments();
   }, 1000);
-  
+
   closeDialog();
 }
 
@@ -165,14 +165,14 @@ function showSuccessMessage(data: { name: string; playerCount: number }): void {
   pointer-events-none
 `;
   successDiv.textContent = `Tournament "${data.name}" created for ${data.playerCount} players!`;
-  
+
   document.body.appendChild(successDiv);
-  
+
   setTimeout(() => {
     successDiv.classList.remove('translate-x-full');
     successDiv.classList.add('translate-x-0');
   }, 100);
-  
+
   setTimeout(() => {
     successDiv.classList.add('translate-x-full');
     setTimeout(() => {
@@ -186,30 +186,30 @@ function showSuccessMessage(data: { name: string; playerCount: number }): void {
 function resetForm(): void {
   nameInput.value = '';
   selectedPlayerCount = null;
-  
+
   playerOptions.forEach((opt: HTMLDivElement) => {
     opt.classList.remove('selected');
   });
-  
+
   createSubmitBtn.disabled = true;
 }
 
 function appendToChat(element: HTMLElement): void {
   if (!messagesContainer) return;
-  
+
   messagesContainer.appendChild(element);
   messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
 function checkAndSuggestTournaments(): void {
-  const waitingTournaments = tournaments.filter(t => 
-    t.status === 'waiting' && 
+  const waitingTournaments = tournaments.filter(t =>
+    t.status === 'waiting' &&
     t.currentPlayers.length < t.playerCount
   );
-  
+
   if (waitingTournaments.length > 0) {
-    displayChatMessage('system', 
-      `${waitingTournaments.length} tournament(s) waiting for players. Click "Join Tournament" to see available options!`, 
+    displayChatMessage('system',
+      `${waitingTournaments.length} tournament(s) waiting for players. Click "Join Tournament" to see available options!`,
       'info'
     );
   }
@@ -231,36 +231,36 @@ async function joinSpecificTournament(tournamentId: string): Promise<void> {
   }
 
   const tournament = tournaments.find(t => t.id === tournamentId);
-  
+
   if (!tournament) {
     displayChatMessage('system', 'Tournament not found!', 'error');
     return;
   }
-  
+
   if (tournament.currentPlayers.includes(currentUser)) {
     displayChatMessage('system', `You (${currentUser}) are already in this tournament!`, 'warning');
     return;
   }
-  
+
   if (tournament.currentPlayers.length >= tournament.playerCount) {
     displayChatMessage('system', 'Tournament is full!', 'error');
     return;
   }
-  
+
   tournament.currentPlayers.push(currentUser);
-  
+
   if (tournament.currentPlayers.length === tournament.playerCount) {
     tournament.status = 'full';
   }
-  
-  displayChatMessage('system', 
-    `Successfully joined "${tournament.name}" as ${currentUser}! (${tournament.currentPlayers.length}/${tournament.playerCount} players)`, 
+
+  displayChatMessage('system',
+    `Successfully joined "${tournament.name}" as ${currentUser}! (${tournament.currentPlayers.length}/${tournament.playerCount} players)`,
     'success'
   );
-  
+
   if (tournament.status === 'full') {
-    displayChatMessage('system', 
-      `Tournament "${tournament.name}" is now full and ready to start!`, 
+    displayChatMessage('system',
+      `Tournament "${tournament.name}" is now full and ready to start!`,
       'success'
     );
     showTournamentBracket(tournament);
@@ -272,7 +272,7 @@ async function initJoinTournament(): Promise<void> {
     console.error('Join tournament button not found');
     return;
   }
-  
+
   joinTournamentBtn.addEventListener('click', handleJoinTournament);
 }
 
@@ -289,13 +289,13 @@ function displayTournamentStatus(): void {
     displayChatMessage('system', 'No tournaments have been created yet. Create a new tournament to get started!', 'info');
     return;
   }
-  
-  const availableTournaments = tournaments.filter(t => 
-    t.status === 'waiting' && 
+
+  const availableTournaments = tournaments.filter(t =>
+    t.status === 'waiting' &&
     t.currentPlayers.length < t.playerCount &&
     !t.currentPlayers.includes(currentUser!)
   );
-  
+
   if (availableTournaments.length === 0) {
     const waitingTournaments = getTournamentsByStatus('waiting');
     if (waitingTournaments.length > 0) {
@@ -305,7 +305,7 @@ function displayTournamentStatus(): void {
     }
   } else {
     displayChatMessage('system', `Found ${availableTournaments.length} tournament(s) available for ${currentUser}:`, 'info');
-    
+
     availableTournaments.forEach(tournament => {
       displayTournamentOption(tournament);
     });
@@ -315,7 +315,7 @@ function displayTournamentStatus(): void {
 function displayTournamentOption(tournament: Tournament): void {
   const messageDiv = document.createElement('div');
   messageDiv.className = 'tournament-option-message';
-  
+
   const tournamentInfo = document.createElement('div');
   tournamentInfo.className = 'tournament-info';
   tournamentInfo.innerHTML = `
@@ -326,24 +326,24 @@ function displayTournamentOption(tournament: Tournament): void {
       <div class="current-players">Players: ${tournament.currentPlayers.join(', ')}</div>
     </div>
   `;
-  
+
   const joinBtn = document.createElement('button');
   joinBtn.className = 'join-tournament-btn';
   joinBtn.textContent = 'Join';
   joinBtn.onclick = () => joinSpecificTournament(tournament.id);
-  
+
   messageDiv.appendChild(tournamentInfo);
   messageDiv.appendChild(joinBtn);
-  
+
   appendToChat(messageDiv);
 }
 
 function displayChatMessage(sender: string, message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info'): void {
   const messageDiv = document.createElement('div');
   messageDiv.className = `chat-message ${type}-message`;
-  
+
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  
+
   messageDiv.innerHTML = `
     <div class="message-header">
       <span class="sender">${sender}</span>
@@ -351,21 +351,21 @@ function displayChatMessage(sender: string, message: string, type: 'info' | 'suc
     </div>
     <div class="message-content">${message}</div>
   `;
-  
+
   appendToChat(messageDiv);
 }
 
 function showTournamentBracket(tournament: Tournament): void {
   const bracketDiv = document.createElement('div');
   bracketDiv.className = 'tournament-bracket';
-  
+
   bracketDiv.innerHTML = `
     <div class="bracket-header">
       <h3>Tournament Bracket: ${tournament.name}</h3>
       <p>All players registered with their game IDs</p>
     </div>
     <div class="bracket-players">
-      ${tournament.currentPlayers.map((player, index) => 
+      ${tournament.currentPlayers.map((player, index) =>
         `<div class="bracket-player">Seed ${index + 1}: ${player}</div>`
       ).join('')}
     </div>
@@ -373,27 +373,27 @@ function showTournamentBracket(tournament: Tournament): void {
       Start Tournament
     </button>
   `;
-  
+
   appendToChat(bracketDiv);
 }
 
 async function startTournament(tournamentId: string): Promise<void> {
   const tournament = tournaments.find(t => t.id === tournamentId);
-  
+
   if (!tournament) {
     displayChatMessage('system', 'Tournament not found!', 'error');
     return;
   }
-  
+
   if (tournament.status !== 'full') {
     displayChatMessage('system', 'Tournament is not ready to start. Need more players!', 'warning');
     return;
   }
-  
+
   tournament.status = 'active';
-  
-  displayChatMessage('system', 
-    `Tournament "${tournament.name}" has started! Players: ${tournament.currentPlayers.join(', ')}`, 
+
+  displayChatMessage('system',
+    `Tournament "${tournament.name}" has started! Players: ${tournament.currentPlayers.join(', ')}`,
     'success'
   );
 

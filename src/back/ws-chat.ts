@@ -23,6 +23,7 @@
 // }
 
 // export async function wsChatPlugin(server: FastifyInstance) {
+
 //   server.get("/ws-page", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
 //     let currentUser: User | null = null;
 

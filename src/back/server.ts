@@ -13,6 +13,7 @@ import type { FastifyListenOptions }	from "fastify";
 
 import cookie							from '@fastify/cookie'
 
+
 // import { wsGamePlugin }			from "./ws-game";
 import { wsPagePlugin }			from "./ws-page"; // ✅ импорт чата
 import { PongBackEngine }		from "../scenes/PongBackScene";
@@ -55,7 +56,9 @@ async function main() {
 	server.register(cookie);
 	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 	server.register(websocket);
+
 	await server.register(wsPagePlugin, { engine, users });
+
 
 	server.register(authRoutes);
 	server.register(protectedRoutes, { prefix: '/api/protected' });

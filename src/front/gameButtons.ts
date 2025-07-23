@@ -1,5 +1,4 @@
 import type { GameType, GameButtons, User, InitGameRequest} from "../defines/types";
-import { getUserId } from "../helpers/helpers";
 import type { PongFrontScene } from "../scenes/PongFrontScene";
 
 export function initGameButtons() : GameButtons {
@@ -35,9 +34,7 @@ function createInitGameHandler(
 	};
 }
 
-export async function setGameButtons(buttons: GameButtons, pongScene: PongFrontScene, player: User | null) {
-	if (!player)
-		player = { id: await getUserId() };
+export async function setGameButtons(buttons: GameButtons, pongScene: PongFrontScene, player: User) {
 	buttons.forEach((btn, type) => {
 		btn.disabled = false;
 		btn.classList.remove("hidden", "absolute", "relative", "w-96", "cursor-not-allowed");
@@ -65,4 +62,12 @@ export function unsetGameButtons(buttons: GameButtons, type: GameType) {
 			btn.classList.add("hidden", "absolute");
 		}
 	});
+}
+
+export function disableGameButtons(gameButtons: GameButtons) {
+	gameButtons.forEach((btn) => { btn.disabled = true; });
+}
+
+export function enableGameButtons(gameButtons: GameButtons) {
+	gameButtons.forEach((btn) => { btn.disabled = false; });
 }
