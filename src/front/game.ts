@@ -23,6 +23,14 @@ window.addEventListener("resize", function () {
 		pongScene.pongMeshes.edgeRight
 	]);
 });
+window.addEventListener("resize", function () {
+	engine.resize();
+	pongScene.camera.zoomOn([
+		pongScene.pongMeshes.edgeBottom,
+		pongScene.pongMeshes.edgeLeft,
+		pongScene.pongMeshes.edgeRight
+	]);
+});
 
 pongScene.executeWhenReady(() => {
 	meshPositions = {
