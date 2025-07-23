@@ -52,16 +52,16 @@ export class AIOpponent {
       this.ballVelocity = positions.ball
         .subtract(this.lastBallPosition)
         .scale(1 / deltaTime);
-      console.log(`[${currentTime}] Ball velocity: x=${this.ballVelocity.x}, y=${this.ballVelocity.y}`);
+      console.log(`[${currentTime}] Ball velocity: x=${this.ballVelocity.x}, y=${this.ballVelocity.z}`);
     } else {
       /* Для первого шага предполагаем, что мяч движется к AI */
-      const paddleY = this.config.paddleSide === "right" ? positions.paddleRight.y : positions.paddleLeft.y;
+      const paddleY = this.config.paddleSide === "right" ? positions.paddleRight.z : positions.paddleLeft.z;
       this.ballVelocity = new Vector3(
         this.config.paddleSide === "right" ? 5 : -5, // Скорость по X
-        positions.ball.y - paddleY, // Скорость по Y основана на разнице
+        positions.ball.z - paddleY, // Скорость по Y основана на разнице
         0
       );
-      console.log(`[${currentTime}] Initial ball velocity: x=${this.ballVelocity.x}, y=${this.ballVelocity.y}`);
+      console.log(`[${currentTime}] Initial ball velocity: x=${this.ballVelocity.x}, z=${this.ballVelocity.z}`);
     }
     this.lastBallPosition = positions.ball.clone();
 
@@ -72,8 +72,8 @@ export class AIOpponent {
     /* Определяем позицию своей ракетки */
     const paddleY =
       this.config.paddleSide === "right"
-        ? positions.paddleRight.y
-        : positions.paddleLeft.y;
+        ? positions.paddleRight.z
+        : positions.paddleLeft.z;
     console.log(`[${currentTime}] Paddle Y: ${paddleY}`);
 
     /* Логика принятия решения */
@@ -109,7 +109,7 @@ export class AIOpponent {
       ? positions.paddleRight.x
       : positions.paddleLeft.x;
 
-  console.log(`[${this.lastUpdate}] Ball position: x=${ball.x}, y=${ball.y}`);
+  console.log(`[${this.lastUpdate}] Ball position: x=${ball.x}, y=${ball.z}`);
   console.log(`[${this.lastUpdate}] Paddle X: ${paddleX}, Velocity X: ${this.ballVelocity.x}`);
 
   /* Если мяч движется в сторону AI */
@@ -126,9 +126,9 @@ export class AIOpponent {
 
     if (timeToPaddle === Infinity || timeToPaddle <= 1) {
       console.log(
-        `[${this.lastUpdate}] Ball close or infinite time, using current ball Y: ${ball.y}`
+        `[${this.lastUpdate}] Ball close or infinite time, using current ball Y: ${ball.z}`
       );
-      return ball.y;
+      return ball.z;
     }
 
     /* Расчёт Y с учётом возможных отражений от верхнего и нижнего края */
@@ -136,7 +136,7 @@ export class AIOpponent {
     const lowerBound = -GROUND_HEIGHT / 2 + EDGE_HEIGHT;
 
 
-    let predictedY = ball.y + this.ballVelocity.y * timeToPaddle;
+    let predictedY = ball.z + this.ballVelocity.z * timeToPaddle;
 
         /* логика отражения от границ */
     const fieldHeight = upperBound - lowerBound;
@@ -160,8 +160,8 @@ export class AIOpponent {
 
   console.log(`[${this.lastUpdate}] Ball moving away, returning paddle Y`);
   return this.config.paddleSide === "right"
-    ? positions.paddleRight.y
-    : positions.paddleLeft.y;
+    ? positions.paddleRight.z
+    : positions.paddleLeft.z;
 }
 
   usePowerUp(): PlayerInput | null {
