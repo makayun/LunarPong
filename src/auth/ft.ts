@@ -104,11 +104,13 @@ export const ft_auth_cb = async (req: FastifyRequest, reply: FastifyReply) => {
 	const { code } = req.query as { code: string };
 	console.log('Code:', code);
 	if (!code) {
-		return reply.status(400).send({ error: 'Code is required' });
+		return reply.redirect(`/`);
+		// return reply.status(400).send({ error: 'Code is required' });
 	}
 
 	const token = await getAccessToken(code as string);
 	if (!token) {
+		// return reply.redirect(`/`);
 		return reply.status(500).send({ error: 'Failed to obtain access token' });
 	}
 
