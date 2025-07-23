@@ -1,8 +1,4 @@
 import type { GameType, GameButtons, User, InitGameRequest} from "../defines/types";
-<<<<<<< HEAD:src/front/gameButtons.ts
-=======
-// import { getUserId } from "../helpers/helpers";
->>>>>>> mad_max:src/front/gameButtons.ts.old
 import type { PongFrontScene } from "../scenes/PongFrontScene";
 
 export function initGameButtons() : GameButtons {
