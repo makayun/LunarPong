@@ -72,3 +72,4 @@ export function initHandlers() {
 
 	window.addEventListener("pongLogoff", () => { logoff() });
 
+}

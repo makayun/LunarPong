@@ -1,7 +1,7 @@
 import { updateI18nContent } from "./i18next"
 import { setDivLogin, setDiv2fa, setDivRegister, setDivQRcode } from "./div_login"
 import { user_f, clearQRcode } from "./login"
-import { User_f } from "../defines/types";
+// import { User_f } from "../defines/types";
 
 // Enum теперь содержит более чистые имена, соответствующие data-view-id
 export enum ViewState {

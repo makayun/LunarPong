@@ -8,12 +8,13 @@ import type { User, GameType, InitGameSuccess, MeshPositions, WSMessage, User_f 
 
 const	canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 const	engine = new Engine(canvas, true);
-const	pongScene = new PongFrontScene(engine);
+export const pongScene = new PongFrontScene(engine);
 const	gameButtons = initGameButtons();
 const	pongLogoff = new Event("pongLogoff");
 var		user: User | null;
 var		meshPositions: MeshPositions;
 
+export function gameMain() {
 disableGameButtons(gameButtons);
 
 window.addEventListener("resize", function () {
@@ -124,3 +125,4 @@ function assignInputHandler(pongScene: PongFrontScene, gameType: GameType) {
 	}
 }
 
+}

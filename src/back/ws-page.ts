@@ -8,12 +8,12 @@ import { PongBackScene }	from "../scenes/PongBackScene";
 import { PADDLE_STEP }				from "../defines/constants";
 import { animatePaddleToX } from "./paddleMovement";
 import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType, GUID } from "../defines/types";
-import { AIOpponent } from "./aiOpponent";
+// import { AIOpponent } from "./aiOpponent";
 import { error } from "node:console";
 
 import type { ChatMessage } from "../defines/types";
 
-const users: Map<GUID, User> = new Map();
+const users: Map<number, User> = new Map();
 export interface WsGamePluginOptions { engine: PongBackEngine; users: User[] };
 
 
@@ -27,7 +27,7 @@ function broadcastUserList() {
   }
 }
 
-function sendToUser(userId: GUID, message: any) {
+function sendToUser(userId: number, message: any) {
   const user = users.get(userId);
   if (user?.chatSocket) {
     user.chatSocket.send(JSON.stringify(message));
@@ -47,7 +47,7 @@ export async function wsPagePlugin(server: FastifyInstance, options: WsGamePlugi
         switch (msg.type) {
             case 'register': {
                 const rawUser = msg.user;
-                let nickname = (rawUser.nick && rawUser.nick.trim()) || `User-${rawUser.id.slice(0, 6)}`;
+                let nickname = (rawUser.nick && rawUser.nick.trim());
                 const isNickTaken = Array.from(users.values()).some(u => u.nick === nickname);
 
                   if (isNickTaken) {
@@ -63,7 +63,7 @@ export async function wsPagePlugin(server: FastifyInstance, options: WsGamePlugi
                 ...rawUser,
                 nick: nickname,
                 chatSocket: socket,
-                blocked: new Set<GUID>(),
+                blocked: new Set<number>(),
             };
 
             users.set(currentUser.id, currentUser);
@@ -300,7 +300,7 @@ async function createRemoteGame(engine: PongBackEngine, newPlayer: User, socket:
 async function createAiGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
     const game = new PongBackScene(engine);
     addPlayerToGame(game, newPlayer, socket);
-    addAiOpponent(game);
+    // addAiOpponent(game);
     await game.enablePongPhysics();
     sendInitGameSuccess("Versus AI", game.id, "left", socket);
 }
@@ -321,10 +321,10 @@ function assignSide(game: PongBackScene) : PlayerSide {
         throw error("Invalid number of players!");
 }
 
-function addAiOpponent(game: PongBackScene) : void {
-    if (!game.aiOpponent)
-        game.aiOpponent = new AIOpponent(game, "right");
-}
+// function addAiOpponent(game: PongBackScene) : void {
+//     if (!game.aiOpponent)
+//         game.aiOpponent = new AIOpponent(game, "right");
+// }
 
 function sendInitGameSuccess(inGameType: GameType, inGameId: GUID, inPlayerSide: PlayerSide, socket: WebSocket) {
     const response : InitGameSuccess = {
