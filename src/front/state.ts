@@ -1,6 +1,7 @@
 import { updateI18nContent } from "./i18next"
 import { setDivLogin, setDiv2fa, setDivRegister, setDivQRcode } from "./div_login"
 import { user_f, clearQRcode } from "./login"
+import { User_f } from "../defines/types";
 
 // Enum теперь содержит более чистые имена, соответствующие data-view-id
 export enum ViewState {
@@ -88,6 +89,7 @@ export function set_view(state: ViewState) {
 	current_state = state;
 
 	// Вызов специфичных для состояния функций...
+
 	switch (state) {
 		case ViewState.LOGIN:
 			setDivLogin();
@@ -106,6 +108,7 @@ export function set_view(state: ViewState) {
 			break;
 	}
 	updateI18nContent();
+
 }
 
 /**

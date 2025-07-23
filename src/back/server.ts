@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import { loadSecretsIntoEnv }			from './vault-loader';
+// import { loadSecretsIntoEnv }			from './vault-loader';
 
 import fs								from "node:fs";
 import path								from "node:path";
@@ -13,8 +13,9 @@ import type { FastifyListenOptions }	from "fastify";
 
 import cookie							from '@fastify/cookie'
 
-import { wsGamePlugin }			from "./ws-game";
-// import { wsChatPlugin }			from "./ws-chat"; // ✅ импорт чата
+
+// import { wsGamePlugin }			from "./ws-game";
+import { wsPagePlugin }			from "./ws-page"; // ✅ импорт чата
 import { PongBackEngine }		from "../scenes/PongBackScene";
 import { startRenderLoop }		from "../scenes/PongBackScene";
 import type { User }			from "../defines/types";
@@ -24,9 +25,9 @@ import authRoutes from '../auth/auth.routes';
 // import { initRedis } from './redis-client';
 
 async function main() {
-	await loadSecretsIntoEnv("env/google");
-	await loadSecretsIntoEnv("env/jwt");
-	await loadSecretsIntoEnv("env/ft");
+	// await loadSecretsIntoEnv("env/google");
+	// await loadSecretsIntoEnv("env/jwt");
+	// await loadSecretsIntoEnv("env/ft");
 
 	const users: User[] = [];
 	const appDir: string = fs.realpathSync(process.cwd());
@@ -55,8 +56,9 @@ async function main() {
 	server.register(cookie);
 	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 	server.register(websocket);
-	await server.register(wsGamePlugin, { engine, users });
-	// await server.register(wsChatPlugin, { users });
+
+	await server.register(wsPagePlugin, { engine, users });
+
 
 	server.register(authRoutes);
 	server.register(protectedRoutes, { prefix: '/api/protected' });

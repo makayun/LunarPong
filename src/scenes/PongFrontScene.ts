@@ -28,7 +28,7 @@ export class PongFrontScene extends PongBaseScene {
 	public id?: GUID;
 	// aiOpponent?: AIOpponent;
 	public side?: PlayerSide;
-	public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-game`);
+	public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-page`);
 
 	private hl = new HighlightLayer("hl", this);
 

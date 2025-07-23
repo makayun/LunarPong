@@ -23,7 +23,8 @@
 // }
 
 // export async function wsChatPlugin(server: FastifyInstance) {
-//   server.get("/ws-chat", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
+
+//   server.get("/ws-page", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
 //     let currentUser: User | null = null;
 
 //     socket.on("message", (data: string) => {

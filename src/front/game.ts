@@ -2,6 +2,7 @@ import '../styles/output.css';
 import { Engine } from "@babylonjs/core/Engines/engine";
 import { PongFrontScene } from "../scenes/PongFrontScene";
 import { aiInputHandler, localInputHandler, remoteInputHandler } from './gameInputVariants';
+
 import { disableGameButtons, initGameButtons, setGameButtons } from "./gameButtons";
 import type { User, GameType, InitGameSuccess, MeshPositions, WSMessage, User_f } from "../defines/types";
 
@@ -54,6 +55,8 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
 		pongScene.socket = new WebSocket(`wss://${window.location.host}/ws-game`);
 		setGameButtons(gameButtons, pongScene, user);
 		setGameInitListener(pongScene, user);
+
+
 		engine.runRenderLoop(() => pongScene.render());
 	}
 	else
@@ -120,3 +123,4 @@ function assignInputHandler(pongScene: PongFrontScene, gameType: GameType) {
 			return aiInputHandler(pongScene);
 	}
 }
+

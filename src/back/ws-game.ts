@@ -1,3 +1,4 @@
+
 import type { FastifyInstance }	from "fastify";
 import type { FastifyRequest }	from "fastify";
 import type { WebSocket }		from "@fastify/websocket";
@@ -100,13 +101,17 @@ async function createRemoteGame(engine: PongBackEngine, newPlayer: User, socket:
 	sendInitGameSuccess("Remote game", game.id, assignSide(game), socket);
 }
 
+
 // async function createAiGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
 // 	const game = new PongBackScene(engine);
 // 	addPlayerToGame(game, newPlayer, socket);
+
 	// addAiOpponent(game);
+
 // 	await game.enablePongPhysics();
 // 	sendInitGameSuccess("Versus AI", game.id, "left", socket);
 // }
+
 
 function addPlayerToGame(game: PongBackScene, newPlayer: User, socket: WebSocket) : void {
 	if (!game.players.find(player => player.id === newPlayer.id)) {
@@ -124,10 +129,12 @@ function assignSide(game: PongBackScene) : PlayerSide {
 		throw error("Invalid number of players!");
 }
 
+
 // function addAiOpponent(game: PongBackScene) : void {
 // 	if (!game.aiOpponent)
 // 		game.aiOpponent = new AIOpponent(game, "right");
 // }
+
 
 function sendInitGameSuccess(inGameType: GameType, inGameId: GUID, inPlayerSide: PlayerSide, socket: WebSocket) {
 	const response : InitGameSuccess = {
@@ -140,3 +147,4 @@ function sendInitGameSuccess(inGameType: GameType, inGameId: GUID, inPlayerSide:
 
 	socket.send(JSON.stringify(response));
 }
+
