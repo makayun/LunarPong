@@ -102,6 +102,7 @@ export function set_view(state: ViewState) {
 			setDivQRcode();
 			break;
 		case ViewState.GAME:
+			window.dispatchEvent(new CustomEvent("pongLogin", {detail: user_f}))
 			break;
 	}
 	updateI18nContent();

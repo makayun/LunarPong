@@ -58,11 +58,16 @@ export function initHandlers() {
 		}
 	)};
 
+	const logoffEvent = new Event("pongLogoff");
+
 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
 	if (logoffBtn) {
 		logoffBtn.addEventListener("click", async () => {
 			console.debug("[LOGOFF] Button clicked:");
-			logoff();
+			window.dispatchEvent(logoffEvent);
+			// logoff();
 		}
 	)};
+
+	window.addEventListener("pongLogoff", () => { logoff() });
 }

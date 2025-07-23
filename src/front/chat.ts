@@ -1,25 +1,13 @@
 // import { getUserId, getUserNickname } from "../helpers/helpers";
-import type { GUID } from "../defines/types";
+import type { GUID, User } from "../defines/types";
 // import '../styles/styles.css';
 import '../styles/output.css';
 
 const input = document.getElementById('chat-input') as HTMLInputElement;
 const messages = document.getElementById('messages') as HTMLDivElement;
 const recipient = document.getElementById('recipient') as HTMLSelectElement;
-const socket = new WebSocket(`wss://${window.location.host}/ws-chat`);
-
-async function chatMain() {
-  let user = {
-    id: await getUserId(),
-    nick: await getUserNickname()
-  };
-
-  const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
-	if (logoffBtn) {
-		logoffBtn.addEventListener("click", async function() {
-			user = { id: await getUserId(), nick: await getUserNickname() }
-		})
-	}
+// const socket = new WebSocket(`wss://${window.location.host}/ws-chat`);
+let user: User | null;
 
   socket.addEventListener('open', () => {
     socket.send(JSON.stringify({ type: 'register', user }));
