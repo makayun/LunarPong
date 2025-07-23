@@ -24,7 +24,8 @@ export default (env: { mode: BuildMode }) => {
 			"login": path.resolve(appDir, srcDir, frontDir, "login.ts"),
 			"game": path.resolve(appDir, srcDir, frontDir, "main-page.ts"),
 			// "chat": path.resolve(appDir, srcDir, frontDir, "chat.ts"),
-			"tournament": path.resolve(appDir, srcDir, frontDir, "tournament.ts")
+			"tournament": path.resolve(appDir, srcDir, frontDir, "tournament.ts"),
+			// "remote": path.resolve(appDir, srcDir, frontDir, "remote_game.ts")
 		},
 		output: path.resolve(appDir, frontDir),
 		public: path.resolve(appDir, pubDir),

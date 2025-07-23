@@ -1518,6 +1518,152 @@
   border-color: var(--color-white) !important;
   background: linear-gradient(180deg, var(--color-purple) 30%, var(--color-green) 120%) !important;
 }
+.remote-game-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.remote-game-content {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 400px;
+  width: 90%;
+  padding: 2rem;
+  border: 1px solid #3b82f6;
+}
+.remote-game-title {
+  color: #60a5fa;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.remote-game-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.remote-option-btn {
+  background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.remote-option-btn:hover {
+  background: linear-gradient(45deg, #2563eb, #1e40af);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+}
+.remote-cancel-btn {
+  background: linear-gradient(45deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+}
+.remote-cancel-btn:hover {
+  background: linear-gradient(45deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+}
+.join-game-content {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  border-radius: 1rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  max-width: 500px;
+  width: 90%;
+  padding: 2rem;
+  border: 1px solid #10b981;
+}
+.join-game-title {
+  color: #34d399;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.available-games {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+.game-item {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid #10b981;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.game-item:hover {
+  background: rgba(16, 185, 129, 0.2);
+  transform: translateX(5px);
+}
+.game-item.selected {
+  background: rgba(16, 185, 129, 0.3);
+  border-color: #34d399;
+}
+.player-name {
+  color: #34d399;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.game-status {
+  color: #9ca3af;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+.join-selected-btn {
+  background: linear-gradient(45deg, #10b981, #059669);
+  color: white;
+  border: none;
+  padding: 1rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+}
+.join-selected-btn:hover:not(:disabled) {
+  background: linear-gradient(45deg, #059669, #047857);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+}
+.join-selected-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.success-message {
+  background: linear-gradient(135deg, #065f46, #047857);
+  border: 1px solid #10b981;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  color: #34d399;
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+.hidden {
+  display: none !important;
+}
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
