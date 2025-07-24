@@ -24,6 +24,7 @@ function sendToUser(userId: number, message: any) {
 
 export async function wsChatPlugin(server: FastifyInstance) {
   server.get("/ws-chat", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
+    server.log.info("[CHAT] WebSocket connected");
     let currentUser: User | null = null;
 
     socket.on("message", (data: string) => {
@@ -159,6 +160,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
 
     socket.on("close", () => {
       if (currentUser) {
+        server.log.info(`[CHAT] WebSocket disconnected, user: ${currentUser.nick}`);
         users.delete(currentUser.id);
         broadcastUserList();
       }

@@ -10,6 +10,7 @@ const	engine = new Engine(canvas, true);
 const	pongScene = new PongFrontScene(engine);
 const	gameButtons = initGameButtons();
 const	pongLogoff = new Event("pongLogoff");
+var		socket: WebSocket;
 var		user: User | null;
 var		meshPositions: MeshPositions;
 
@@ -33,7 +34,7 @@ pongScene.executeWhenReady(() => {
 		paddleRight: pongScene.pongMeshes.paddleRight.position
 	};
 	pongScene.registerBeforeRender(() => pongScene.applyMeshPositions(meshPositions));
-	pongScene.registerAfterRender(() => pongScene.sendPlayerInput(pongScene.socket));
+	pongScene.registerAfterRender(() => pongScene.sendPlayerInput(socket));
 })
 
 window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
@@ -44,39 +45,41 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
 			id: inId,
 			nick: inNick,
 		}
-		pongScene.socket = new WebSocket(`wss://${window.location.host}/ws-game`);
-		setGameButtons(gameButtons, pongScene, user);
+		if (!socket || socket.readyState != socket.OPEN)
+			socket = new WebSocket(`wss://${window.location.host}/ws-game`);
+		setGameButtons(gameButtons, socket, user);
 		setGameInitListener(pongScene, user);
 		engine.runRenderLoop(() => pongScene.render());
+		window.addEventListener("pongLogoff", () => {
+			disableGameButtons(gameButtons);
+			engine.stopRenderLoop();
+			socket.close();
+			user = null;
+		})
 	}
 	else
 		window.dispatchEvent(pongLogoff);
 })
 
-window.addEventListener("pongLogoff", () => {
-	disableGameButtons(gameButtons);
-	engine.stopRenderLoop();
-	pongScene.socket.close();
-	user = null;
-})
 
 function setGameInitListener(pongScene:  PongFrontScene, player: User) {
-	pongScene.socket.onmessage =  async function(event: MessageEvent) {
+	socket.onmessage =  async function(event: MessageEvent) {
 		const msg = JSON.parse(event.data);
 		if (msg.type === "InitGameSuccess") {
 			await gameInit(pongScene, player, msg);
 		}
 	}
 }
+
 async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameSuccess) : Promise<void> {
 	pongScene.score = [0,0];
 	pongScene.updateScore(pongScene.score);
 	pongScene.side = opts.playerSide;
 	pongScene.id = opts.gameId;
-	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType);
+	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType, socket);
 	console.log(`Game initiated! Scene: [${pongScene.id}], player: [${player.nick}], input: ${window.onkeydown}`);
 
-	pongScene.socket.onmessage = function(event: MessageEvent) {
+	socket.onmessage = function(event: MessageEvent) {
 		try {
 			const message: WSMessage = JSON.parse(event.data);
 
@@ -92,7 +95,7 @@ async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameS
 					break;
 				case "GameOver":
 					window.onkeydown = null;
-					setGameButtons(gameButtons, pongScene, player);
+					setGameButtons(gameButtons, socket, player);
 					setGameInitListener(pongScene, player);
 					break;
 			}
@@ -103,13 +106,13 @@ async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameS
 	};
 }
 
-function assignInputHandler(pongScene: PongFrontScene, gameType: GameType) {
+function assignInputHandler(pongScene: PongFrontScene, gameType: GameType, socket: WebSocket) {
 	switch (gameType) {
 		case "Local game":
-			return localInputHandler(pongScene);
+			return localInputHandler(pongScene, socket);
 		case "Remote game":
-			return remoteInputHandler(pongScene);
+			return remoteInputHandler(pongScene, socket);
 		case "Versus AI":
-			return aiInputHandler(pongScene);
+			return aiInputHandler(pongScene, socket);
 	}
 }

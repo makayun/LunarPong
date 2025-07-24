@@ -17,7 +17,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 	const { engine } = options;
 
 	server.get("/ws-game", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
-		console.log("WebSocket game client connected");
+		server.log.info("[GAME] WebSocket connected");
 
 		socket.on("message", (message: string) => {
 			try {
@@ -47,6 +47,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 		});
 
 		socket.on("close", () => {
+			server.log.info("[GAME] WebSocket disconnected");
 			engine.removePlayerBySocket(socket);
 		});
 	});
