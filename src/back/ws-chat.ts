@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { WebSocket } from "@fastify/websocket";
 import type { FastifyRequest } from "fastify";
 import type { ChatMessage, User, GUID } from "../defines/types";
+import ActiveService from "./active";
 
 const users: Map<GUID, User> = new Map();
 
@@ -22,10 +23,13 @@ function sendToUser(userId: GUID, message: any) {
   }
 }
 
-export async function wsChatPlugin(server: FastifyInstance) {
+export interface WsChatPluginOptions { users: User[]; activeService: ActiveService; };
+
+export async function wsChatPlugin(server: FastifyInstance, options: WsChatPluginOptions) {
   server.get("/ws-chat", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
     let currentUser: User | null = null;
-
+	socket.isAlive = true;
+	options.activeService.add(-1, socket, socket); // Временная заглушка для активной сессии
     socket.on("message", (data: string) => {
       try {
         const msg: ChatMessage = JSON.parse(data.toString());
@@ -163,5 +167,10 @@ export async function wsChatPlugin(server: FastifyInstance) {
         broadcastUserList();
       }
     });
+
+	socket.on("pong", () => {
+		console.debug("Received pong from client");
+		socket.isAlive = true;
+	});
   });
 }

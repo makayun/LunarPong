@@ -1,6 +1,7 @@
 import type { FastifyInstance }	from "fastify";
 import type { FastifyRequest }	from "fastify";
 import type { WebSocket }		from "@fastify/websocket";
+import ActiveService			from "./active";
 
 // import { startGameLog } from "./db";
 import { PongBackEngine }	from "../scenes/PongBackScene";
@@ -11,7 +12,7 @@ import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, Gam
 import { AIOpponent } from "./aiOpponent";
 import { error } from "node:console";
 
-export interface WsGamePluginOptions { engine: PongBackEngine; users: User[] };
+export interface WsGamePluginOptions { engine: PongBackEngine; users: User[]; activeService: ActiveService; };
 
 export async function wsGamePlugin(server: FastifyInstance, options: WsGamePluginOptions) {
 	const { engine } = options;
@@ -48,6 +49,11 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 
 		socket.on("close", () => {
 			engine.removePlayerBySocket(socket);
+		});
+
+		socket.on("pong", () => {
+			console.debug("Received pong from client");
+			socket.isAlive = true;
 		});
 	});
 }
