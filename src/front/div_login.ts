@@ -31,7 +31,7 @@ function enableDiv(divName: string) {
 		return;
 	}
 	const elements = container.querySelectorAll("input, button, select, textarea");
-	
+
 	elements?.forEach(el => {
 		if ('disabled' in el) {
 			(el as HTMLInputElement).disabled = false;

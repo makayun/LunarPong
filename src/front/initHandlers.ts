@@ -11,7 +11,7 @@ export function initHandlers() {
 			console.debug("[LOGIN] Enter key pressed");
 			login();
 		}
-		}); 
+		});
 	}
 
 	const loginBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="login"]`);
@@ -31,7 +31,7 @@ export function initHandlers() {
 			console.debug("[2FA] Enter key pressed");
 			twofa();
 		}
-		}); 
+		});
 	}
 
 	const continueBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="2fa_continue"]`);
@@ -49,7 +49,7 @@ export function initHandlers() {
 			navigateTo(ViewState.REGISTER);
 		}
 	)};
-	
+
 	const registerBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="register"]`);
 	if (registerBtn) {
 		registerBtn.addEventListener("click", () => {
@@ -58,11 +58,16 @@ export function initHandlers() {
 		}
 	)};
 
+	const logoffEvent = new Event("pongLogoff");
+
 	const logoffBtn = document.querySelector<HTMLElement>(`.btn_click[data-btn-id="logoff"]`);
 	if (logoffBtn) {
 		logoffBtn.addEventListener("click", async () => {
 			console.debug("[LOGOFF] Button clicked:");
-			logoff();
+			window.dispatchEvent(logoffEvent);
+			// logoff();
 		}
 	)};
+
+	window.addEventListener("pongLogoff", () => { logoff() });
 }
