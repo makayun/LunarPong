@@ -15,25 +15,20 @@ import { HighlightLayer, Mesh } from "@babylonjs/core";
 
 
 import { PongBaseScene } from "./PongBaseScene";
-import type { GUID, MeshName, PlayerSide } from "../defines/types";
+import type { GUID, MeshName, MeshPositions, PlayerSide } from "../defines/types";
 
-// import { ReflectionProbe } from "@babylonjs/core/Probes";
 import { PBRMaterial } from "@babylonjs/core/Materials/PBR";
-// import { Constants } from "@babylonjs/core/Engines";
-// import { Texture } from "@babylonjs/core/Materials/Textures/texture";
-// import { StandardMaterial } from "@babylonjs/core/Materials/standardMaterial";
-// import { GridMaterial } from "@babylonjs/materials";
 import { Color3 } from "@babylonjs/core/Maths";
-// const grassTextureUrl: string = "/assets/grass.jpg";
+
 
 import { GLOW_MAX, GLOW_MIN } from "../defines/constants";
-import { AIOpponent } from "../back/aiOpponent";
+// import { AIOpponent } from "../back/aiOpponent";
 
 export class PongFrontScene extends PongBaseScene {
 	public id?: GUID;
-	aiOpponent?: AIOpponent;
+	// aiOpponent?: AIOpponent;
 	public side?: PlayerSide;
-	public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-game`);
+	// public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-game`);
 
 	private hl = new HighlightLayer("hl", this);
 
@@ -90,6 +85,12 @@ export class PongFrontScene extends PongBaseScene {
 			if (mesh.name as MeshName !== "ground" && this.hl.hasMesh(mesh))
 				this.hl.setEffectIntensity(mesh, GLOW_MIN);
 		})
+	}
+
+	applyMeshPositions (newPositions: MeshPositions) : void {
+		this.pongMeshes.ball.position = newPositions.ball;
+		this.pongMeshes.paddleLeft.position = newPositions.paddleLeft;
+		this.pongMeshes.paddleRight.position = newPositions.paddleRight;
 	}
 
 	sendPlayerInput(_socket: WebSocket) {};
