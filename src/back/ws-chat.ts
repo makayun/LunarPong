@@ -54,6 +54,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
             };
 
             users.set(currentUser.id, currentUser);
+            server.log.info(`[CHAT] Number of active users: ${users.size}`);
             socket.send(JSON.stringify({ type: 'system', content: `Welcome, ✨${currentUser.nick}✨` }));
             broadcastUserList();
             socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
@@ -162,6 +163,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
       if (currentUser) {
         server.log.info(`[CHAT] WebSocket disconnected, user: ${currentUser.nick}`);
         users.delete(currentUser.id);
+        server.log.info(`[CHAT] Number of active users: ${users.size}`);
         broadcastUserList();
       }
     });
