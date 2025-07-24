@@ -13,7 +13,7 @@ import type { FastifyListenOptions }	from "fastify";
 
 import cookie							from '@fastify/cookie'
 
-import ActiveService			from "./active";
+import ActiveService			from "./active_service";
 import { wsGamePlugin }			from "./ws-game";
 import { wsChatPlugin }			from "./ws-chat"; // ✅ импорт чата
 import { PongBackEngine }		from "../scenes/PongBackScene";
@@ -58,7 +58,7 @@ async function main() {
 	server.register(websocket);
 
 	const activeService = new ActiveService();
-
+	activeService.loop();
 	await server.register(wsGamePlugin, { engine, users, activeService });
 	await server.register(wsChatPlugin, { users, activeService });
 

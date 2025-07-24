@@ -2,7 +2,8 @@ import type { FastifyInstance } from "fastify";
 import type { WebSocket } from "@fastify/websocket";
 import type { FastifyRequest } from "fastify";
 import type { ChatMessage, User } from "../defines/types";
-import ActiveService from "./active";
+import ActiveService from "./active_service";
+// import UserSession from "./user_session";
 
 const users: Map<number, User> = new Map();
 
@@ -30,13 +31,24 @@ export async function wsChatPlugin(server: FastifyInstance, options: WsChatPlugi
     server.log.info("[CHAT] WebSocket connected");
     let currentUser: User | null = null;
 	socket.isAlive = true;
-	options.activeService.add(-1, socket, socket); // Временная заглушка для активной сессии
     socket.on("message", (data: string) => {
       try {
         const msg: ChatMessage = JSON.parse(data.toString());
 
         switch (msg.type) {
-            case 'register': {
+			case "register": {
+				console.debug("Registering user in chat:", msg.user.id);
+				const userSessionIDX: number = options.activeService.getSessionIDX(msg.user.id)
+				console.debug(`User session index for ${msg.user.id} (socket_c):`, userSessionIDX);
+				if (userSessionIDX === -1) {
+					options.activeService.add(msg.user.id, undefined, socket);
+					console.log(`User ${msg.user.id} registered in ActiveService.`);
+				} else {
+					options.activeService.getSession(userSessionIDX)?.setSocketC(socket);
+					console.log(`User ${msg.user.id} is already active in ActiveService, just add the chat socket.`);
+				}
+			// 	break;
+            // case 'register': {
                 const rawUser = msg.user;
                 let nickname = (rawUser.nick && rawUser.nick.trim());
                 const isNickTaken = Array.from(users.values()).some(u => u.nick === nickname);
@@ -173,7 +185,7 @@ export async function wsChatPlugin(server: FastifyInstance, options: WsChatPlugi
     });
 
 	socket.on("pong", () => {
-		console.debug("Received pong from client");
+		console.debug("Received pong from client (socket_c)");
 		socket.isAlive = true;
 	});
   });

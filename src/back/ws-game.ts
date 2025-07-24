@@ -1,7 +1,8 @@
 import type { FastifyInstance }	from "fastify";
 import type { FastifyRequest }	from "fastify";
 import type { WebSocket }		from "@fastify/websocket";
-import ActiveService			from "./active";
+import ActiveService			from "./active_service";
+// import UserSession				from "./user_session";
 
 // import { startGameLog } from "./db";
 import { PongBackEngine }	from "../scenes/PongBackScene";
@@ -25,6 +26,18 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 				const msg: WSMessage = JSON.parse(message);
 
 				switch (msg.type) {
+				case "register":
+					console.debug("Registering user in game:", msg.user.id);
+					const userSessionIDX: number = options.activeService.getSessionIDX(msg.user.id)
+					console.debug(`User session index for ${msg.user.id} (socket_g):`, userSessionIDX);
+					if (userSessionIDX === -1) {
+						options.activeService.add(msg.user.id, socket);
+						console.log(`User ${msg.user.id} registered in ActiveService.`);
+					} else {
+						options.activeService.getSession(userSessionIDX)?.setSocketG(socket);
+						console.log(`User ${msg.user.id} is already active in ActiveService, just add the game socket.`);
+					}
+					break;
 				case "InitGameRequest":
 					processInitGameRequest(engine, socket, msg as InitGameRequest);
 					break;
@@ -53,7 +66,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 		});
 
 		socket.on("pong", () => {
-			console.debug("Received pong from client");
+			console.debug("Received pong from client (socket_g)");
 			socket.isAlive = true;
 		});
 	});

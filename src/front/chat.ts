@@ -8,7 +8,7 @@ var		socket: WebSocket;
 
 window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
   const inId = e.detail?.id;
-	const inNick = e.detail?.name;
+  const inNick = e.detail?.name;
   if (inId && inNick) {
     const user = {
       id: inId,
@@ -20,7 +20,8 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
     window.addEventListener("pongLogoff", () => { socket.close(); })
 
     socket.addEventListener('open', () => {
-      socket.send(JSON.stringify({ type: 'register', user }));
+		console.debug("WebSocket (socket_c) connection established.");
+    	socket.send(JSON.stringify({ type: 'register', user }));
     });
 
     socket.addEventListener('message', (event) => {
