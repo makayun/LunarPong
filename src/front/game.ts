@@ -15,24 +15,17 @@ var		meshPositions: MeshPositions;
 
 disableGameButtons(gameButtons);
 
-window.addEventListener("resize", function () {
-	engine.resize();
-	pongScene.camera.zoomOn([
-		pongScene.pongMeshes.edgeBottom,
-		pongScene.pongMeshes.edgeLeft,
-		pongScene.pongMeshes.edgeRight
-	]);
-});
-window.addEventListener("resize", function () {
-	engine.resize();
-	pongScene.camera.zoomOn([
-		pongScene.pongMeshes.edgeBottom,
-		pongScene.pongMeshes.edgeLeft,
-		pongScene.pongMeshes.edgeRight
-	]);
-});
+
 
 pongScene.executeWhenReady(() => {
+	window.addEventListener("resize", function () {
+		engine.resize();
+		pongScene.camera.zoomOn([
+			pongScene.pongMeshes.edgeBottom,
+			pongScene.pongMeshes.edgeLeft,
+			pongScene.pongMeshes.edgeRight
+		]);
+	});
 	meshPositions = {
 		type: "MeshPositions",
 		ball: pongScene.pongMeshes.ball.position,
