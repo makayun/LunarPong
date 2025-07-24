@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
 import type { WebSocket } from "@fastify/websocket";
 import type { FastifyRequest } from "fastify";
-import type { ChatMessage, User, GUID } from "../defines/types";
+import type { ChatMessage, User } from "../defines/types";
 import ActiveService from "./active";
 
-const users: Map<GUID, User> = new Map();
+const users: Map<number, User> = new Map();
 
 function broadcastUserList() {
   const payload = JSON.stringify({
@@ -16,7 +16,7 @@ function broadcastUserList() {
   }
 }
 
-function sendToUser(userId: GUID, message: any) {
+function sendToUser(userId: number, message: any) {
   const user = users.get(userId);
   if (user?.chatSocket) {
     user.chatSocket.send(JSON.stringify(message));
@@ -27,6 +27,7 @@ export interface WsChatPluginOptions { users: User[]; activeService: ActiveServi
 
 export async function wsChatPlugin(server: FastifyInstance, options: WsChatPluginOptions) {
   server.get("/ws-chat", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
+    server.log.info("[CHAT] WebSocket connected");
     let currentUser: User | null = null;
 	socket.isAlive = true;
 	options.activeService.add(-1, socket, socket); // Временная заглушка для активной сессии
@@ -37,7 +38,7 @@ export async function wsChatPlugin(server: FastifyInstance, options: WsChatPlugi
         switch (msg.type) {
             case 'register': {
                 const rawUser = msg.user;
-                let nickname = (rawUser.nick && rawUser.nick.trim()) || `User-${rawUser.id.slice(0, 6)}`;
+                let nickname = (rawUser.nick && rawUser.nick.trim());
                 const isNickTaken = Array.from(users.values()).some(u => u.nick === nickname);
 
                   if (isNickTaken) {
@@ -53,10 +54,11 @@ export async function wsChatPlugin(server: FastifyInstance, options: WsChatPlugi
                 ...rawUser,
                 nick: nickname,
                 chatSocket: socket,
-                blocked: new Set<GUID>(),
+                blocked: new Set<number>(),
             };
 
             users.set(currentUser.id, currentUser);
+            server.log.info(`[CHAT] Number of active users: ${users.size}`);
             socket.send(JSON.stringify({ type: 'system', content: `Welcome, ✨${currentUser.nick}✨` }));
             broadcastUserList();
             socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
@@ -163,7 +165,9 @@ export async function wsChatPlugin(server: FastifyInstance, options: WsChatPlugi
 
     socket.on("close", () => {
       if (currentUser) {
+        server.log.info(`[CHAT] WebSocket disconnected, user: ${currentUser.nick}`);
         users.delete(currentUser.id);
+        server.log.info(`[CHAT] Number of active users: ${users.size}`);
         broadcastUserList();
       }
     });

@@ -71,7 +71,7 @@ export function set_view(state: ViewState) {
 
 	// Находим и отображаем целевой контейнер по data-атрибуту
 	const target = document.querySelector<HTMLElement>(`.page-view[data-view-id="${state}"]`);
-	
+
 	if (target) {
 		target.classList.remove("hidden");
 		target.classList.add("flex");
@@ -102,6 +102,7 @@ export function set_view(state: ViewState) {
 			setDivQRcode();
 			break;
 		case ViewState.GAME:
+			window.dispatchEvent(new CustomEvent("pongLogin", {detail: user_f}))
 			break;
 	}
 	updateI18nContent();

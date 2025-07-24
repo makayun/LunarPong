@@ -20,7 +20,7 @@ import { initHandlers } from "./initHandlers";
 import { isViewState, set_view, ViewState, navigateTo} from "./state"
 import type { User_f } from "../defines/types";
 import { jwtDecode } from 'jwt-decode';
-import { setUser, unsetUser } from "../helpers/helpers";
+// import { setUser, unsetUser } from "../helpers/helpers";
 import i18next from 'i18next';
 
 export let qrcode: string = "";
@@ -215,7 +215,7 @@ export async function getUserData(tokenName: string) {
 			}
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
-			setUser(user_f);
+			// setUser(user_f);
 			console.log("[USER] Get user data:", data);
 		}  catch (err) {
 			console.error("[USER] Get user data:", err);
@@ -254,7 +254,7 @@ export async function twofa() {
 			token.value = "";
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
-			setUser(user_f);
+			// setUser(user_f);
 			localStorage.removeItem("twofaToken");
 			localStorage.setItem("accessToken", data.accessToken);
 			localStorage.setItem("refreshToken", data.refreshToken);
@@ -275,7 +275,7 @@ export async function logoff() {
 	localStorage.removeItem("refreshToken");
 	user_f.id = -1;
 	user_f.name = "";
-	unsetUser();
+	// unsetUser();
 	navigateTo(ViewState.LOGIN);
 }
 
