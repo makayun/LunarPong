@@ -36,6 +36,7 @@ export default class ActiveService {
 
 	ping(userSession: UserSession) {
 		try {
+			// console.debug(`[PING]`, this.userSession);
 			if (!userSession.socket_g || !userSession.socket_c) {
 				console.debug(`Session ${userSession.user} has no sockets or just one..`);
 				// console.debug(`Session ${session.user} has no sockets, removing...`);
@@ -47,6 +48,9 @@ export default class ActiveService {
 				userSession.socket_g.terminate();
 				userSession.socket_c.terminate();
 				this.userSession = this.userSession.filter(s => s.user !== userSession.user); // remove dead session
+				// const idx = this.userSession.findIndex(s => s.user !== userSession.user);
+				// this.userSession.splice(idx, 1); // remove dead session
+				// console.debug(`Session ${userSession.user}, idx: ${idx}, removed`);
 				return;
 			}
 
@@ -65,9 +69,14 @@ export default class ActiveService {
 			}
 		} catch (err: any) {
 			console.error(`Failed to ping session ${userSession.user}:`, err);
-			if (userSession.socket_g) userSession.socket_g.terminate();
-			if (userSession.socket_c) userSession.socket_c.terminate();
-			this.userSession = this.userSession.filter(s => s.user !== userSession.user);
+			if (userSession) {
+				if (userSession.socket_g) userSession.socket_g.terminate();
+				if (userSession.socket_c) userSession.socket_c.terminate();
+				this.userSession = this.userSession.filter(s => s.user !== userSession.user);
+			}
+			// const idx = this.userSession.findIndex(s => s.user !== userSession.user);
+			// this.userSession.splice(idx, 1); // remove dead session
+			// console.debug(`Session ${userSession.user}, idx: ${idx}, removed`);
 		}
 	}
 
@@ -75,7 +84,9 @@ export default class ActiveService {
 	async loop () {
 		while (true) {
 			console.debug("Checking sessions...");
-        	this.userSession.forEach(this.ping); 
+			// const copy_userSession: UserSession[] = this.userSession;
+        	// copy_userSession.forEach(this.ping);
+			this.userSession.forEach(this.ping.bind(this));
         	await new Promise((resolve) => setTimeout(resolve, 5000)); // sleep 5s
 		}
 	}
