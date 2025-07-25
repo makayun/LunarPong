@@ -36,7 +36,7 @@ export const login = async (
 	console.log("[login] request.body = ", request.body);
 	const { username, password } = request.body;
 	try {
-		const user = getDB().prepare('SELECT * FROM users WHERE username = ?').get(username) as getUser | undefined;
+		const user = getDB().prepare('SELECT * FROM lusers WHERE username = ?').get(username) as getUser | undefined;
 		if (!user || !checkPassword(password, user.password)) {
 			return reply.status(401).send({ error: 'Invalid credentials' });
 		}
