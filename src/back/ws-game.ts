@@ -8,7 +8,7 @@ import { PongBackScene }	from "../scenes/PongBackScene";
 import { PADDLE_STEP }				from "../defines/constants";
 import { animatePaddleToX } from "./paddleMovement";
 import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType, GUID } from "../defines/types";
-// import { AIOpponent } from "./aiOpponent";
+import { AIOpponent } from "./aiOpponent";
 import { error } from "node:console";
 
 export interface WsGamePluginOptions { engine: PongBackEngine; users: User[] };
@@ -29,7 +29,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 					break;
 				case "PlayerInput":
 					let scene = engine.scenes.find(scene => scene.id === msg.gameId);
-					if (scene) {
+				if (scene) {
 						const paddle = msg.side === "left" ? scene.pongMeshes.paddleLeft : scene.pongMeshes.paddleRight;
 						scene.stopAnimation(paddle);
 						animatePaddleToX(paddle, paddle.position.z + PADDLE_STEP * msg.direction);
@@ -76,8 +76,8 @@ async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket,
 			return await createLocalGame(engine, msg.user, socket);
 		case "Remote game":
 			return await createRemoteGame(engine, msg.user, socket);
-		// case "Versus AI":
-		// 	return await createAiGame(engine, msg.user, socket);
+		case "Versus AI":
+			return await createAiGame(engine, msg.user, socket);
 	}
 }
 
@@ -101,13 +101,13 @@ async function createRemoteGame(engine: PongBackEngine, newPlayer: User, socket:
 	sendInitGameSuccess("Remote game", game.id, assignSide(game), socket);
 }
 
-// async function createAiGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
-// 	const game = new PongBackScene(engine);
-// 	addPlayerToGame(game, newPlayer, socket);
-	// addAiOpponent(game);
-// 	await game.enablePongPhysics();
-// 	sendInitGameSuccess("Versus AI", game.id, "left", socket);
-// }
+async function createAiGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
+	const game = new PongBackScene(engine);
+	addPlayerToGame(game, newPlayer, socket);
+	addAiOpponent(game);
+	await game.enablePongPhysics();
+	sendInitGameSuccess("Versus AI", game.id, "left", socket);
+}
 
 function addPlayerToGame(game: PongBackScene, newPlayer: User, socket: WebSocket) : void {
 	if (!game.players.find(player => player.id === newPlayer.id)) {
@@ -125,10 +125,10 @@ function assignSide(game: PongBackScene) : PlayerSide {
 		throw error("Invalid number of players!");
 }
 
-// function addAiOpponent(game: PongBackScene) : void {
-// 	if (!game.aiOpponent)
-// 		game.aiOpponent = new AIOpponent(game, "right");
-// }
+function addAiOpponent(game: PongBackScene) : void {
+	if (!game.aiOpponent)
+		game.aiOpponent = new AIOpponent(game/*, "right"*/);
+}
 
 function sendInitGameSuccess(inGameType: GameType, inGameId: GUID, inPlayerSide: PlayerSide, socket: WebSocket) {
 	const response : InitGameSuccess = {

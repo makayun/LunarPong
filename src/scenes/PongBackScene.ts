@@ -2,18 +2,21 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
 import type { WebSocket } from "@fastify/websocket";
 import { PongBaseScene } from "./PongBaseScene";
+import { PADDLE_STEP }				from "../defines/constants";
 import { generateGuid } from "../helpers/helpers";
 import type { User, Game, GUID, MeshPositions, GameOver } from "../defines/types";
-// import { AIOpponent } from "../back/aiOpponent";
+import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 import { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";
+import { animatePaddleToX } from "../back/paddleMovement";
+
 // import { endGameLog } from "../back/db";
 
 export class PongBackScene extends PongBaseScene implements Game {
     public id: GUID = generateGuid();
     public players: User[] = [];
     public startTime = new Date();
-    // public aiOpponent?: AIOpponent;
+    public aiOpponent?: AIOpponent;
     private ballVelocity: Vector3 = new Vector3(10, 0, -2);
     private ballSpeed: number = 18;
     private isFalling: boolean = false;
@@ -218,6 +221,19 @@ export function startRenderLoop(engine: PongBackEngine) {
                 paddleLeft: scene.pongMeshes.paddleLeft.position,
                 paddleRight: scene.pongMeshes.paddleRight.position
             };
+
+            if(scene.aiOpponent) {
+                const aiInput = scene.aiOpponent.update(posMessage, Date.now());
+				if (aiInput) {
+                    const paddle = scene.pongMeshes.paddleRight;
+		            scene.stopAnimation(paddle);
+		            animatePaddleToX(paddle, paddle.position.z + PADDLE_STEP * aiInput.direction);
+
+					scene.players.forEach(player => {
+						player.gameSocket?.send(JSON.stringify(aiInput));
+					});
+				}
+            }
 
             scene.players.forEach(player => {
                 player.gameSocket?.send(JSON.stringify(posMessage));
