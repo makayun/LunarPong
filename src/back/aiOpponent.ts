@@ -105,7 +105,7 @@ export class AIOpponent {
       console.log(
         `[${this.lastUpdate}] Ball close or infinite time, using current ball Y: ${ball.y}`
       );
-      return ball.y; // z or y????
+      return ball.z;
     }
 
     /* Расчёт Y с учётом возможных отражений от верхнего и нижнего края */
