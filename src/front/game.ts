@@ -81,6 +81,7 @@ async function gameInit(pongScene: PongFrontScene, player: User | null, opts: In
 					pongScene.animateHighlightIntensity(message.collidedWith);
 					break;
 				case "GameOver":
+					showSuccessMessage({ type: 'LocalWon', winner: player.nick});
 					window.onkeydown = null;
 					setGameButtons(gameButtons, pongScene, player);
 					setGameInitListener(pongScene, player);
@@ -97,8 +98,10 @@ async function gameInit(pongScene: PongFrontScene, player: User | null, opts: In
 function assignInputHandler(pongScene: PongFrontScene, gameType: GameType) {
 	switch (gameType) {
 		case "Local game":
+			showSuccessMessage({ type: 'LocalCreated', playerCount: 2 });
 			return localInputHandler(pongScene);
 		case "Remote game":
+			showSuccessMessage({ type: 'RemoteStarted' });
 			return remoteInputHandler(pongScene);
 		case "Versus AI":
 			return aiInputHandler(pongScene);
@@ -119,6 +122,56 @@ function setGameInitListener(pongScene:  PongFrontScene, player: User) {
 			await gameInit(pongScene, player, msg);
 		}
 	}
+}
+
+function showSuccessMessage(data: { name?: string; playerCount?: number; type: 'LocalCreated' | 'LocalStarted' | 'RemoteStarted' | 'LocalWon' | "RemoteWon"; winner?: string }): void {
+  const successDiv = document.createElement('div');
+  successDiv.className = `
+  fixed top-5 right-5 z-[2000]
+  text-white font-semibold font-mono
+  px-6 py-4 rounded-2xl
+  border-2 border-[--color-blue]
+  backdrop-blur-md
+  bg-[rgba(0,0,0,0.9)]
+  shadow-[0_0_6px_var(--color-white)]
+  transform translate-x-full
+  transition-transform duration-300 ease-out
+  pointer-events-none
+`;
+
+  let message: string = '';
+  switch (data.type) {
+	case 'LocalCreated':
+	  message = `Local game created!`;
+	  break;
+	case 'RemoteStarted':
+	  message = 'Remote game created. Now go play or wait until someone will connect!';
+	  break;
+	case 'LocalWon':
+	  message = `Gongratulations with finishing this great game!`;
+	  break;
+	case 'RemoteWon':
+	  message = `${data.winner} won the game!`;
+	  break;
+  }
+  
+  successDiv.textContent = message;
+  
+  document.body.appendChild(successDiv);
+  
+  setTimeout(() => {
+    successDiv.classList.remove('translate-x-full');
+    successDiv.classList.add('translate-x-0');
+  }, 100);
+  
+  setTimeout(() => {
+    successDiv.classList.add('translate-x-full');
+    setTimeout(() => {
+      if (successDiv.parentNode) {
+        successDiv.parentNode.removeChild(successDiv);
+      }
+    }, 300);
+  }, 3000);
 }
 
 // gameMain();
