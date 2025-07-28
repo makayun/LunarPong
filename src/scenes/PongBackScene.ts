@@ -48,7 +48,7 @@ export class PongBackScene extends PongBaseScene implements Game {
     }
 
     enablePongPhysics(): void {
-        this.pongMeshes.ball.position = new Vector3(0, 25, 0); // 💥средняя цифра - высота на старте. меняем как хотим)
+        this.pongMeshes.ball.position = new Vector3(0, 25, 0);
         this.isFalling = true;
         this.state = "running"; // state
         this.sendGameState();
@@ -61,7 +61,7 @@ export class PongBackScene extends PongBaseScene implements Game {
         const deltaTime = this.getEngine().getDeltaTime() / 1000;
 
         if (this.isFalling) {
-            const gravity = -9.81; // 💥можно поиграться
+            const gravity = -9.81;
             const fallSpeed = gravity * deltaTime;
             this.pongMeshes.ball.position.y += fallSpeed;
 
@@ -84,8 +84,8 @@ export class PongBackScene extends PongBaseScene implements Game {
         this.pongMeshes.ball.position.addInPlace(moveDirection.scale(moveDistance));
 
         const x = this.pongMeshes.ball.position.x;
-        const fieldWidth = 12; // если поиграться этими циферками, то можно 😸
-        const waveAmplitude = 2; // достичь идеальных подскакиваний мячика 😸
+        const fieldWidth = 7.5;
+        const waveAmplitude = 2;
         const waveFrequency = Math.PI / fieldWidth;
         this.pongMeshes.ball.position.y = waveAmplitude * Math.abs(Math.sin(x * waveFrequency));
 
@@ -183,7 +183,7 @@ export class PongBackScene extends PongBaseScene implements Game {
             return;
         }
 
-        this.pongMeshes.ball.position = new Vector3(0, 15, 0); // 💥 это выоста после гола
+        this.pongMeshes.ball.position = new Vector3(0, 15, 0);
         this.isFalling = true;
     }
 }

@@ -14,65 +14,55 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 // import { generateGuid } from '../helpers/helpers';
 
 interface AIOpponentConfig {
-  paddleSpeed: number; // Скорость движения ракетки (единиц в секунду)
-  updateInterval: number; // Интервал обновления (в мс, 1000 = 1 сек)
+  paddleSpeed: number;
+  updateInterval: number;
 }
 
 export class AIOpponent {
-  //private user = Math.random().toString(36).substring(2, 15);
-  private game: Game; // Текущая игра
+  private game: Game;
   private config: AIOpponentConfig;
-  private lastUpdate: number = 0; // Время последнего обновления
-  private ballVelocity: Vector3 = new Vector3(0, 0, 0); // Скорость мяча
-  private lastBallPosition: Vector3 | null = null; // Последняя позиция мяча
+  private lastUpdate: number = 0;
+  private ballVelocity: Vector3 = new Vector3(0, 0, 0);
+  private lastBallPosition: Vector3 | null = null;
 
   constructor(game: Game) {
-    //this.user;
     this.game = game;
     this.config = {
       paddleSpeed: PADDLE_STEP,
-      updateInterval: 100, // 👿 1000 !!!!!!!!!!!!!!!
+      updateInterval: 1000, // 👿 1000 !!!!!!!!!!!!!!!
     };
   }
 
   update(positions: MeshPositions, currentTime: number): PlayerInput | null {
     if (currentTime - this.lastUpdate < this.config.updateInterval) {
-      // console.log(`[${currentTime}] Update skipped: too early`);
-      return null; // Обновляем только раз в секунду
+      return null;
     }
     this.lastUpdate = currentTime;
 
     if (this.lastBallPosition) {
-      const deltaTime = this.config.updateInterval / 1000; // Время в секундах
+      const deltaTime = this.config.updateInterval / 1000;
       this.ballVelocity = positions.ball
         .subtract(this.lastBallPosition)
-        .scale(1 / deltaTime);
-      console.log(`[${currentTime}] Ball velocity: x=${this.ballVelocity.x}, y=${this.ballVelocity.y}`);
+        .scale(1.2 / deltaTime);
     } else {
       /* Для первого шага предполагаем, что мяч движется к AI */
       const paddleZ = positions.paddleRight.z;
       this.ballVelocity = new Vector3(5, 0, positions.ball.z - paddleZ);
-
-      console.log(`[${currentTime}] Initial ball velocity: x=${this.ballVelocity.x}, y=${this.ballVelocity.y}`);
     }
     this.lastBallPosition = positions.ball.clone();
 
     /* Предсказываем, где мяч пересечет линию ракетки */
-    const predictedZ = this.predictBallPosition(positions);
+    const predictedZ = this.oracleOfDelphi(positions);
     const paddleZ = positions.paddleRight.z;
-    console.log(`[${currentTime}] Predicted Z: ${predictedZ}`);
-    console.log(`[${currentTime}] Paddle Z: ${paddleZ}`);
 
     /* Логика принятия решения */
-    const threshold = 0.5; // Допустимое отклонение
+    // const threshold = 0.5; // Допустимое отклонение
+    const doorstep = Math.max(0.1, 0.3 / (1 + Math.abs(this.ballVelocity.z)));
 
     let direction: typeof UP | typeof DOWN | typeof STOP = STOP;
 
-    // if (predictedZ > paddleZ + threshold) direction = UP;
-    // else if (predictedZ < paddleZ - threshold) direction = DOWN;
-
-    if (predictedZ < paddleZ - threshold) direction = UP;
-    else if (predictedZ > paddleZ + threshold) direction = DOWN;
+    if (predictedZ < paddleZ - doorstep) direction = UP;
+    else if (predictedZ > paddleZ + doorstep) direction = DOWN;
 
     if (direction !== STOP) {
       return {
@@ -86,12 +76,9 @@ export class AIOpponent {
   }
     /* Предсказываем, где мяч пересечет линию ракетки */
 
-  private predictBallPosition(positions: MeshPositions): number {
+  private oracleOfDelphi(positions: MeshPositions): number {
   const ball = positions.ball;
   const paddleX = positions.paddleRight.x;
-
-  console.log(`[${this.lastUpdate}] Ball position: x=${ball.x}, y=${ball.y}`);
-  console.log(`[${this.lastUpdate}] Paddle X: ${paddleX}, Velocity X: ${this.ballVelocity.x}`);
 
   /* Если мяч движется в сторону AI */
   if (this.ballVelocity.x > 0) {
@@ -99,12 +86,8 @@ export class AIOpponent {
     const timeToPaddle = this.ballVelocity.x !== 0
         ? distanceToPaddle / /*Math.abs(*/this.ballVelocity.x/*)*/
         : Infinity;
-    console.log(`[${this.lastUpdate}] Time to paddle: ${timeToPaddle}`);
 
     if (timeToPaddle === Infinity || timeToPaddle <= 1) {
-      console.log(
-        `[${this.lastUpdate}] Ball close or infinite time, using current ball Y: ${ball.y}`
-      );
       return ball.z;
     }
 
@@ -131,11 +114,8 @@ export class AIOpponent {
     if (predictedZ > PADDLE_MAX_Z) predictedZ = PADDLE_MAX_Z;
     if (predictedZ < PADDLE_MIN_Z) predictedZ = PADDLE_MIN_Z;
 
-    console.log(`[${this.lastUpdate}] Predicted Z (clamped): ${predictedZ}`);
     return predictedZ;
   }
-
-  console.log(`[${this.lastUpdate}] Ball moving away, returning paddle`);
   return positions.paddleRight.z;
 }
 
