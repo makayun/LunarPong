@@ -208,8 +208,10 @@ export class PongBackEngine extends NullEngine {
 
 export function startRenderLoop(engine: PongBackEngine) {
     engine.runRenderLoop(() => {
-        engine.scenes.forEach(scene => {
-            if (scene.state !== "running") return; // state
+        // Copy the scenes array to avoid mutation issues
+        const scenes = [...engine.scenes];
+        for (const scene of scenes) {
+            if (scene.state !== "running") continue;
             scene.render();
 
             const posMessage: MeshPositions = {
@@ -222,8 +224,7 @@ export function startRenderLoop(engine: PongBackEngine) {
             scene.players.forEach(player => {
                 player.gameSocket?.send(JSON.stringify(posMessage));
             });
-        });
+        }
         engine.removeEmptyScenes();
-
     });
 }
