@@ -20,7 +20,7 @@ const TrnmntSrv = new TournamentService();
 export interface WsGamePluginOptions { engine: PongBackEngine; users: User[]; };
 
 export async function wsGamePlugin(server: FastifyInstance, options: WsGamePluginOptions) {
-	const { engine } = options;
+	const { engine, users } = options;
 
 	server.get("/ws-game", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
 		server.log.info("[GAME] WebSocket connected");
@@ -43,7 +43,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 				// 	}
 				// 	break;
 				case "InitGameRequest":
-					processInitGameRequest(engine, socket, msg as InitGameRequest);
+					processInitGameRequest(engine, socket, msg as InitGameRequest, users);
 					break;
 				case "PlayerInput":
 					let scene = engine.scenes.find(scene => scene.id === msg.gameId);
@@ -76,11 +76,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 	});
 }
 
-async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: InitGameRequest): Promise<void> {
-	// *Наташа: Старт логирования игры
-    // const logId = await startGameLog(msg.user.id, msg.opponent.id);
-    // (можно передать logId в сцену)
-
+async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: InitGameRequest, users: Map<number, User>): Promise<void> {
 	console.log("Initializing game for player:", [msg.user.id], ", type : ", msg.gameType);
 
 	engine.scenes.forEach(
@@ -93,6 +89,13 @@ async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket,
 			}
 		)
 	)
+
+	var user = users.get(msg.user.id);
+	if (!user) {
+		user = msg.user;
+		users.set(user.id, user);
+	}
+	user.gameSocket = socket;
 
 	switch (msg.gameType) {
 		case "Local game":

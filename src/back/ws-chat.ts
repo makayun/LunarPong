@@ -2,10 +2,10 @@ import type { FastifyInstance } from "fastify";
 import type { WebSocket } from "@fastify/websocket";
 import type { FastifyRequest } from "fastify";
 import type { ChatMessage, User } from "../defines/types";
-// import ActiveService from "./active_service";
-// import UserSession from "./user_session";
 
-const users: Map<number, User> = new Map();
+var users: Map<number, User>;
+
+export interface WsChatPluginOptions { users: Map<number, User> };
 
 function broadcastUserList() {
   const payload = JSON.stringify({
@@ -24,10 +24,9 @@ function sendToUser(userId: number, message: any) {
   }
 }
 
-// export interface WsChatPluginOptions { users: User[]; activeService: ActiveService; };
+export async function wsChatPlugin(server: FastifyInstance, options: WsChatPluginOptions) {
+  users = options.users;
 
-// export async function wsChatPlugin(server: FastifyInstance, options: WsChatPluginOptions) {
-export async function wsChatPlugin(server: FastifyInstance) {
   server.get("/ws-chat", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
     server.log.info("[CHAT] WebSocket connected");
     let currentUser: User | null = null;
@@ -68,15 +67,15 @@ export async function wsChatPlugin(server: FastifyInstance) {
                 nick: nickname,
                 chatSocket: socket,
                 blocked: new Set<number>(),
-            };
+                };
 
-            users.set(currentUser.id, currentUser);
-            server.log.info(`[CHAT] Number of active users: ${users.size}`);
-            socket.send(JSON.stringify({ type: 'system', content: `Welcome, ✨${currentUser.nick}✨` }));
-            broadcastUserList();
-            socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
-            break;
-          }
+                users.set(currentUser.id, currentUser);
+                server.log.info(`[CHAT] Number of active users: ${users.size}`);
+                socket.send(JSON.stringify({ type: 'system', content: `Welcome, ✨${currentUser.nick}✨` }));
+                broadcastUserList();
+                socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
+                break;
+              }
 
           case 'message': {
             if (!currentUser) return;

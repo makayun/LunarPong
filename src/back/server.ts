@@ -29,7 +29,7 @@ async function main() {
 	await loadSecretsIntoEnv("env/jwt");
 	await loadSecretsIntoEnv("env/ft");
 
-	const users: User[] = [];
+	const users: Map<number, User> = new Map();
 	const appDir: string = fs.realpathSync(process.cwd());
 	const frontDir: string = "front";
 	const certPath = path.resolve(appDir, 'data/cert');
