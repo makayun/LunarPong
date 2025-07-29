@@ -15,7 +15,7 @@ import { HighlightLayer, Mesh } from "@babylonjs/core";
 
 
 import { PongBaseScene } from "./PongBaseScene";
-import type { GUID, MeshName, MeshPositions, PlayerSide } from "../defines/types";
+import type { MeshName, MeshPositions, PlayerSide } from "../defines/types";
 
 import { PBRMaterial } from "@babylonjs/core/Materials/PBR";
 import { Color3 } from "@babylonjs/core/Maths";
@@ -25,7 +25,7 @@ import { GLOW_MAX, GLOW_MIN } from "../defines/constants";
 // import { AIOpponent } from "../back/aiOpponent";
 
 export class PongFrontScene extends PongBaseScene {
-	public id?: GUID;
+	public id?: number;
 	// aiOpponent?: AIOpponent;
 	public side?: PlayerSide;
 	// public socket: WebSocket = new WebSocket(`wss://${window.location.host}/ws-game`);

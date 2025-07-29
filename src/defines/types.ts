@@ -29,7 +29,7 @@ export type MeshesDict = {
 	edgeBottom: Mesh
 };
 
-export type GUID = string & { __brand: "GUID" };
+// export type GUID = string & { __brand: "GUID" };
 
 export type User_f = {
 	id: number;
@@ -49,7 +49,7 @@ export type User = {
 export type PlayerSide = "left" | "right";
 
 export interface Game {
-	id: GUID;
+	id: number;
 	state: GameState;
 	players: User[];
 	type?: GameType;
@@ -65,7 +65,7 @@ export type GameState =
 
 export type PlayerInput = {
 	type: "PlayerInput",
-	gameId: GUID,
+	gameId: number,
 	side: PlayerSide,
 	direction: -1 | 0 | 1
 };
@@ -88,7 +88,7 @@ export type InitGameRequest = {
 export type InitGameSuccess = {
 	type: "InitGameSuccess",
 	gameType: GameType,
-	gameId: GUID,
+	gameId: number,
 	gameState: GameState,
 	playerSide: "left" | "right",
 }
@@ -115,7 +115,7 @@ export type ChatMessage =
   | { type: 'broadcast', content: string } // 🐬 dobavila etu stroku
   | { type: 'block', user: User }
   | { type: 'unblock', user: User }
-  | { type: 'invite', to: User; game?: GUID }
+  | { type: 'invite', to: User; game?: number }
   | { type: 'notify', content: string }
   | { type: 'profile', user: User };
 

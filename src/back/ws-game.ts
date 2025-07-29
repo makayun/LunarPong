@@ -1,19 +1,23 @@
 import type { FastifyInstance }	from "fastify";
 import type { FastifyRequest }	from "fastify";
 import type { WebSocket }		from "@fastify/websocket";
-import ActiveService			from "./active_service";
+// import ActiveService			from "./active_service";
 // import UserSession				from "./user_session";
+import { TournamentService }	from './sqlib'
 
 // import { startGameLog } from "./db";
 import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
 import { PADDLE_STEP }				from "../defines/constants";
 import { animatePaddleToX } from "./paddleMovement";
-import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType, GUID } from "../defines/types";
+import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType } from "../defines/types";
 // import { AIOpponent } from "./aiOpponent";
 import { error } from "node:console";
 
-export interface WsGamePluginOptions { engine: PongBackEngine; users: User[]; activeService: ActiveService; };
+const TrnmntSrv = new TournamentService();
+
+// export interface WsGamePluginOptions { engine: PongBackEngine; users: User[]; activeService: ActiveService; };
+export interface WsGamePluginOptions { engine: PongBackEngine; users: User[]; };
 
 export async function wsGamePlugin(server: FastifyInstance, options: WsGamePluginOptions) {
 	const { engine } = options;
@@ -26,18 +30,18 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 				const msg: WSMessage = JSON.parse(message);
 
 				switch (msg.type) {
-				case "register":
-					console.debug("Registering user in game:", msg.user.id);
-					const userSessionIDX: number = options.activeService.getSessionIDX(msg.user.id)
-					console.debug(`User session index for ${msg.user.id} (socket_g):`, userSessionIDX);
-					if (userSessionIDX === -1) {
-						options.activeService.add(msg.user.id, socket);
-						console.log(`User ${msg.user.id} registered in ActiveService.`);
-					} else {
-						options.activeService.getSession(userSessionIDX)?.setSocketG(socket);
-						console.log(`User ${msg.user.id} is already active in ActiveService, just add the game socket.`);
-					}
-					break;
+				// case "register":
+				// 	console.debug("Registering user in game:", msg.user.id);
+				// 	const userSessionIDX: number = options.activeService.getSessionIDX(msg.user.id)
+				// 	console.debug(`User session index for ${msg.user.id} (socket_g):`, userSessionIDX);
+				// 	if (userSessionIDX === -1) {
+				// 		options.activeService.add(msg.user.id, socket);
+				// 		console.log(`User ${msg.user.id} registered in ActiveService.`);
+				// 	} else {
+				// 		options.activeService.getSession(userSessionIDX)?.setSocketG(socket);
+				// 		console.log(`User ${msg.user.id} is already active in ActiveService, just add the game socket.`);
+				// 	}
+				// 	break;
 				case "InitGameRequest":
 					processInitGameRequest(engine, socket, msg as InitGameRequest);
 					break;
@@ -132,6 +136,17 @@ function addPlayerToGame(game: PongBackScene, newPlayer: User, socket: WebSocket
 	if (!game.players.find(player => player.id === newPlayer.id)) {
 		newPlayer.gameSocket = socket;
 		game.players.push(newPlayer);
+		if (game.id === -1) {
+			game.id = TrnmntSrv.createRemoteGame(newPlayer.id);
+			console.debug("Create game:", game.id, ", player:", newPlayer.id);
+		} else {
+			game.id = TrnmntSrv.addRemoteGame(game.id, newPlayer.id);
+			console.debug("Update game:", game.id, ", player", newPlayer.id);
+		}
+		if (game.id === -1) {
+			console.error("Failed to create game or add player in database for game:", game.id, ", player", newPlayer.id);
+			return;
+		}
 	}
 }
 
@@ -149,7 +164,7 @@ function assignSide(game: PongBackScene) : PlayerSide {
 // 		game.aiOpponent = new AIOpponent(game, "right");
 // }
 
-function sendInitGameSuccess(inGameType: GameType, inGameId: GUID, inPlayerSide: PlayerSide, socket: WebSocket) {
+function sendInitGameSuccess(inGameType: GameType, inGameId: number, inPlayerSide: PlayerSide, socket: WebSocket) {
 	const response : InitGameSuccess = {
 		type: "InitGameSuccess",
 		gameType: inGameType,

@@ -2,15 +2,15 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
 import type { WebSocket } from "@fastify/websocket";
 import { PongBaseScene } from "./PongBaseScene";
-import { generateGuid } from "../helpers/helpers";
-import type { User, Game, GUID, MeshPositions, GameOver } from "../defines/types";
+// import { generateGuid } from "../helpers/helpers";
+import type { User, Game, MeshPositions, GameOver } from "../defines/types";
 // import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 import { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";
 // import { endGameLog } from "../back/db";
 
 export class PongBackScene extends PongBaseScene implements Game {
-    public id: GUID = generateGuid();
+    public id: number = -1;
     public players: User[] = [];
     public startTime = new Date();
     // public aiOpponent?: AIOpponent;

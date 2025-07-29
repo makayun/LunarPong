@@ -1,4 +1,4 @@
-import {TournamentService } from './sqlib'
+import { TournamentService } from './sqlib'
 import { int } from '@babylonjs/core';
 
 export function test_db(n: int) {
