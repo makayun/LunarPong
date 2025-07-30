@@ -140,9 +140,18 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
     }
 
     function viewProfile() {
-      const target = recipient.value;
+      let target = recipient.value;
+      let playerNick: string;
       if (target !== 'all') {
-        const playerNick = userMap.get(Number(target)) || target;
+        playerNick = userMap.get(Number(target)) || target;
+      } else {
+        if (!inId || !inNick) {
+          console.error('No user ID or nickname available for profile view');
+          return;
+        }
+        target = inId.toString();
+        playerNick = inNick;
+      }
 
         socket.send(JSON.stringify({
           type: 'profile',
@@ -157,11 +166,13 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
               console.log('Profile data received:', data.profile);
               const profileHTML = `
                 <div class="player-profile">
-                  <h3>🎮 ${playerNick}</h3>
+                  <hr>
+                  <h3>🎮 Profile: ${playerNick}</h3>
                   <p>🏅 Position: ${data.profile.position}</p>
                   <p>🕹️ Games: ${data.profile.games}</p>
                   <p>🏆 Wins: ${data.profile.wins}</p>
                   <p>⭐ Score: ${data.profile.score}</p>
+                  <hr>
                 </div>
               `;
 
@@ -175,7 +186,7 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
         };
 
         socket.addEventListener('message', profileHandler);
-      }
+      // }
     }
 
     (window as any).blockUser = blockUser;
