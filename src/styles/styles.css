@@ -437,7 +437,7 @@
     flex: 1;
     padding: calc(var(--spacing) * 2);
     background: rgba(0, 0, 0, 0.8);
-    color: var(--color-white);
+    color: #8eff00;
     overflow-wrap: break-word;
     font-size: var(--text-base);
     line-height: var(--tw-leading, var(--text-sm--line-height));

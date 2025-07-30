@@ -18,7 +18,7 @@ export class PongBackScene extends PongBaseScene implements Game {
     public startTime = new Date();
     public aiOpponent?: AIOpponent;
     private ballVelocity: Vector3 = new Vector3(10, 0, -2);
-    private ballSpeed: number = 18;
+    private ballSpeed: number = 14;
     private isFalling: boolean = false;
 
     private fieldWidth: number;
@@ -85,7 +85,7 @@ export class PongBackScene extends PongBaseScene implements Game {
 
         const x = this.pongMeshes.ball.position.x;
         const fieldWidth = 7.5;
-        const waveAmplitude = 2;
+        const waveAmplitude = 3;
         const waveFrequency = Math.PI / fieldWidth;
         this.pongMeshes.ball.position.y = waveAmplitude * Math.abs(Math.sin(x * waveFrequency));
 
@@ -146,7 +146,7 @@ export class PongBackScene extends PongBaseScene implements Game {
         this.state = "over";
         this.sendGameState();
 
-        const winnerIndex = this.score[0] >= 7 ? 0 : 1;
+        const winnerIndex = this.score[0] >= 11 ? 0 : 1;
         const message : GameOver = {
             type: "GameOver",
             winner: this.players[winnerIndex]?.nick,
@@ -178,7 +178,7 @@ export class PongBackScene extends PongBaseScene implements Game {
             player.gameSocket?.send(JSON.stringify(message));
         });
 
-        if (this.score[0] >= 7 || this.score[1] >= 7) {
+        if (this.score[0] >= 11 || this.score[1] >= 11) {
             this.endGame();
             return;
         }

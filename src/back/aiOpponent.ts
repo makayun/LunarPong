@@ -33,6 +33,7 @@ export class AIOpponent {
     };
   }
 
+
   update(positions: MeshPositions, currentTime: number): PlayerInput | null {
     if (currentTime - this.lastUpdate < this.config.updateInterval) {
       return null;
@@ -51,13 +52,30 @@ export class AIOpponent {
     }
     this.lastBallPosition = positions.ball.clone();
 
+    /* Если мяч движется в сторону левого игрока, возвращаем ракетку в центр */
+if (this.ballVelocity.x < 0 || this.ballVelocity.y > 5) {
+  const paddleZ = positions.paddleRight.z;
+  const doorstep = /*0.4;*/ 0.1 + 0.4 * Math.abs(paddleZ) / (GROUND_HEIGHT/2);
+  // const doorstep = Math.max(0.01, 0.05 / (1 + Math.abs(this.ballVelocity.z)));
+  // const doorstep = Math.max(0.01, 0.05 / (1 + Math.pow(Math.abs(this.ballVelocity.z), 0.5)));
+  if (paddleZ > 0 + doorstep) {
+    return this.createInput(UP);
+  } else if (paddleZ < 0 - doorstep) {
+    return this.createInput(DOWN);
+  }
+  return null;
+}
+
+
     /* Предсказываем, где мяч пересечет линию ракетки */
     const predictedZ = this.oracleOfDelphi(positions);
     const paddleZ = positions.paddleRight.z;
 
     /* Логика принятия решения */
-    // const threshold = 0.5; // Допустимое отклонение
-    const doorstep = Math.max(0.1, 0.3 / (1 + Math.abs(this.ballVelocity.z)));
+    const doorstep = 0.4; // Допустимое отклонение
+    // const doorstep = Math.max(0.1, 0.3 / (1 + Math.abs(this.ballVelocity.z)));
+    // const doorstep = Math.max(0.01, 0.05 / (1 + Math.abs(this.ballVelocity.z)));
+    // const doorstep = Math.max(0.01, 0.05 / (1 + Math.pow(Math.abs(this.ballVelocity.z), 0.5)));
 
     let direction: typeof UP | typeof DOWN | typeof STOP = STOP;
 
@@ -65,66 +83,87 @@ export class AIOpponent {
     else if (predictedZ > paddleZ + doorstep) direction = DOWN;
 
     if (direction !== STOP) {
-      return {
-        type: "PlayerInput",
-        side: "right",
-        gameId: this.game.id,
-        direction,
-      };
+      return this.createInput(direction);
     }
     return null;
   }
+
+  private createInput(direction: typeof UP | typeof DOWN): PlayerInput {
+  return {
+    type: "PlayerInput",
+    side: "right",
+    gameId: this.game.id,
+    direction,
+  };
+}
     /* Предсказываем, где мяч пересечет линию ракетки */
 
-  private oracleOfDelphi(positions: MeshPositions): number {
+    private oracleOfDelphi(positions: MeshPositions): number {
   const ball = positions.ball;
   const paddleX = positions.paddleRight.x;
 
-  /* Если мяч движется в сторону AI */
   if (this.ballVelocity.x > 0) {
     const distanceToPaddle = Math.abs(paddleX - ball.x);
-    const timeToPaddle = this.ballVelocity.x !== 0
-        ? distanceToPaddle / /*Math.abs(*/this.ballVelocity.x/*)*/
-        : Infinity;
+    const timeToPaddle = distanceToPaddle / Math.max(0.001, Math.abs(this.ballVelocity.x));
 
-    if (timeToPaddle === Infinity || timeToPaddle <= 1) {
-      return ball.z;
-    }
-
-    /* Расчёт Y с учётом возможных отражений от верхнего и нижнего края */
+    // Улучшенный расчет отскоков с учетом времени
     const upperBound = GROUND_HEIGHT / 2 - EDGE_HEIGHT;
     const lowerBound = -GROUND_HEIGHT / 2 + EDGE_HEIGHT;
-
-
-    let predictedZ = ball.z + this.ballVelocity.z * timeToPaddle;
-
-        /* логика отражения от границ */
-    const fieldHeight = upperBound - lowerBound;
-    const offset = predictedZ - lowerBound;
-
-    const bounces = Math.floor(offset / fieldHeight);
-    const remainder = offset % fieldHeight;
-
-    if (bounces % 2 === 0) {
-      predictedZ = lowerBound + remainder;
-    } else {
-      predictedZ = upperBound - remainder;
+    
+    let remainingTime = timeToPaddle;
+    let currentZ = ball.z;
+    let currentVz = this.ballVelocity.z;
+    
+    while (remainingTime > 0) {
+      // Рассчитываем время до следующего отскока
+      let timeToPaddle;
+      if (currentVz > 0) {
+        timeToPaddle = (upperBound - currentZ) / currentVz;
+      } else if (currentVz < 0) {
+        timeToPaddle = (lowerBound - currentZ) / currentVz;
+      } else {
+        break; // Нет вертикального движения
+      }
+      
+      timeToPaddle = Math.max(0, timeToPaddle);
+      
+      if (timeToPaddle >= remainingTime) {
+        currentZ += currentVz * remainingTime;
+        break;
+      } else {
+        currentZ += currentVz * timeToPaddle;
+        currentVz *= -1; // Инвертируем скорость при отскоке
+        remainingTime -= timeToPaddle;
+      }
     }
-    /* ограничиваем в пределах поля */
-    if (predictedZ > PADDLE_MAX_Z) predictedZ = PADDLE_MAX_Z;
-    if (predictedZ < PADDLE_MIN_Z) predictedZ = PADDLE_MIN_Z;
-
-    return predictedZ;
+    
+    return Math.max(PADDLE_MIN_Z, Math.min(PADDLE_MAX_Z, currentZ));
   }
   return positions.paddleRight.z;
 }
 
-  usePowerUp(): PlayerInput | null {
-    return null; // 💥💥💥Заглушка для power-up
-  }
 }
 
-//   getUser(): User {
-//     return this.user;
-//   }
-// }
+
+// 1. Проверяем, не прошло ли слишком мало времени с прошлого обновления
+//    Если да — выходим
+
+// 2. Проверяем, не появился ли мяч заново (после гола)
+//    Если да — сбрасываем lastBallPosition и выходим
+
+// 3. Если это первый шаг (нет lastBallPosition):
+//    - сохраняем позицию мяча
+//    - ничего не делаем пока (ждём следующего шага)
+
+// 4. Если lastBallPosition есть:
+//    - рассчитываем ballVelocity
+
+// 5. Если мяч летит влево:
+//    - двигаем ракетку к центру
+
+// 6. Если мяч летит вправо:
+//    - предсказываем по oracleOfDelphi
+//    - двигаемся вверх/вниз/стоим
+
+// 7. Сохраняем текущую позицию мяча как lastBallPosition
+
