@@ -152,19 +152,16 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
         const profileHandler = (event: MessageEvent) => {
           try {
             const data = JSON.parse(event.data);
-            if (data.type === 'profile' && data.user.id === target) {
+            if (data.type === 'profile' && data.code === 200) {
               socket.removeEventListener('message', profileHandler);
-
+              console.log('Profile data received:', data.profile);
               const profileHTML = `
                 <div class="player-profile">
                   <h3>🎮 ${playerNick}</h3>
-                  <p>⭐ Rating: ${data.rating || 'N/A'}</p>
-                  <p>🏆 Wins: ${data.wins || 0}</p>
-                  <p>🔥 Streak: ${data.streak || 0}</p>
-                  <button id="joinTournament"
-                    class="game-button-tw">
-                    Join Tournament
-                  </button>
+                  <p>🏅 Position: ${data.profile.position}</p>
+                  <p>🕹️ Games: ${data.profile.games}</p>
+                  <p>🏆 Wins: ${data.profile.wins}</p>
+                  <p>⭐ Score: ${data.profile.score}</p>
                 </div>
               `;
 

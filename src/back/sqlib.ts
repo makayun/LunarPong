@@ -1,6 +1,14 @@
 import type { Database as DatabaseType } from 'better-sqlite3';
 import { getDB } from './db';
 
+export interface Profile {
+	user_id: number;
+	games: number;
+	wins: number;
+	position: number;
+	score: number;
+}
+
 export class TournamentService {
 	private db: DatabaseType;
 
@@ -168,6 +176,19 @@ export class TournamentService {
 		} catch (e) {
 			console.error('updateGame error:', e);
 			return false;
+		}
+	}
+
+	getProfile(user_id: number): Profile | null{
+		try {
+			const stmt = this.db.prepare(
+				`SELECT user_id, games, wins, position, score FROM profiles WHERE user_id = ?`
+			);
+			const result = stmt.get(user_id);
+			return result as Profile;
+		} catch (e) {
+			console.error('getProfile error:', e);
+			return null;
 		}
 	}
 

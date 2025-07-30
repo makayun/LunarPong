@@ -4,6 +4,9 @@ import type { FastifyRequest } from "fastify";
 import type { ChatMessage, User } from "../defines/types";
 // import ActiveService from "./active_service";
 // import UserSession from "./user_session";
+import { TournamentService }	from './sqlib'
+
+const TrnmntSrv = new TournamentService();
 
 const users: Map<number, User> = new Map();
 
@@ -144,29 +147,49 @@ export async function wsChatPlugin(server: FastifyInstance) {
           case 'profile': {
             if (!currentUser) return;
 
-            const requestedUser = users.get(msg.user.id);
-            if (!requestedUser) {
-              socket.send(JSON.stringify({
+            const profile = TrnmntSrv.getProfile(msg.user.id);
+            if (!profile) {
+              socket.send(JSON.stringify({ 
                 type: 'profile',
-                user: { id: msg.user.id },
-                error: 'User not found'
+                code: 404,
+                error: 'Profile not found'
               }));
-              return;
+              break;
             }
-
-            // 💥💥💥Здесь должны быть реальные данные!
             socket.send(JSON.stringify({
               type: 'profile',
-              user: {
-                id: requestedUser.id,
-                nick: requestedUser.nick
-              },
-              rating: 4.2,       // 💥💥💥Заглушка
-              wins: 42,          // 💥💥💥Заглушка
-              streak: 5          // 💥💥💥Заглушка
+              code: 200,
+              profile: profile
             }));
             break;
           }
+
+          // case 'profile': {
+          //   if (!currentUser) return;
+          
+          //   const requestedUser = users.get(msg.user.id);
+          //   if (!requestedUser) {
+          //     socket.send(JSON.stringify({
+          //       type: 'profile',
+          //       user: { id: msg.user.id },
+          //       error: 'User not found'
+          //     }));
+          //     return;
+          //   }
+
+          //   // 💥💥💥Здесь должны быть реальные данные!
+          //   socket.send(JSON.stringify({
+          //     type: 'profile',
+          //     user: {
+          //       id: requestedUser.id,
+          //       nick: requestedUser.nick
+          //     },
+          //     rating: 4.2,       // 💥💥💥Заглушка
+          //     wins: 42,          // 💥💥💥Заглушка
+          //     streak: 5          // 💥💥💥Заглушка
+          //   }));
+          //   break;
+          // }
 
           default:
             console.warn("Unknown message type:", msg);
