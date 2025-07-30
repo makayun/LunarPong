@@ -25,6 +25,8 @@ export interface getUser {
 	otp: string;
 	g_id: number;
 	g_username: string;
+	ft_id: number;
+	ft_username: string;
 }
 
 export const login = async (
@@ -62,16 +64,27 @@ export const register = async (
 	reply: FastifyReply
 ) => {
 	const { username, password } = request.body;
-	const user = getDB().prepare('SELECT * FROM users WHERE username = ?').get(username) as getUser | undefined;
-	if (user !== undefined) {
-		return reply.status(400).send({ error: 'User already exists' });
-	}
+	// const user = getDB().prepare('SELECT * FROM users WHERE username = ?').get(username) as getUser | undefined;
+	// if (user !== undefined) {
+	// 	return reply.status(400).send({ error: 'User already exists' });
+	// }
 	const hashed = hashPassword(password);
 	const secret = authenticator.generateSecret();
 	const otpauth = authenticator.keyuri(username, "Pong", secret);
 	const qr = await QRCode.toDataURL(otpauth);
 
-	getDB().prepare('INSERT INTO users (username, password, otp) VALUES (?, ?, ?)').run(username, hashed, secret);
-	return reply.send ({ qr: qr});
-	return reply.send({ message: 'User registered' });
+	try {
+		getDB().prepare('INSERT INTO users (username, password, otp) VALUES (?, ?, ?)').run(username, hashed, secret);
+		return reply.send ({ qr: qr});
+	} catch (err: any) {
+		console.error("[DB Error]", err); // log full error for debugging
+
+		// Optionally inspect error.code or err.message
+		if (err.message.includes("UNIQUE") || err.message.includes("already exists")) {
+			return reply.status(406).send({ error: err.message, cli_error: 'register_username_duplicate' });
+		}
+
+		// Generic DB error
+		return reply.status(500).send({ error: err.message, cli_error: 'server'});
+	}	
 };

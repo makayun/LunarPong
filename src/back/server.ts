@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import { loadSecretsIntoEnv }			from './vault-loader';
 
 import fs								from "node:fs";
 import path								from "node:path";
@@ -23,6 +24,10 @@ import authRoutes from '../auth/auth.routes';
 // import { initRedis } from './redis-client';
 
 async function main() {
+	await loadSecretsIntoEnv("env/google");
+	await loadSecretsIntoEnv("env/jwt");
+	await loadSecretsIntoEnv("env/ft");
+
 	const users: User[] = [];
 	const appDir: string = fs.realpathSync(process.cwd());
 	const frontDir: string = "front";

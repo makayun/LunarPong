@@ -39,12 +39,11 @@ export type User_f = {
 export type GameButtons = Map<GameType, HTMLButtonElement>;
 
 export type User = {
-	id: GUID,
-	gameId?: GUID,
-	nick?: string,
+	id: number,
+	nick: string,
 	gameSocket?: WebSocket,
 	chatSocket?: WebSocket,
-	blocked?: Set<GUID>
+	blocked?: Set<number>
 };
 
 export type PlayerSide = "left" | "right";
@@ -106,7 +105,7 @@ export type ScoreUpdate = {
 
 export type GameOver = {
 	type: "GameOver",
-	winner: GUID,
+	winner: string,
 	finalScore: [number, number]
 }
 

@@ -1,42 +1,71 @@
 {
   "or": "nebo",
-    "hello": "Ahoj, {{name}}!",
-    "login": {
-      "title": "Vítejte!",
-      "label_name": "Uživatelské jméno",
-      "name": "Uživatelské jméno",
-      "label_password": "Heslo",
-      "password": "Heslo",
-      "button": "Přihlášení"
-    },
-    "logged": {
-      "title": "Ahoj, {{name}}! (id: {{id}})"
-    },
-    "logoff": {
-      "button": "Odhlášení"
-    },
-    "register": {
-      "title": "Registrace",
-      "label_name": "Uživatelské jméno",
-      "label_password1": "Heslo",
-      "label_password2": "Opakovat heslo",
-      "label_email": "Email",
-      "button": "Registrovat"
-    },
-    "continue": "Pokračovat",
-    "game": {
-      "title": "Lunární Pong",
-      "local-btn": "Místní hra",
-      "remote-btn": "Vzdálená hra",
-      "versusai-btn": "Proti AI",
-      "block-chat": "Blokovat",
-      "invite-chat": "Pozvat",
-      "profile-chat": "Profil",
-      "msg-input": "Napište zde..."
-    },
-    "2fa": {
-      "title": "Zadejte dvoufaktorový klíč",
-      "label_token": "Zadejte kód zde...",
-      "continue": "Pokračovat"
-    }
+  "hello": "Ahoj, {{name}}!",
+  "error": {
+    "title": "Chyba",
+    "button": "Zavřít",
+    "server": "Jejda! Něco se pokazilo na naší straně. Prosím zkuste to za chvíli znovu.",
+    "default": "Něco se pokazilo...",
+    "user_password_problem": "Špatné uživatelské jméno nebo heslo.",
+    "user_exist": "Uživatelské jméno již existuje.",
+    "refresh_token_problem": "Nelze obnovit token.",
+    "2fa_problem": "Chyba dvoufázového ověření.",
+    "2fa_required": "Dvoufázové ověření je povinné.",
+    "2fa_invalid_code": "Neplatný kód dvoufázového ověření.",
+    "2fa_token": "Neplatný dvoufázový token.",
+    "check_agreemnt": "Před pokračováním si prosím přečtěte a souhlasíte s naším oznámením o ochraně osobních údajů.",
+    "register_password": "Hesla se neshodují. Zkuste to prosím znovu.",
+    "register_password_weak": "Heslo musí mít alespoň 8 znaků a obsahovat alespoň jedno velké písmeno, jedno malé písmeno, číslici a speciální znak.",
+    "register_username_short": "Příliš krátké! Uživatelské jméno musí mít alespoň 4 znaky.",
+    "register_username_duplicate": "Jejda! Toto uživatelské jméno je již obsazeno. Zkuste jiné."
+  },
+  "login": {
+    "title": "Vítejte!",
+    "label_name": "Uživatelské jméno",
+    "name": "Uživatelské jméno",
+    "label_password": "Heslo",
+    "password": "Heslo",
+    "button": "Přihlásit se"
+  },
+  "logged": {
+    "title": "Ahoj, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+    "button": "Odhlásit se"
+  },
+  "register": {
+    "title": "Registrace",
+    "label_name": "Uživatelské jméno",
+    "label_password1": "Heslo",
+    "label_password2": "Zopakujte heslo",
+    "label_email": "Email",
+    "button": "Registrovat se",
+    "qrcode": "Důležité: Nyní musíte naskenovat QR kód pomocí Google Authenticator nebo Microsoft Authenticator. Pokud tento krok přeskočíte, vaše registrace bude ztracena a nebude možné ji obnovit."
+  },
+  "agreement": {
+    "notice": "Oznámení o ochraně osobních údajů",
+    "p1": "Shromažďujeme vaše osobní údaje (např. jméno, email) pouze za účelem kontaktování vás a poskytování našich služeb. Vaše data nebudou sdílena s třetími stranami bez vašeho výslovného souhlasu, pokud to zákon nevyžaduje.",
+    "p2": "Máte právo kdykoli požádat o přístup ke svým údajům, jejich opravu nebo smazání. Kontaktujte nás prosím na [your-email@example.com].",
+    "p3": "Zaškrtnutím níže souhlasíte se zpracováním svých osobních údajů v souladu s Obecným nařízením o ochraně osobních údajů (GDPR) (EU) 2016/679.",
+    "checkbox": "Přečetl(a) jsem si a souhlasím s výše uvedeným oznámením o ochraně osobních údajů."
+  },
+  "continue": "Pokračovat",
+  "game": {
+    "title": "Lunar Pong",
+    "local-btn": "Lokální hra",
+    "remote-btn": "Vzdálená hra",
+    "versusai-btn": "Proti AI",
+    "block-chat": "Blokovat",
+    "invite-chat": "Pozvat",
+    "profile-chat": "Profil",
+    "msg-input": "Zde napište..."
+  },
+  "2fa": {
+    "title": "Zadejte kód dvoufázového ověření",
+    "label_token": "Zadejte kód zde...",
+    "continue": "Pokračovat"
+  },
+  "back": {
+    "button": "Zpět"
+  }
 }

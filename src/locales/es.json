@@ -1,42 +1,71 @@
 {
   "or": "o",
-    "hello": "¡Hola, {{name}}!",
-    "login": {
-      "title": "¡Bienvenido!",
-      "label_name": "Nombre de usuario",
-      "name": "Nombre de usuario",
-      "label_password": "Contraseña",
-      "password": "Contraseña",
-      "button": "Iniciar sesión"
-    },
-    "logged": {
-      "title": "¡Hola, {{name}}! (id: {{id}})"
-    },
-    "logoff": {
-      "button": "Cerrar sesión"
-    },
-    "register": {
-      "title": "Registro",
-      "label_name": "Nombre de usuario",
-      "label_password1": "Contraseña",
-      "label_password2": "Repetir contraseña",
-      "label_email": "Correo electrónico",
-      "button": "Registrarse"
-    },
-    "continue": "Continuar",
-    "game": {
-      "title": "Pong Lunar",
-      "local-btn": "Juego local",
-      "remote-btn": "Juego remoto",
-      "versusai-btn": "Contra IA",
-      "block-chat": "Bloquear",
-      "invite-chat": "Invitar",
-      "profile-chat": "Perfil",
-      "msg-input": "Escribe aquí..."
-    },
-    "2fa": {
-      "title": "Ingresa la clave de autenticación de dos factores",
-      "label_token": "Ingresa el código aquí...",
-      "continue": "Continuar"
-    }
+  "hello": "¡Hola, {{name}}!",
+  "error": {
+    "title": "Error",
+    "button": "Cerrar",
+    "server": "¡Vaya! Algo salió mal de nuestro lado. Por favor, inténtalo de nuevo en un momento.",
+    "default": "Algo salió mal...",
+    "user_password_problem": "Nombre de usuario o contraseña incorrectos.",
+    "user_exist": "El nombre de usuario ya existe.",
+    "refresh_token_problem": "No se puede actualizar el token.",
+    "2fa_problem": "Error en la autenticación de dos factores.",
+    "2fa_required": "Se requiere autenticación de dos factores.",
+    "2fa_invalid_code": "Código de autenticación de dos factores inválido.",
+    "2fa_token": "Token de dos factores inválido.",
+    "check_agreemnt": "Por favor, lee y acepta nuestro Aviso de Privacidad antes de continuar.",
+    "register_password": "Las contraseñas no coinciden. Por favor, inténtalo de nuevo.",
+    "register_password_weak": "La contraseña debe tener al menos 8 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial.",
+    "register_username_short": "¡Demasiado corto! Tu nombre de usuario debe tener al menos 4 caracteres.",
+    "register_username_duplicate": "¡Ups! Ese nombre de usuario ya está en uso. Intenta con otro."
+  },
+  "login": {
+    "title": "¡Bienvenido!",
+    "label_name": "Nombre de usuario",
+    "name": "Nombre de usuario",
+    "label_password": "Contraseña",
+    "password": "Contraseña",
+    "button": "Iniciar sesión"
+  },
+  "logged": {
+    "title": "Hola, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+    "button": "Cerrar sesión"
+  },
+  "register": {
+    "title": "Registro",
+    "label_name": "Nombre de usuario",
+    "label_password1": "Contraseña",
+    "label_password2": "Repetir contraseña",
+    "label_email": "Correo electrónico",
+    "button": "Registrarse",
+    "qrcode": "Importante: Debes escanear el código QR usando Google Authenticator o Microsoft Authenticator ahora. Si omites este paso, tu registro se perderá y no podrá recuperarse."
+  },
+  "agreement": {
+    "notice": "Aviso de Privacidad",
+    "p1": "Recopilamos tus datos personales (por ejemplo, nombre, correo electrónico) únicamente con el propósito de contactarte y brindarte nuestros servicios. Tus datos no serán compartidos con terceros sin tu consentimiento explícito, salvo que lo exija la ley.",
+    "p2": "Tienes derecho a acceder, corregir o eliminar tus datos en cualquier momento. Para ello, contáctanos en [your-email@example.com].",
+    "p3": "Al marcar la casilla a continuación, aceptas el procesamiento de tus datos personales conforme al Reglamento General de Protección de Datos (RGPD) (UE) 2016/679.",
+    "checkbox": "He leído y acepto el aviso de privacidad mencionado arriba."
+  },
+  "continue": "Continuar",
+  "game": {
+    "title": "Lunar Pong",
+    "local-btn": "Juego local",
+    "remote-btn": "Juego remoto",
+    "versusai-btn": "Contra IA",
+    "block-chat": "Bloquear",
+    "invite-chat": "Invitar",
+    "profile-chat": "Perfil",
+    "msg-input": "Escribe aquí..."
+  },
+  "2fa": {
+    "title": "Introduce el código de autenticación de dos factores",
+    "label_token": "Introduce el código aquí...",
+    "continue": "Continuar"
+  },
+  "back": {
+    "button": "Volver"
+  }
 }

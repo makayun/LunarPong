@@ -1,42 +1,71 @@
 {
   "or": "oder",
-    "hello": "Hallo, {{name}}!",
-    "login": {
-      "title": "Willkommen!",
-      "label_name": "Benutzername",
-      "name": "Benutzername",
-      "label_password": "Passwort",
-      "password": "Passwort",
-      "button": "Anmelden"
-    },
-    "logged": {
-      "title": "Hallo, {{name}}! (id: {{id}})"
-    },
-    "logoff": {
-      "button": "Abmelden"
-    },
-    "register": {
-      "title": "Registrierung",
-      "label_name": "Benutzername",
-      "label_password1": "Passwort",
-      "label_password2": "Passwort wiederholen",
-      "label_email": "E-Mail",
-      "button": "Registrieren"
-    },
-    "continue": "Weiter",
-    "game": {
-      "title": "Mond-Pong",
-      "local-btn": "Lokales Spiel",
-      "remote-btn": "Online-Spiel",
-      "versusai-btn": "Gegen KI",
-      "block-chat": "Blockieren",
-      "invite-chat": "Einladen",
-      "profile-chat": "Profil",
-      "msg-input": "Hier eingeben..."
-    },
-    "2fa": {
-      "title": "Zwei-Faktor-Authentifizierungsschlüssel eingeben",
-      "label_token": "Code hier eingeben...",
-      "continue": "Weiter"
-    }
+  "hello": "Hallo, {{name}}!",
+  "error": {
+    "title": "Fehler",
+    "button": "Schließen",
+    "server": "Ups! Auf unserer Seite ist etwas schiefgelaufen. Bitte versuche es in einem Moment erneut.",
+    "default": "Etwas ist schiefgelaufen...",
+    "user_password_problem": "Falscher Benutzername oder Passwort.",
+    "user_exist": "Benutzername existiert bereits.",
+    "refresh_token_problem": "Token kann nicht aktualisiert werden.",
+    "2fa_problem": "Fehler bei der Zwei-Faktor-Authentifizierung.",
+    "2fa_required": "Zwei-Faktor-Authentifizierung ist erforderlich.",
+    "2fa_invalid_code": "Ungültiger Zwei-Faktor-Authentifizierungscode.",
+    "2fa_token": "Ungültiges Zwei-Faktor-Token.",
+    "check_agreemnt": "Bitte lesen und akzeptieren Sie unsere Datenschutzerklärung, bevor Sie fortfahren.",
+    "register_password": "Passwörter stimmen nicht überein. Bitte versuchen Sie es erneut.",
+    "register_password_weak": "Das Passwort muss mindestens 8 Zeichen lang sein und mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.",
+    "register_username_short": "Zu kurz! Der Benutzername muss mindestens 4 Zeichen lang sein.",
+    "register_username_duplicate": "Ups! Dieser Benutzername ist bereits vergeben. Bitte wählen Sie einen anderen."
+  },
+  "login": {
+    "title": "Willkommen!",
+    "label_name": "Benutzername",
+    "name": "Benutzername",
+    "label_password": "Passwort",
+    "password": "Passwort",
+    "button": "Anmelden"
+  },
+  "logged": {
+    "title": "Hallo, {{name}}! (id: {{id}})"
+  },
+  "logoff": {
+    "button": "Abmelden"
+  },
+  "register": {
+    "title": "Registrierung",
+    "label_name": "Benutzername",
+    "label_password1": "Passwort",
+    "label_password2": "Passwort wiederholen",
+    "label_email": "E-Mail",
+    "button": "Registrieren",
+    "qrcode": "Wichtig: Sie müssen jetzt den QR-Code mit Google Authenticator oder Microsoft Authenticator scannen. Wenn Sie diesen Schritt überspringen, geht Ihre Registrierung verloren und kann nicht wiederhergestellt werden."
+  },
+  "agreement": {
+    "notice": "Datenschutzhinweis",
+    "p1": "Wir erfassen Ihre personenbezogenen Daten (z.B. Name, E-Mail) ausschließlich zum Zweck der Kontaktaufnahme und zur Erbringung unserer Dienstleistungen. Ihre Daten werden ohne Ihre ausdrückliche Zustimmung nicht an Dritte weitergegeben, es sei denn, dies ist gesetzlich vorgeschrieben.",
+    "p2": "Sie haben das Recht, jederzeit Zugriff auf Ihre Daten zu verlangen, diese zu berichtigen oder zu löschen. Bitte kontaktieren Sie uns dazu unter [your-email@example.com].",
+    "p3": "Mit dem Ankreuzen des untenstehenden Feldes stimmen Sie der Verarbeitung Ihrer personenbezogenen Daten gemäß der Datenschutz-Grundverordnung (DSGVO) (EU) 2016/679 zu.",
+    "checkbox": "Ich habe den oben genannten Datenschutzhinweis gelesen und stimme ihm zu."
+  },
+  "continue": "Weiter",
+  "game": {
+    "title": "Lunar Pong",
+    "local-btn": "Lokales Spiel",
+    "remote-btn": "Fernspiel",
+    "versusai-btn": "Gegen KI",
+    "block-chat": "Blockieren",
+    "invite-chat": "Einladen",
+    "profile-chat": "Profil",
+    "msg-input": "Hier tippen..."
+  },
+  "2fa": {
+    "title": "Geben Sie den Zwei-Faktor-Authentifizierungscode ein",
+    "label_token": "Code hier eingeben...",
+    "continue": "Weiter"
+  },
+  "back": {
+    "button": "Zurück"
+  }
 }

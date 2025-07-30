@@ -1,7 +1,9 @@
 #! /bin/bash
 
+# sleep infinity
 # rc-service sshd start
 
+rm -rf node_modules package-lock.json
 npm install -g npm
 
 # # Download and install nvm:
@@ -16,7 +18,7 @@ npm install -g npm
 # sleep infinity
 
 # cd /var/fp_data
+
 su node -c "npm install"
 su node -c "npm run build"
 su node -c "npm start"
-# sleep infinity

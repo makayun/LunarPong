@@ -64,9 +64,9 @@ export default async function protectedRoutes(fastify: FastifyInstance) {
 		}
 	}, async (request: FastifyRequest, reply: FastifyReply) => {
 		const { id, token } = request.body as twofaBody;
-		console.log(`[2fa] Request id = ${id}, token = ${token}`);
+		console.log(`[2FA] Request id = ${id}, token = ${token}`);
 		const user = getDB().prepare('SELECT * FROM users WHERE id = ?').get(id) as getUser | undefined;
-		console.log(`[2fa] DB id = ${user!.id}, opt = ${user!.otp}`);
+		console.log(`[2FA] DB id = ${user!.id}, opt = ${user!.otp}`);
 		if (user == undefined) {
 			return reply.status(400).send({ error: 'Wrong request' });
 		}
@@ -74,8 +74,8 @@ export default async function protectedRoutes(fastify: FastifyInstance) {
 		// const secret = authenticator.generateSecret();
 		// const otpauth = authenticator.keyuri(user!.username, "Pong", secret);
 		// const qr = await QRCode.toDataURL(otpauth);
-		// console.log(`[2fa] SECRET = ${secret}`);
-		// console.log(`[2fa] SECRET (QR)  = ${qr}`);
+		// console.log(`[2FA] SECRET = ${secret}`);
+		// console.log(`[2FA] SECRET (QR)  = ${qr}`);
 		
 		const isValid = authenticator.check(token, user!.otp);
 		if (!isValid) {

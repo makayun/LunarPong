@@ -1,6 +1,5 @@
 import type { GameType, GameButtons, User, InitGameRequest} from "../defines/types";
-import { getUserId } from "../helpers/helpers";
-import type { PongFrontScene } from "../scenes/PongFrontScene";
+// import type { PongFrontScene } from "../scenes/PongFrontScene";
 
 export function initGameButtons() : GameButtons {
 	const buttons = new Map<GameType, HTMLButtonElement>;
@@ -20,7 +19,8 @@ const handlers = new Map<GameType, EventListener>();
 
 function createInitGameHandler(
 	type: GameType,
-	pongScene: PongFrontScene,
+	// pongScene: PongFrontScene,
+	socket: WebSocket,
 	player: User,
 	buttons: GameButtons
 ): EventListener {
@@ -30,20 +30,18 @@ function createInitGameHandler(
 			gameType: type,
 			user: player,
 		};
-		pongScene.socket.send(JSON.stringify(initGameMsg));
+		socket.send(JSON.stringify(initGameMsg));
 		unsetGameButtons(buttons, type);
 	};
 }
 
-export async function setGameButtons(buttons: GameButtons, pongScene: PongFrontScene, player: User | null) {
-	if (!player)
-		player = { id: await getUserId() };
+export async function setGameButtons(buttons: GameButtons, socket: WebSocket, player: User) {
 	buttons.forEach((btn, type) => {
 		btn.disabled = false;
 		btn.classList.remove("hidden", "absolute", "relative", "w-96", "cursor-not-allowed");
 		btn.classList.add("flex");
 
-		const handler = createInitGameHandler(type, pongScene, player, buttons);
+		const handler = createInitGameHandler(type, socket, player, buttons);
 		handlers.set(type, handler);
 		btn.addEventListener("click", handler, { once: true });
 	});
@@ -65,4 +63,12 @@ export function unsetGameButtons(buttons: GameButtons, type: GameType) {
 			btn.classList.add("hidden", "absolute");
 		}
 	});
+}
+
+export function disableGameButtons(gameButtons: GameButtons) {
+	gameButtons.forEach((btn) => { btn.disabled = true; });
+}
+
+export function enableGameButtons(gameButtons: GameButtons) {
+	gameButtons.forEach((btn) => { btn.disabled = false; });
 }
