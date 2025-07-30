@@ -9,166 +9,161 @@ import {
   STOP
 } from "../defines/constants";
 
-import type { MeshPositions, PlayerInput, User, Game, GUID } from "../defines/types";
+import type { MeshPositions, PlayerInput, /*User,*/ Game/*, GUID*/ } from "../defines/types";
 import { Vector3 } from "@babylonjs/core/Maths/math.vector";
-import { generateGuid } from '../helpers/helpers';
+// import { generateGuid } from '../helpers/helpers';
 
 interface AIOpponentConfig {
-  paddleSpeed: number; // Скорость движения ракетки (единиц в секунду)
-  updateInterval: number; // Интервал обновления (в мс, 1000 = 1 сек)
-  paddleSide: "left" | "right"; // Сторона ракетки AI
+  paddleSpeed: number;
+  updateInterval: number;
 }
 
 export class AIOpponent {
-  private user: User; // Псевдо-пользователь для AI
-  private game: Game; // Текущая игра
+  private game: Game;
   private config: AIOpponentConfig;
-  private lastUpdate: number = 0; // Время последнего обновления
-  private ballVelocity: Vector3 = new Vector3(0, 0, 0); // Скорость мяча
-  private lastBallPosition: Vector3 | null = null; // Последняя позиция мяча
+  private lastUpdate: number = 0;
+  private ballVelocity: Vector3 = new Vector3(0, 0, 0);
+  private lastBallPosition: Vector3 | null = null;
 
-  constructor(game: Game, paddleSide: "left" | "right") {
-    this.user = {
-      id: `AI_${generateGuid()}` as GUID, // потом подумаем
-      gameId: game.id,
-    };
+  constructor(game: Game) {
     this.game = game;
     this.config = {
       paddleSpeed: PADDLE_STEP,
-      updateInterval: 1000,
-      paddleSide,
+      updateInterval: 1000, // 👿 1000 !!!!!!!!!!!!!!!
     };
   }
 
+
   update(positions: MeshPositions, currentTime: number): PlayerInput | null {
     if (currentTime - this.lastUpdate < this.config.updateInterval) {
-      console.log(`[${currentTime}] Update skipped: too early`);
-      return null; // Обновляем только раз в секунду
+      return null;
     }
     this.lastUpdate = currentTime;
 
     if (this.lastBallPosition) {
-      const deltaTime = this.config.updateInterval / 1000; // Время в секундах
+      const deltaTime = this.config.updateInterval / 1000;
       this.ballVelocity = positions.ball
         .subtract(this.lastBallPosition)
-        .scale(1 / deltaTime);
-      console.log(`[${currentTime}] Ball velocity: x=${this.ballVelocity.x}, y=${this.ballVelocity.y}`);
+        .scale(1.2 / deltaTime);
     } else {
       /* Для первого шага предполагаем, что мяч движется к AI */
-      const paddleY = this.config.paddleSide === "right" ? positions.paddleRight.y : positions.paddleLeft.y;
-      this.ballVelocity = new Vector3(
-        this.config.paddleSide === "right" ? 5 : -5, // Скорость по X
-        positions.ball.y - paddleY, // Скорость по Y основана на разнице
-        0
-      );
-      console.log(`[${currentTime}] Initial ball velocity: x=${this.ballVelocity.x}, y=${this.ballVelocity.y}`);
+      const paddleZ = positions.paddleRight.z;
+      this.ballVelocity = new Vector3(5, 0, positions.ball.z - paddleZ);
     }
     this.lastBallPosition = positions.ball.clone();
 
-    /* Предсказываем, где мяч пересечет линию ракетки */
-    const predictedY = this.predictBallPosition(positions);
-    console.log(`[${currentTime}] Predicted Y: ${predictedY}`);
+    /* Если мяч движется в сторону левого игрока, возвращаем ракетку в центр */
+if (this.ballVelocity.x < 0 || this.ballVelocity.y > 5) {
+  const paddleZ = positions.paddleRight.z;
+  const doorstep = /*0.4;*/ 0.1 + 0.4 * Math.abs(paddleZ) / (GROUND_HEIGHT/2);
+  // const doorstep = Math.max(0.01, 0.05 / (1 + Math.abs(this.ballVelocity.z)));
+  // const doorstep = Math.max(0.01, 0.05 / (1 + Math.pow(Math.abs(this.ballVelocity.z), 0.5)));
+  if (paddleZ > 0 + doorstep) {
+    return this.createInput(UP);
+  } else if (paddleZ < 0 - doorstep) {
+    return this.createInput(DOWN);
+  }
+  return null;
+}
 
-    /* Определяем позицию своей ракетки */
-    const paddleY =
-      this.config.paddleSide === "right"
-        ? positions.paddleRight.y
-        : positions.paddleLeft.y;
-    console.log(`[${currentTime}] Paddle Y: ${paddleY}`);
+
+    /* Предсказываем, где мяч пересечет линию ракетки */
+    const predictedZ = this.oracleOfDelphi(positions);
+    const paddleZ = positions.paddleRight.z;
 
     /* Логика принятия решения */
-    let key: "w" | "s" | "ArrowUp" | "ArrowDown" | null = null;
-    const threshold = 0.5; // Допустимое отклонение
-    if (predictedY > paddleY + threshold) {
-      key = this.config.paddleSide === "left" ? "w" : "ArrowUp";
-    } else if (predictedY < paddleY - threshold) {
-      key = this.config.paddleSide === "left" ? "s" : "ArrowDown";
-    }
+    const doorstep = 0.4; // Допустимое отклонение
+    // const doorstep = Math.max(0.1, 0.3 / (1 + Math.abs(this.ballVelocity.z)));
+    // const doorstep = Math.max(0.01, 0.05 / (1 + Math.abs(this.ballVelocity.z)));
+    // const doorstep = Math.max(0.01, 0.05 / (1 + Math.pow(Math.abs(this.ballVelocity.z), 0.5)));
 
     let direction: typeof UP | typeof DOWN | typeof STOP = STOP;
-    if (key === "w" || key === "ArrowUp") direction = UP;
-    else if (key === "s" || key === "ArrowDown") direction = DOWN;
 
-    console.log(`[${currentTime}] AI decision: ${key || "null"}`);
-    if (key) {
-      return {
-        type: "PlayerInput",
-        side: this.config.paddleSide,
-        gameId: this.game.id,
-        direction,
-      };
+    if (predictedZ < paddleZ - doorstep) direction = UP;
+    else if (predictedZ > paddleZ + doorstep) direction = DOWN;
+
+    if (direction !== STOP) {
+      return this.createInput(direction);
     }
     return null;
   }
+
+  private createInput(direction: typeof UP | typeof DOWN): PlayerInput {
+  return {
+    type: "PlayerInput",
+    side: "right",
+    gameId: this.game.id,
+    direction,
+  };
+}
     /* Предсказываем, где мяч пересечет линию ракетки */
 
-  private predictBallPosition(positions: MeshPositions): number {
+    private oracleOfDelphi(positions: MeshPositions): number {
   const ball = positions.ball;
-  const paddleX =
-    this.config.paddleSide === "right"
-      ? positions.paddleRight.x
-      : positions.paddleLeft.x;
+  const paddleX = positions.paddleRight.x;
 
-  console.log(`[${this.lastUpdate}] Ball position: x=${ball.x}, y=${ball.y}`);
-  console.log(`[${this.lastUpdate}] Paddle X: ${paddleX}, Velocity X: ${this.ballVelocity.x}`);
-
-  /* Если мяч движется в сторону AI */
-  if (
-    (this.config.paddleSide === "right" && this.ballVelocity.x > 0) ||
-    (this.config.paddleSide === "left" && this.ballVelocity.x < 0)
-  ) {
+  if (this.ballVelocity.x > 0) {
     const distanceToPaddle = Math.abs(paddleX - ball.x);
-    const timeToPaddle =
-      this.ballVelocity.x !== 0
-        ? distanceToPaddle / Math.abs(this.ballVelocity.x)
-        : Infinity;
-    console.log(`[${this.lastUpdate}] Time to paddle: ${timeToPaddle}`);
+    const timeToPaddle = distanceToPaddle / Math.max(0.001, Math.abs(this.ballVelocity.x));
 
-    if (timeToPaddle === Infinity || timeToPaddle <= 1) {
-      console.log(
-        `[${this.lastUpdate}] Ball close or infinite time, using current ball Y: ${ball.y}`
-      );
-      return ball.y;
-    }
-
-    /* Расчёт Y с учётом возможных отражений от верхнего и нижнего края */
+    // Улучшенный расчет отскоков с учетом времени
     const upperBound = GROUND_HEIGHT / 2 - EDGE_HEIGHT;
     const lowerBound = -GROUND_HEIGHT / 2 + EDGE_HEIGHT;
-
-
-    let predictedY = ball.y + this.ballVelocity.y * timeToPaddle;
-
-        /* логика отражения от границ */
-    const fieldHeight = upperBound - lowerBound;
-    const offset = predictedY - lowerBound;
-
-    const bounces = Math.floor(offset / fieldHeight);
-    const remainder = offset % fieldHeight;
-
-    if (bounces % 2 === 0) {
-      predictedY = lowerBound + remainder;
-    } else {
-      predictedY = upperBound - remainder;
+    
+    let remainingTime = timeToPaddle;
+    let currentZ = ball.z;
+    let currentVz = this.ballVelocity.z;
+    
+    while (remainingTime > 0) {
+      // Рассчитываем время до следующего отскока
+      let timeToPaddle;
+      if (currentVz > 0) {
+        timeToPaddle = (upperBound - currentZ) / currentVz;
+      } else if (currentVz < 0) {
+        timeToPaddle = (lowerBound - currentZ) / currentVz;
+      } else {
+        break; // Нет вертикального движения
+      }
+      
+      timeToPaddle = Math.max(0, timeToPaddle);
+      
+      if (timeToPaddle >= remainingTime) {
+        currentZ += currentVz * remainingTime;
+        break;
+      } else {
+        currentZ += currentVz * timeToPaddle;
+        currentVz *= -1; // Инвертируем скорость при отскоке
+        remainingTime -= timeToPaddle;
+      }
     }
-    /* ограничиваем в пределах поля */
-    if (predictedY > PADDLE_MAX_Z) predictedY = PADDLE_MAX_Z;
-    if (predictedY < PADDLE_MIN_Z) predictedY = PADDLE_MIN_Z;
-
-    console.log(`[${this.lastUpdate}] Predicted Y (clamped): ${predictedY}`);
-    return predictedY;
+    
+    return Math.max(PADDLE_MIN_Z, Math.min(PADDLE_MAX_Z, currentZ));
   }
-
-  console.log(`[${this.lastUpdate}] Ball moving away, returning paddle Y`);
-  return this.config.paddleSide === "right"
-    ? positions.paddleRight.y
-    : positions.paddleLeft.y;
+  return positions.paddleRight.z;
 }
 
-  usePowerUp(): PlayerInput | null {
-    return null; // 💥💥💥Заглушка для power-up
-  }
-
-  getUser(): User {
-    return this.user;
-  }
 }
+
+
+// 1. Проверяем, не прошло ли слишком мало времени с прошлого обновления
+//    Если да — выходим
+
+// 2. Проверяем, не появился ли мяч заново (после гола)
+//    Если да — сбрасываем lastBallPosition и выходим
+
+// 3. Если это первый шаг (нет lastBallPosition):
+//    - сохраняем позицию мяча
+//    - ничего не делаем пока (ждём следующего шага)
+
+// 4. Если lastBallPosition есть:
+//    - рассчитываем ballVelocity
+
+// 5. Если мяч летит влево:
+//    - двигаем ракетку к центру
+
+// 6. Если мяч летит вправо:
+//    - предсказываем по oracleOfDelphi
+//    - двигаемся вверх/вниз/стоим
+
+// 7. Сохраняем текущую позицию мяча как lastBallPosition
+

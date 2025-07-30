@@ -9,7 +9,7 @@ CREATE UNIQUE INDEX users_id ON users (
     id
 );
 
--- // *Наташа: Таблица логов игр
+// *Наташа: Таблица логов игр
 CREATE TABLE IF NOT EXISTS game_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     player1_id INTEGER NOT NULL,

@@ -29,7 +29,7 @@ export type MeshesDict = {
 	edgeBottom: Mesh
 };
 
-export type GUID = string & { __brand: "GUID" };
+// export type GUID = string & { __brand: "GUID" };
 
 export type User_f = {
 	id: number;
@@ -39,18 +39,17 @@ export type User_f = {
 export type GameButtons = Map<GameType, HTMLButtonElement>;
 
 export type User = {
-	id: GUID,
-	gameId?: GUID,
-	nick?: string,
+	id: number,
+	nick: string,
 	gameSocket?: WebSocket,
 	chatSocket?: WebSocket,
-	blocked?: Set<GUID>
+	blocked?: Set<number>
 };
 
 export type PlayerSide = "left" | "right";
 
 export interface Game {
-	id: GUID;
+	id: number;
 	state: GameState;
 	players: User[];
 	type?: GameType;
@@ -66,7 +65,7 @@ export type GameState =
 
 export type PlayerInput = {
 	type: "PlayerInput",
-	gameId: GUID,
+	gameId: number,
 	side: PlayerSide,
 	direction: -1 | 0 | 1
 };
@@ -89,7 +88,7 @@ export type InitGameRequest = {
 export type InitGameSuccess = {
 	type: "InitGameSuccess",
 	gameType: GameType,
-	gameId: GUID,
+	gameId: number,
 	gameState: GameState,
 	playerSide: "left" | "right",
 }
@@ -106,7 +105,7 @@ export type ScoreUpdate = {
 
 export type GameOver = {
 	type: "GameOver",
-	winner: GUID,
+	winner: string,
 	finalScore: [number, number]
 }
 
@@ -116,7 +115,7 @@ export type ChatMessage =
   | { type: 'broadcast', content: string } // 🐬 dobavila etu stroku
   | { type: 'block', user: User }
   | { type: 'unblock', user: User }
-  | { type: 'invite', to: User; game?: GUID }
+  | { type: 'invite', to: User; game?: number }
   | { type: 'notify', content: string }
   | { type: 'profile', user: User };
 

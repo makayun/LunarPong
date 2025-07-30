@@ -20,7 +20,7 @@ import { initHandlers } from "./initHandlers";
 import { isViewState, set_view, ViewState, navigateTo} from "./state"
 import type { User_f } from "../defines/types";
 import { jwtDecode } from 'jwt-decode';
-import { setUser, unsetUser } from "../helpers/helpers";
+// import { setUser, unsetUser } from "../helpers/helpers";
 import i18next from 'i18next';
 
 export let qrcode: string = "";
@@ -157,11 +157,6 @@ export async function login() {
 		console.log("[login] login name or password empty");
 		return;
 	}
-	if(name.value === password.value){
-		console.error("[login] User is built different");
-		showErrorModal("pass_same_username");
-		return;
-	}
 	try {
 		stopCountdown();
 		const response = await fetch(`/api/login`, {
@@ -176,11 +171,6 @@ export async function login() {
 		});
 		const data = await response.json();
 		if (!response.ok) {
-			if (data.cli_error === "user_exist") {
-				showErrorModal("user_exist");
-				console.error("[login] User already logged in:", data.error);
-				return;
-			}
 			showErrorModal("user_password_problem");
 			console.error("[login] Login failed:", data.error);
 			return;
@@ -188,7 +178,15 @@ export async function login() {
 		name.value = "";
 		password.value = "";
 
+		// const qrImg = document.getElementById("qr-img") as HTMLImageElement;
+		// qrImg.src = data.qr;
+		// qrImg.alt = "Scan with Google Authenticator";
+		// user_f.id = -2;
+
 		user_f.id = data.user.id;
+		// user_f.name = data.user.username;
+		// setUser(user_f);
+		// console.log("[login] Login successful, User name = ", user_f.name);
 		console.log("[login] Login successful, User id =", user_f.id);
 		// 💾 Сохраняем токены (в localStorage или sessionStorage)
 		localStorage.setItem("twofaToken", data.twofaToken);
@@ -217,7 +215,7 @@ export async function getUserData(tokenName: string) {
 			}
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
-			setUser(user_f);
+			// setUser(user_f);
 			console.log("[USER] Get user data:", data);
 		}  catch (err) {
 			console.error("[USER] Get user data:", err);
@@ -256,7 +254,7 @@ export async function twofa() {
 			token.value = "";
 			user_f.id = data.user.id;
 			user_f.name = data.user.username;
-			setUser(user_f);
+			// setUser(user_f);
 			localStorage.removeItem("twofaToken");
 			localStorage.setItem("accessToken", data.accessToken);
 			localStorage.setItem("refreshToken", data.refreshToken);
@@ -277,7 +275,7 @@ export async function logoff() {
 	localStorage.removeItem("refreshToken");
 	user_f.id = -1;
 	user_f.name = "";
-	unsetUser();
+	// unsetUser();
 	navigateTo(ViewState.LOGIN);
 }
 
@@ -312,11 +310,7 @@ export async function register() {
 
 	const password1 = document.querySelector<HTMLElement>(`.data_input[data-input-id="register_password1"]`) as HTMLInputElement;
 	const password2 = document.querySelector<HTMLElement>(`.data_input[data-input-id="register_password2"]`) as HTMLInputElement;
-	if(password1.value === username.value){
-		console.error("[REGISTER] User is built different");
-		showErrorModal("pass_same_username");
-		return;
-	}
+
 	if (password1.value !== password2.value) {
 		console.error("[REGISTER] Passwords do not match.");
 		showErrorModal("register_password");

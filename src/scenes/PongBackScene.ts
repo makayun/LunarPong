@@ -2,22 +2,23 @@ import { Vector3 } from "@babylonjs/core/Maths/math.vector";
 import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
 import type { WebSocket } from "@fastify/websocket";
 import { PongBaseScene } from "./PongBaseScene";
-import { generateGuid } from "../helpers/helpers";
-import type { User, Game, GUID, MeshPositions, GameState, GameOver } from "../defines/types";
+import { PADDLE_STEP }				from "../defines/constants";
+import type { User, Game, MeshPositions, GameOver } from "../defines/types";
 import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 import { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";
+import { animatePaddleToX } from "../back/paddleMovement";
+
 // import { endGameLog } from "../back/db";
 
 export class PongBackScene extends PongBaseScene implements Game {
-    public id: GUID = generateGuid();
+    public id: number = -1;
     public players: User[] = [];
     public startTime = new Date();
     public aiOpponent?: AIOpponent;
     private ballVelocity: Vector3 = new Vector3(10, 0, -2);
-    private ballSpeed: number = 18;
+    private ballSpeed: number = 14;
     private isFalling: boolean = false;
-    public gameState: GameState = "init"; // state
 
     private fieldWidth: number;
     private fieldHeight: number;
@@ -34,10 +35,22 @@ export class PongBackScene extends PongBaseScene implements Game {
         this.paddleHeight = paddleBounds.maximum.z - paddleBounds.minimum.z;
     }
 
+    private sendGameState(): void {
+        const stateMessage = {
+            type: "GameState",
+            state: this.state
+        };
+
+        this.players.forEach(player => {
+            player.gameSocket?.send(JSON.stringify(stateMessage));
+        });
+    }
+
     enablePongPhysics(): void {
-        this.pongMeshes.ball.position = new Vector3(0, 25, 0); // 💥средняя цифра - высота на старте. меняем как хотим)
+        this.pongMeshes.ball.position = new Vector3(0, 25, 0);
         this.isFalling = true;
-        this.gameState = "running"; // state
+        this.state = "running"; // state
+        this.sendGameState();
         this.onBeforeRenderObservable.add(() => {
             this.updateBall();
         });
@@ -47,7 +60,7 @@ export class PongBackScene extends PongBaseScene implements Game {
         const deltaTime = this.getEngine().getDeltaTime() / 1000;
 
         if (this.isFalling) {
-            const gravity = -9.81; // 💥можно поиграться
+            const gravity = -9.81;
             const fallSpeed = gravity * deltaTime;
             this.pongMeshes.ball.position.y += fallSpeed;
 
@@ -70,8 +83,8 @@ export class PongBackScene extends PongBaseScene implements Game {
         this.pongMeshes.ball.position.addInPlace(moveDirection.scale(moveDistance));
 
         const x = this.pongMeshes.ball.position.x;
-        const fieldWidth = 12; // если поиграться этими циферками, то можно 😸
-        const waveAmplitude = 2; // достичь идеальных подскакиваний мячика 😸
+        const fieldWidth = 7.5;
+        const waveAmplitude = 3;
         const waveFrequency = Math.PI / fieldWidth;
         this.pongMeshes.ball.position.y = waveAmplitude * Math.abs(Math.sin(x * waveFrequency));
 
@@ -129,12 +142,13 @@ export class PongBackScene extends PongBaseScene implements Game {
     }
 
     private endGame(): void {
-        this.gameState = "over";
+        this.state = "over";
+        this.sendGameState();
 
-        const winnerIndex = this.score[0] >= 7 ? 0 : 1;
+        const winnerIndex = this.score[0] >= 11 ? 0 : 1;
         const message : GameOver = {
             type: "GameOver",
-            winner: this.players[winnerIndex]?.id,
+            winner: this.players[winnerIndex]?.nick,
             finalScore: [this.score[0], this.score[1]],
         };
 
@@ -163,12 +177,12 @@ export class PongBackScene extends PongBaseScene implements Game {
             player.gameSocket?.send(JSON.stringify(message));
         });
 
-        if (this.score[0] >= 7 || this.score[1] >= 7) {
+        if (this.score[0] >= 11 || this.score[1] >= 11) {
             this.endGame();
             return;
         }
 
-        this.pongMeshes.ball.position = new Vector3(0, 15, 0); // 💥 это выоста после гола
+        this.pongMeshes.ball.position = new Vector3(0, 15, 0);
         this.isFalling = true;
     }
 }
@@ -196,8 +210,10 @@ export class PongBackEngine extends NullEngine {
 
 export function startRenderLoop(engine: PongBackEngine) {
     engine.runRenderLoop(() => {
-        engine.scenes.forEach(scene => {
-            if (scene.gameState !== "running") return; // state
+        // Copy the scenes array to avoid mutation issues
+        const scenes = [...engine.scenes];
+        for (const scene of scenes) {
+            if (scene.state !== "running") continue;
             scene.render();
 
             const posMessage: MeshPositions = {
@@ -207,11 +223,23 @@ export function startRenderLoop(engine: PongBackEngine) {
                 paddleRight: scene.pongMeshes.paddleRight.position
             };
 
+            if(scene.aiOpponent) {
+                const aiInput = scene.aiOpponent.update(posMessage, Date.now());
+				if (aiInput) {
+                    const paddle = scene.pongMeshes.paddleRight;
+		            scene.stopAnimation(paddle);
+		            animatePaddleToX(paddle, paddle.position.z + PADDLE_STEP * aiInput.direction);
+
+					scene.players.forEach(player => {
+						player.gameSocket?.send(JSON.stringify(aiInput));
+					});
+				}
+            }
+
             scene.players.forEach(player => {
                 player.gameSocket?.send(JSON.stringify(posMessage));
             });
-        });
+        }
         engine.removeEmptyScenes();
-
     });
 }
