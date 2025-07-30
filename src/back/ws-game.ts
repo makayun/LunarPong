@@ -10,7 +10,7 @@ import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
 import { PADDLE_STEP }				from "../defines/constants";
 import { animatePaddleToX } from "./paddleMovement";
-import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType, GUID } from "../defines/types";
+import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType } from "../defines/types";
 import { AIOpponent } from "./aiOpponent";
 import { error } from "node:console";
 
