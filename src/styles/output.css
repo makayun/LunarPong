@@ -757,9 +757,11 @@
     height: 100%;
     flex-direction: row;
     box-sizing: border-box;
+    transition: all 300ms ease-in-out;
+    min-width: 100%;
+    min-height: 100vh;
   }
   .game-screen-div {
-    flex: 3;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -788,10 +790,10 @@
   .chat-main-div {
     min-width: 240px;
     max-width: 800px;
+    width: 800px;
     border: 2px solid var(--color-blue);
     padding: calc(var(--spacing) * 2);
     gap: calc(var(--spacing) * 2);
-    flex: 1;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
@@ -799,6 +801,7 @@
     margin-left: calc(var(--spacing) * 20);
     border-radius: 1rem;
     backdrop-filter: blur(2px);
+    align-items: center;
   }
   .chat-head {
     display: flex;
@@ -821,8 +824,8 @@
     flex: 1;
   }
   .chat-util-btn {
-    background: linear-gradient(180deg, var(--color-purple) 40%, var(--color-green) 130%);
-    color: var(--color-white);
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--color-blue);
     border: 2px solid var(--color-blue);
     border-radius: 0.25rem;
     padding: calc(var(--spacing) * 1);
@@ -839,13 +842,16 @@
     flex: 1;
     padding: calc(var(--spacing) * 2);
     background: rgba(0, 0, 0, 0.8);
-    color: var(--color-white);
+    color: #8eff00;
     overflow-wrap: break-word;
     font-size: var(--text-base);
     line-height: var(--tw-leading, var(--text-sm--line-height));
     border-radius: 0.25rem;
     border: 2px solid var(--color-blue);
     height: 600px;
+    width: 500px;
+    min-width: 330px;
+    max-width: 500px;
     min-height: 400px;
     max-height: 80vh;
     overflow-x: hidden;
@@ -1102,14 +1108,16 @@
     }
     .game-div {
       flex-direction: column;
+      width: 100%;
+      min-width: 100%;
     }
     .game-win {
       max-width: min(90vw, 80vh * 10/7);
       padding-left: calc(var(--spacing) * 2);
     }
     .chat-main-div {
-      min-width: 100%;
-      max-width: min(90vw, 80vh * 10/7);
+      min-width: 240px;
+      max-width: 520px;
       margin: calc(var(--spacing) * 2);
       margin-top: 0;
     }
@@ -1141,7 +1149,6 @@
       flex-direction: column;
     }
     .game-win {
-      max-width: min(90vw, 80vh * 10/7);
       padding-left: calc(var(--spacing) * 2);
     }
     .game-button-tw {
@@ -1170,10 +1177,14 @@
   }
   @media (min-width: 769px) {
     .game-win {
-      max-width: min(90vw, 80vh * 10/7);
+      width: 100%;
+      height: 100%;
     }
     .game-div {
       flex-direction: row;
+    }
+    .game-screen-div {
+      width: 100%;
     }
     .chat-main-div {
       min-width: 240px;
