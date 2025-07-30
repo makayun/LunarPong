@@ -2,6 +2,11 @@ import type { FastifyInstance } from "fastify";
 import type { WebSocket } from "@fastify/websocket";
 import type { FastifyRequest } from "fastify";
 import type { ChatMessage, User } from "../defines/types";
+// import ActiveService from "./active_service";
+// import UserSession from "./user_session";
+import { TournamentService }	from './sqlib'
+
+const TrnmntSrv = new TournamentService();
 
 const users: Map<number, User> = new Map();
 
@@ -22,17 +27,32 @@ function sendToUser(userId: number, message: any) {
   }
 }
 
+// export interface WsChatPluginOptions { users: User[]; activeService: ActiveService; };
+
+// export async function wsChatPlugin(server: FastifyInstance, options: WsChatPluginOptions) {
 export async function wsChatPlugin(server: FastifyInstance) {
   server.get("/ws-chat", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
     server.log.info("[CHAT] WebSocket connected");
     let currentUser: User | null = null;
-
+	socket.isAlive = true;
     socket.on("message", (data: string) => {
       try {
         const msg: ChatMessage = JSON.parse(data.toString());
 
         switch (msg.type) {
-            case 'register': {
+			case "register": {
+				// console.debug("Registering user in chat:", msg.user.id);
+				// const userSessionIDX: number = options.activeService.getSessionIDX(msg.user.id)
+				// console.debug(`User session index for ${msg.user.id} (socket_c):`, userSessionIDX);
+				// if (userSessionIDX === -1) {
+				// 	options.activeService.add(msg.user.id, undefined, socket);
+				// 	console.log(`User ${msg.user.id} registered in ActiveService.`);
+				// } else {
+				// 	options.activeService.getSession(userSessionIDX)?.setSocketC(socket);
+				// 	console.log(`User ${msg.user.id} is already active in ActiveService, just add the chat socket.`);
+				// }
+			// 	break;
+            // case 'register': {
                 const rawUser = msg.user;
                 let nickname = (rawUser.nick && rawUser.nick.trim());
                 const isNickTaken = Array.from(users.values()).some(u => u.nick === nickname);
@@ -127,29 +147,49 @@ export async function wsChatPlugin(server: FastifyInstance) {
           case 'profile': {
             if (!currentUser) return;
 
-            const requestedUser = users.get(msg.user.id);
-            if (!requestedUser) {
-              socket.send(JSON.stringify({
+            const profile = TrnmntSrv.getProfile(msg.user.id);
+            if (!profile) {
+              socket.send(JSON.stringify({ 
                 type: 'profile',
-                user: { id: msg.user.id },
-                error: 'User not found'
+                code: 404,
+                error: 'Profile not found'
               }));
-              return;
+              break;
             }
-
-            // 💥💥💥Здесь должны быть реальные данные!
             socket.send(JSON.stringify({
               type: 'profile',
-              user: {
-                id: requestedUser.id,
-                nick: requestedUser.nick
-              },
-              rating: 4.2,       // 💥💥💥Заглушка
-              wins: 42,          // 💥💥💥Заглушка
-              streak: 5          // 💥💥💥Заглушка
+              code: 200,
+              profile: profile
             }));
             break;
           }
+
+          // case 'profile': {
+          //   if (!currentUser) return;
+          
+          //   const requestedUser = users.get(msg.user.id);
+          //   if (!requestedUser) {
+          //     socket.send(JSON.stringify({
+          //       type: 'profile',
+          //       user: { id: msg.user.id },
+          //       error: 'User not found'
+          //     }));
+          //     return;
+          //   }
+
+          //   // 💥💥💥Здесь должны быть реальные данные!
+          //   socket.send(JSON.stringify({
+          //     type: 'profile',
+          //     user: {
+          //       id: requestedUser.id,
+          //       nick: requestedUser.nick
+          //     },
+          //     rating: 4.2,       // 💥💥💥Заглушка
+          //     wins: 42,          // 💥💥💥Заглушка
+          //     streak: 5          // 💥💥💥Заглушка
+          //   }));
+          //   break;
+          // }
 
           default:
             console.warn("Unknown message type:", msg);
@@ -167,5 +207,10 @@ export async function wsChatPlugin(server: FastifyInstance) {
         broadcastUserList();
       }
     });
+
+	socket.on("pong", () => {
+		console.debug("Received pong from client (socket_c)");
+		socket.isAlive = true;
+	});
   });
 }

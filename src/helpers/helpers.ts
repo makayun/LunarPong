@@ -1,11 +1,11 @@
-import type { GUID } from "../defines/types";
+// import type { GUID } from "../defines/types";
 
-export function generateGuid(): GUID {
-	return (
-		Math.random().toString(36).substring(2, 15) +
-		Math.random().toString(36).substring(2, 15)
-	) as GUID;
-}
+// export function generateGuid(): GUID {
+// 	return (
+// 		Math.random().toString(36).substring(2, 15) +
+// 		Math.random().toString(36).substring(2, 15)
+// 	) as GUID;
+// }
 
 const adjectives = [ "Quick", "Bright", "Calm", "Sharp", "Mighty", "Lazy", "Sad", "Angry" ];
 const nouns = ["Cat", "Star", "Tree", "Cloud", "Bird", "Snail", "Thor", "Hulk", "Groot", "Loki"];

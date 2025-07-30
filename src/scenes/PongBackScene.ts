@@ -3,8 +3,7 @@ import { NullEngine } from "@babylonjs/core/Engines/nullEngine";
 import type { WebSocket } from "@fastify/websocket";
 import { PongBaseScene } from "./PongBaseScene";
 import { PADDLE_STEP }				from "../defines/constants";
-import { generateGuid } from "../helpers/helpers";
-import type { User, Game, GUID, MeshPositions, GameOver } from "../defines/types";
+import type { User, Game, MeshPositions, GameOver } from "../defines/types";
 import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 import { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";
@@ -13,7 +12,7 @@ import { animatePaddleToX } from "../back/paddleMovement";
 // import { endGameLog } from "../back/db";
 
 export class PongBackScene extends PongBaseScene implements Game {
-    public id: GUID = generateGuid();
+    public id: number = -1;
     public players: User[] = [];
     public startTime = new Date();
     public aiOpponent?: AIOpponent;
@@ -211,8 +210,10 @@ export class PongBackEngine extends NullEngine {
 
 export function startRenderLoop(engine: PongBackEngine) {
     engine.runRenderLoop(() => {
-        engine.scenes.forEach(scene => {
-            if (scene.state !== "running") return; // state
+        // Copy the scenes array to avoid mutation issues
+        const scenes = [...engine.scenes];
+        for (const scene of scenes) {
+            if (scene.state !== "running") continue;
             scene.render();
 
             const posMessage: MeshPositions = {
@@ -238,8 +239,7 @@ export function startRenderLoop(engine: PongBackEngine) {
             scene.players.forEach(player => {
                 player.gameSocket?.send(JSON.stringify(posMessage));
             });
-        });
+        }
         engine.removeEmptyScenes();
-
     });
 }

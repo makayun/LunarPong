@@ -56,6 +56,10 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
 			socket.close();
 			user = null;
 		})
+		socket.addEventListener('open', () => {
+			console.debug("WebSocket (socket_g) connection established.");
+      		socket.send(JSON.stringify({ type: 'register', user}));
+    	});
 	}
 	else
 		window.dispatchEvent(pongLogoff);

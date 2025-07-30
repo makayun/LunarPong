@@ -88,6 +88,12 @@ export const g_auth_cb = async (req: FastifyRequest, reply: FastifyReply) => {
 	const client = getGoogleOAuthClient();
 	const { code } = req.query as { code: string };
 
+	console.log('Code:', code);
+	if (!code) {
+		return reply.redirect(`/`);
+		// return reply.status(400).send({ error: 'Code is required' });
+	}
+
 	const options = {
 		code,
 		redirect_uri: process.env.GOOGLE_REDIRECT_URI,

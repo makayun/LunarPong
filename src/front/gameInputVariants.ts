@@ -1,4 +1,4 @@
-import type { GUID, PlayerInput, PlayerSide/*, MeshPositions*/ } from "../defines/types";
+import type { PlayerInput, PlayerSide/*, MeshPositions*/ } from "../defines/types";
 import type { PongFrontScene } from "../scenes/PongFrontScene";
 // import { AIOpponent } from "../back/aiOpponent";
 
@@ -16,7 +16,7 @@ export function localInputHandler(scene: PongFrontScene, socket: WebSocket): () 
 
 			const inputMessage: PlayerInput = {
 				type: "PlayerInput",
-				gameId: scene.id as GUID,
+				gameId: scene.id as number,
 				side: "left",
 				direction: 0
 			};
@@ -60,7 +60,7 @@ export function remoteInputHandler(scene: PongFrontScene, socket: WebSocket): ()
 
 			const inputMessage: PlayerInput = {
 				type: "PlayerInput",
-				gameId: scene.id as GUID,
+				gameId: scene.id as number,
 				side: scene.side as PlayerSide,
 				direction: 0
 			};
@@ -90,7 +90,7 @@ export function aiInputHandler(scene: PongFrontScene, socket: WebSocket): () => 
 
 			const inputMessage: PlayerInput = {
 				type: "PlayerInput",
-				gameId: scene.id as GUID,
+				gameId: scene.id as number,
 				side: "left",
 				direction: 0
 			};
