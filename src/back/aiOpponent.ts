@@ -32,7 +32,6 @@ export class AIOpponent {
     };
   }
 
-
   update(positions: MeshPositions, currentTime: number): PlayerInput | null {
     if (currentTime - this.lastUpdate < this.config.updateInterval) {
       return null;
@@ -85,7 +84,6 @@ export class AIOpponent {
     }
     return null;
   }
-
 
   private createInput(direction: typeof UP | typeof DOWN): PlayerInput {
     return {
