@@ -60,6 +60,17 @@
     "profile-chat": "Profile",
     "msg-input": "Type here..."
   },
+  "tournament": {
+    "create": "Create Tournament",
+    "join": "Join Tournament",
+    "title": "Create Tournament",
+    "name": "Tournament Name",
+    "name_placeholder": "Enter tournament name...",
+    "players": "Number of Players",
+    "players_label": "Players",
+    "cancel": "Cancel",
+    "create_btn": "Create Tournament"
+  },
   "2fa": {
     "title": "Enter two-factor authentication key",
     "label_token": "Enter code here...",

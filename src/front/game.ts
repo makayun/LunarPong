@@ -111,7 +111,7 @@ async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameS
 	};
 }
 
-function assignInputHandler(pongScene: PongFrontScene, gameType: GameType, socket: WebSocket) {
+function assignInputHandler(pongScene: PongFrontScene, gameType: GameType, socket: WebSocket): (_socket: WebSocket) => void {
 	switch (gameType) {
 		case "Local game":
 			showSuccessMessage({ type: 'LocalCreated', playerCount: 2 });
@@ -121,6 +121,8 @@ function assignInputHandler(pongScene: PongFrontScene, gameType: GameType, socke
 			return remoteInputHandler(pongScene, socket);
 		case "Versus AI":
 			return aiInputHandler(pongScene, socket);
+		default:
+			return () => {};
 	}
 }
 

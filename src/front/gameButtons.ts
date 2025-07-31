@@ -3,7 +3,7 @@ import type { GameType, GameButtons, User, InitGameRequest} from "../defines/typ
 
 export function initGameButtons() : GameButtons {
 	const buttons = new Map<GameType, HTMLButtonElement>;
-	const types: GameType[] = ["Local game", "Remote game", "Versus AI"];
+	const types: GameType[] = ["Local game", "Remote game", "Versus AI", "createTournament","joinTournament"];
 
 	types.forEach(type => {
 		const button = document.getElementById(type);

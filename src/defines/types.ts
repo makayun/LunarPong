@@ -6,6 +6,8 @@ import type { WebSocket  } from "@fastify/websocket";
 export type GameType =
 	| "Local game"
 	| "Remote game"
+	| "createTournament"
+	| "joinTournament"
 	| "Versus AI";
 
 export type MeshName =

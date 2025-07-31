@@ -157,56 +157,53 @@
     </canvas>
     <div class="flex flex-wrap gap-4 justify-center mt-6 px-4">
       <button id="createTournament" 
-              class="game-button-tw">
-          Create Tournament
+              class="game-button-tw" data-i18n="tournament.create">
       </button>
       <div id="tournamentDialog" class="dialog-overlay">
     <div class="dialog">
       <div class="dialog-header">
-        <h2 class="dialog-title">Create Tournament</h2>
+        <h2 class="dialog-title" data-i18n="tournament.create"></h2>
         <button class="close-btn" id="btn-close">&times;</button>
       </div>
       <form id="tournamentForm">
         <div class="form-group">
-          <label class="form-label">Tournament Name</label>
+          <label class="form-label" data-i18n="tournament.name"></label>
           <input 
             type="text" 
             id="tournamentName" 
-            class="tournament-name-input" 
-            placeholder="Enter tournament name..."
+            class="tournament-name-input"
+            data-i18n="tournament.name_placeholder"
+            placeholder=""
             required>
         </div>
         <div class="form-group">
-          <label class="form-label">Number of Players</label>
+          <label class="form-label" data-i18n="tournament.players"></label>
           <div class="player-count-grid" id="playerCountOptions">
             <div class="player-count-option" data-players="2">
               <span class="player-number">2</span>
-              <span class="player-label">Players</span>
+              <span class="player-label" data-i18n="tournament.players_label"></span>
             </div>
             <div class="player-count-option" data-players="4">
               <span class="player-number">4</span>
-              <span class="player-label">Players</span>
+              <span class="player-label" data-i18n="tournament.players_label"></span>
             </div>
             <div class="player-count-option" data-players="8">
               <span class="player-number">8</span>
-              <span class="player-label">Players</span>
+              <span class="player-label" data-i18n="tournament.players_label"></span>
             </div>
           </div>
         </div>
         <div class="dialog-actions">
-          <button type="button" class="dialog-btn btn-cancel" id="Cancel-btn">
-            Cancel
+          <button type="button" class="dialog-btn btn-cancel" id="Cancel-btn" data-i18n="tournament.cancel">
           </button>
-          <button type="submit" class="dialog-btn btn-create" id="createBtn" disabled>
-            Create Tournament
+          <button type="submit" class="dialog-btn btn-create" id="createBtn" data-i18n="tournament.create" disabled>
           </button>
         </div>
       </form>
     </div>
   </div>
       <button id="joinTournament"
-              class="game-button-tw">
-          Join Tournament
+              class="game-button-tw" data-i18n="tournament.join">
       </button>
     </div>
   </div>
