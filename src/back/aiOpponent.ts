@@ -42,11 +42,10 @@ export class AIOpponent {
     const paddleZ = positions.paddleRight.z;
     const ballPos = positions.ball;
 
-    // if (ballPos.y > 5) {
-    if (ballPos.y > 3) {
+    if (ballPos.y > 5) {
       this.lastBallPosition = null;
-      if (paddleZ > 0.1) return this.createInput(UP);
-      if (paddleZ < -0.1) return this.createInput(DOWN);
+      if (paddleZ > 3) return this.createInput(UP);
+      if (paddleZ < -3) return this.createInput(DOWN);
       return null;
     }
 
@@ -61,8 +60,9 @@ export class AIOpponent {
     this.lastBallPosition = ballPos.clone();
 
     if (this.ballVelocity.x < 0) {
+      const doorstep = 0.4;
       // const doorstep = 0.1 + 0.4 * Math.abs(paddleZ) / (GROUND_HEIGHT / 2);
-      const doorstep = Math.max(0.05, 0.3 / (1 + Math.abs(this.ballVelocity.z)));
+      // const doorstep = Math.max(0.05, 0.3 / (1 + Math.abs(this.ballVelocity.z)));
       // const doorstep = Math.max(0.08, 0.2 / (1 + Math.abs(this.ballVelocity.z)));
 
       if (paddleZ > 0 + doorstep) return this.createInput(UP);
@@ -71,8 +71,8 @@ export class AIOpponent {
     }
 
     const predictedZ = this.oracleOfDelphi(positions);
-    // const doorstep = 0.4;
-    const doorstep = Math.max(0.05, 0.3 / (1 + Math.abs(this.ballVelocity.z)));
+    const doorstep = 0.4;
+    // const doorstep = Math.max(0.05, 0.3 / (1 + Math.abs(this.ballVelocity.z)));
     // const doorstep = Math.max(0.08, 0.2 / (1 + Math.abs(this.ballVelocity.z)));
 
     let direction: typeof UP | typeof DOWN | typeof STOP = STOP;
@@ -101,8 +101,8 @@ export class AIOpponent {
     const paddleX = positions.paddleRight.x;
 
     const distanceToPaddle = Math.abs(paddleX - ball.x);
-    const closeThreshold = Math.max(0.3, 0.5 / (1 + Math.abs(this.ballVelocity.x)));
-    // const closeThreshold = 0.5; /* ✨✨✨ */
+    // const closeThreshold = Math.max(0.3, 0.5 / (1 + Math.abs(this.ballVelocity.x)));
+    const closeThreshold = 0.5; /* ✨✨✨ */
     if (distanceToPaddle < closeThreshold) {
       return Math.max(PADDLE_MIN_Z, Math.min(PADDLE_MAX_Z, ball.z));
     }
