@@ -4,6 +4,7 @@ import type { WebSocket }		from "@fastify/websocket";
 // import ActiveService			from "./active_service";
 // import UserSession				from "./user_session";
 import { TournamentService }	from './sqlib'
+import { Tournament } from "./tournament_back"; // ✨✨✨✨✨✨✨
 
 // import { startGameLog } from "./db";
 import { PongBackEngine }	from "../scenes/PongBackScene";
@@ -21,6 +22,7 @@ export interface WsGamePluginOptions { engine: PongBackEngine; users: User[]; };
 
 export async function wsGamePlugin(server: FastifyInstance, options: WsGamePluginOptions) {
 	const { engine } = options;
+	const tournaments: Map<string, Tournament> = new Map(); // ✨✨✨✨✨✨✨
 
 	server.get("/ws-game", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
 		server.log.info("[GAME] WebSocket connected");
@@ -30,6 +32,109 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 				const msg: WSMessage = JSON.parse(message);
 
 				switch (msg.type) {
+				    // ✨✨✨✨✨✨✨✨✨✨✨✨
+                    case "JoinTournament":
+                        const { user, tournamentId } = msg;
+                        let tournament = tournaments.get(tournamentId);
+                        if (!tournament) {
+                            tournament = new Tournament(tournamentId);
+                            tournaments.set(tournamentId, tournament);
+                        }
+                        tournament.addPlayer({ ...user, gameSocket: socket });
+                        TrnmntSrv.addUser(Number(tournamentId), user.id);
+						const waitingScene = engine.scenes.find(scene => 
+                            scene.players.length === 1 && 
+                            scene.state === "init" && 
+                            scene.players[0].id === user.id
+                        );
+                        if (waitingScene) {
+                            engine.scenes = engine.scenes.filter(scene => scene.id !== waitingScene.id);
+                            console.log(`Player ${user.id} removed from waiting scenes`);
+                        }
+                        // break;
+
+
+    // // Новая логика: если 3 игрока, начать турнир и создать сцены
+    // if (tournament.players.length === 3) {
+    //     tournament.startTournament();
+    //     tournament.matches.forEach(match => {
+    //         const game = new PongBackScene(engine);
+    //         addPlayerToGame(game, match.player1, match.player1.gameSocket);
+    //         addPlayerToGame(game, match.player2, match.player2.gameSocket);
+    //         game.enablePongPhysics();
+    //         match.gameId = game.id; // Заполняем gameId матча
+    //         sendInitGameSuccess("Tournament game", game.id, "left", match.player1.gameSocket);
+    //         sendInitGameSuccess("Tournament game", game.id, "right", match.player2.gameSocket);
+    //     });
+    // }
+    					break;
+
+// 		case "CreateTournament": {
+//     const { tournamentId } = msg;
+
+//     if (tournaments.has(tournamentId)) {
+//         socket.send({
+//             type: "Error",
+//             message: `Tournament '${tournamentId}' already exists`
+//         });
+//         break;
+//     }
+
+//     const newTournament = new Tournament(tournamentId);
+//     tournaments.set(tournamentId, newTournament);
+
+//     socket.send({
+//         type: "TournamentCreated",
+//         tournamentId,
+//     });
+//     break;
+// }
+
+
+// 				case "JoinTournament": {
+//     const { user, tournamentId } = msg;
+//     const tournament = tournaments.get(tournamentId);
+
+//     if (!tournament) {
+//         socket.send({
+//             type: "Error",
+//             message: `Tournament '${tournamentId}' does not exist`
+//         });
+//         break;
+//     }
+
+//     tournament.addPlayer({ ...user, gameSocket: socket });
+//     TrnmntSrv.addUser(Number(tournamentId), user.id);
+
+//     // Очистка старой сцены ожидания
+//     const waitingScene = engine.scenes.find(scene =>
+//         scene.players.length === 1 &&
+//         scene.state === "init" &&
+//         scene.players[0].id === user.id
+//     );
+//     if (waitingScene) {
+//         engine.scenes = engine.scenes.filter(scene => scene.id !== waitingScene.id);
+//         console.log(`Player ${user.id} removed from waiting scenes`);
+//     }
+
+//     // Если собрано 3 игрока — запускаем турнир
+//     if (tournament.players.length === 3) {
+//         tournament.startTournament();
+//         tournament.matches.forEach(match => {
+//             const game = new PongBackScene(engine);
+//             addPlayerToGame(game, match.player1, match.player1.gameSocket);
+//             addPlayerToGame(game, match.player2, match.player2.gameSocket);
+//             game.enablePongPhysics();
+//             match.gameId = game.id;
+//             sendInitGameSuccess("Tournament game", game.id, "left", match.player1.gameSocket);
+//             sendInitGameSuccess("Tournament game", game.id, "right", match.player2.gameSocket);
+//         });
+//     }
+//     break;
+// }
+
+
+                    // ✨✨✨✨✨✨✨✨✨✨✨✨
 				// case "register":
 				// 	console.debug("Registering user in game:", msg.user.id);
 				// 	const userSessionIDX: number = options.activeService.getSessionIDX(msg.user.id)
