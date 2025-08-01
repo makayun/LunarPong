@@ -8,7 +8,7 @@
 // }
 
 const adjectives = [ "Quick", "Bright", "Calm", "Sharp", "Mighty", "Lazy", "Sad", "Angry" ];
-const nouns = ["Cat", "Star", "Tree", "Cloud", "Bird", "Snail", "Thor", "Hulk", "Groot", "Loki"];
+const nouns = [" Cat", " Star", " Tree", " Cloud", " Bird", " Snail", " Thor", " Hulk", " Groot", " Loki"];
 
 // proverka na unikalnost!!! 🔥
 export function generateNickname(): string {
