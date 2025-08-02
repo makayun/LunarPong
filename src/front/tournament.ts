@@ -16,6 +16,7 @@ interface Tournament {
 let selectedPlayerCount: number | null = null;
 let tournaments: Tournament[] = [];
 let currentUser: string | null = null;
+export let TournamentActive: boolean;
 
 async function initCurrentUser(): Promise<void> {
   try {
@@ -114,7 +115,19 @@ function validateForm(): void {
   initCurrentUser();
   const hasName = nameInput.value.trim().length > 0;
   const hasPlayerCount = selectedPlayerCount !== null;
+  if(TournamentActive)
+  {
+    displayChatMessage('system',
+    `You cannot create new tournament until active is not finished`,
+    'error'
+  );
+  dialog.classList.remove('active');
 
+  setTimeout(() => {
+    resetForm();
+  }, 300);
+  }
+      
   createSubmitBtn.disabled = !(hasName && hasPlayerCount);
 }
 
@@ -138,7 +151,7 @@ async function handleSubmitUpdated(e: Event): Promise<void> {
 
   tournaments.push(tournamentData);
   console.log('Tournament created:', tournamentData);
-
+  TournamentActive = true;
   showSuccessMessage(tournamentData);
 
   displayChatMessage('system',
