@@ -4,7 +4,7 @@ import type { WebSocket }		from "@fastify/websocket";
 // import ActiveService			from "./active_service";
 // import UserSession				from "./user_session";
 import { TournamentService }	from './sqlib'
-import { Tournament } from "./tournament_back"; // ✨✨✨✨✨✨✨
+// import { TournamentB } from "./tournament_back"; // ✨✨✨✨✨✨✨
 
 // import { startGameLog } from "./db";
 import { PongBackEngine }	from "../scenes/PongBackScene";
@@ -22,7 +22,6 @@ export interface WsGamePluginOptions { engine: PongBackEngine; users: User[]; };
 
 export async function wsGamePlugin(server: FastifyInstance, options: WsGamePluginOptions) {
 	const { engine } = options;
-	const tournaments: Map<string, Tournament> = new Map(); // ✨✨✨✨✨✨✨
 
 	server.get("/ws-game", { websocket: true }, (socket: WebSocket, _req: FastifyRequest) => {
 		server.log.info("[GAME] WebSocket connected");
@@ -33,38 +32,10 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 
 				switch (msg.type) {
 				    // ✨✨✨✨✨✨✨✨✨✨✨✨
-                    case "Tournament":
-                        const { user, tournamentId } = msg;
-                        let tournament = tournaments.get(tournamentId);
-                        if (!tournament) {
-                            tournament = new Tournament(tournamentId);
-                            tournaments.set(tournamentId, tournament);
-                        }
-                        tournament.addPlayer({ ...user, gameSocket: socket });
-                        TrnmntSrv.addUser(Number(tournamentId), user.id);
-						const waitingScene = engine.scenes.find(scene => 
-                            scene.players.length === 1 && 
-                            scene.state === "init" && 
-                            scene.players[0].id === user.id
-                        );
-                        if (waitingScene) {
-                            engine.scenes = engine.scenes.filter(scene => scene.id !== waitingScene.id);
-                            console.log(`Player ${user.id} removed from waiting scenes`);
-                        }
-    					break;
+                // case "Tournament":
+				// 		// 
+    			// 	break;
                     // ✨✨✨✨✨✨✨✨✨✨✨✨
-				// case "register":
-				// 	console.debug("Registering user in game:", msg.user.id);
-				// 	const userSessionIDX: number = options.activeService.getSessionIDX(msg.user.id)
-				// 	console.debug(`User session index for ${msg.user.id} (socket_g):`, userSessionIDX);
-				// 	if (userSessionIDX === -1) {
-				// 		options.activeService.add(msg.user.id, socket);
-				// 		console.log(`User ${msg.user.id} registered in ActiveService.`);
-				// 	} else {
-				// 		options.activeService.getSession(userSessionIDX)?.setSocketG(socket);
-				// 		console.log(`User ${msg.user.id} is already active in ActiveService, just add the game socket.`);
-				// 	}
-				// 	break;
 				case "InitGameRequest":
 					processInitGameRequest(engine, socket, msg as InitGameRequest);
 					break;

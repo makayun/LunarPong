@@ -442,3 +442,24 @@ export {
     startTournament
 };
 
+
+
+// import { TournamentB } from "../back/tournament_back";
+// import type { User } from "../defines/types";
+
+// const player1: User = { id: 1, nick: "Anna", gameSocket: socket1 };
+// const player2: User = { id: 2, nick: "Marivanna", gameSocket: socket2 };
+// const player3: User = { id: 3, nick: "Dolboeb", gameSocket: socket3 };
+// const player4: User = { id: 4, nick: "Bot", gameSocket: socket4 };
+
+// const tournamentName = "Ultimate Battle";
+// const tournament = new TournamentB(tournamentName);
+
+// tournament.runTournament(player1, player2, player3, player4);
+// /* prinimaem json s resultatom */
+// tournament.handleGameOver(1, "Anna");
+// /* prinimaem json s resultatom */
+// tournament.handleGameOver(2, "Bot");
+// /* prinimaem json s resultatom */
+// tournament.handleGameOver(3, "Dolboeb");
+// /* rassylka */
