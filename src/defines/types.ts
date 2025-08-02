@@ -121,10 +121,13 @@ export type ChatMessage =
   | { type: 'notify', content: string }
   | { type: 'profile', user: User };
 
-export interface JoinTournament {
-    type: "JoinTournament";
-    user: User;
-    tournamentId: string;
+export interface Tournament {
+    type: "Tournament";
+	tournamentId: string;
+    user1: User;
+	user2: User;
+	user3: User;
+	user4: User;
 }
 
 export type WSMessage =
@@ -136,4 +139,4 @@ export type WSMessage =
 	| BallCollision
 	| ScoreUpdate
 	| GameOver
-	| JoinTournament
+	| Tournament
