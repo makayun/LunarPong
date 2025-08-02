@@ -52,8 +52,6 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
                             console.log(`Player ${user.id} removed from waiting scenes`);
                         }
     					break;
-
-
                     // ✨✨✨✨✨✨✨✨✨✨✨✨
 				// case "register":
 				// 	console.debug("Registering user in game:", msg.user.id);

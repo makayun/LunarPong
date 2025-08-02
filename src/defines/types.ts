@@ -123,11 +123,24 @@ export type ChatMessage =
 
 export interface Tournament {
     type: "Tournament";
-	tournamentId: string;
-    user1: User;
+    tournamentId: string;
+	user1: User;
 	user2: User;
 	user3: User;
 	user4: User;
+}
+
+export interface TournamentCreated {
+	type: "TourCreated";
+	user: User;
+	message: string;
+	tournamentName: string;
+}
+
+export interface TournamentResult {
+	type: "TourResult";
+	user: User;
+	tournamentActive: boolean;
 }
 
 export type WSMessage =
@@ -140,3 +153,4 @@ export type WSMessage =
 	| ScoreUpdate
 	| GameOver
 	| Tournament
+	| TournamentCreated
