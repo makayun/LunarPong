@@ -1,5 +1,8 @@
 // import { getUserId } from '../helpers/helpers';
 
+import { generateNickname } from "../helpers/helpers";
+
+
 interface Tournament {
   id: string;
   name: string;
@@ -16,8 +19,8 @@ let currentUser: string | null = null;
 
 async function initCurrentUser(): Promise<void> {
   try {
-    currentUser = await getUserId();
-    console.log('Tournament system initialized with user ID:', currentUser);
+    currentUser = nameInput.value.toString();
+    console.log('Tournament system initialized with user :', currentUser);
   } catch (error) {
     console.error('Failed to get user ID:', error);
   }
@@ -36,7 +39,6 @@ const messagesContainer = document.getElementById('messages') as HTMLDivElement;
 
 async function initTournamentDialog(): Promise<void> {
 
-  await initCurrentUser();
 
   if (!dialog || !createBtn || !closeBtn || !cancelBtn || !form || !nameInput || !createSubmitBtn) {
     console.error('Tournament dialog elements not found');
@@ -109,6 +111,7 @@ function selectPlayerCount(option: HTMLDivElement): void {
 }
 
 function validateForm(): void {
+  initCurrentUser();
   const hasName = nameInput.value.trim().length > 0;
   const hasPlayerCount = selectedPlayerCount !== null;
 
@@ -125,7 +128,7 @@ async function handleSubmitUpdated(e: Event): Promise<void> {
 
   const tournamentData: Tournament = {
     id: Date.now().toString(),
-    name: nameInput.value.trim(),
+    name: generateNickname(),
     playerCount: selectedPlayerCount,
     currentPlayers: [currentUser],
     status: 'waiting',
@@ -400,10 +403,6 @@ async function startTournament(tournamentId: string): Promise<void> {
 }
 
 
-function getCurrentUserId(): string | null {
-  return currentUser;
-}
-
 async function updateCurrentUser(): Promise<void> {
   await initCurrentUser();
 }
@@ -419,18 +418,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   }, 500);
 });
 
-async function getUserId(): Promise<string> {
-    // Try to get user ID from localStorage (simulate authentication)
-    const storedId = localStorage.getItem('userId');
-    if (storedId) {
-        return storedId;
-    }
-    // If not found, generate a random user ID and store it
-    const newId = `user_${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem('userId', newId);
-    return newId;
-}
-
 export {
     initTournamentDialog,
     initJoinTournament,
@@ -438,7 +425,6 @@ export {
     hasActiveTournaments,
     checkAndSuggestTournaments,
     getTournamentsByStatus,
-    getCurrentUserId,
     updateCurrentUser,
     startTournament
 };
