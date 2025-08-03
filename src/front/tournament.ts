@@ -134,17 +134,40 @@ function validateForm(): void {
 async function handleSubmitUpdated(e: Event): Promise<void> {
   e.preventDefault();
 
-  if (!selectedPlayerCount || !currentUser) {
+  const player1Input = document.getElementById('player1') as HTMLInputElement;
+  const player2Input = document.getElementById('player2') as HTMLInputElement;
+  const player3Input = document.getElementById('player3') as HTMLInputElement;
+
+  if (!player1Input.value || !player2Input.value || !player3Input.value || !currentUser) {
     console.error('Missing required data for tournament creation');
+    displayChatMessage('system', 'All player name fields must be filled!', 'error');
     return;
   }
+
+  const players = [
+    player1Input.value.trim(),
+    player2Input.value.trim(),
+    player3Input.value.trim()
+  ];
+
+  const uniquePlayers = new Set(players);
+  if (uniquePlayers.size !== 3) {
+    console.error('Player names must be unique');
+    displayChatMessage('system', 'Player names must be unique!', 'error');
+    return;
+  }
+
+  // if (!selectedPlayerCount || !currentUser) {
+  //   console.error('Missing required data for tournament creation');
+  //   return;
+  // }
 
   const tournamentData: Tournament = {
     id: Date.now().toString(),
     name: generateNickname(),
-    playerCount: selectedPlayerCount,
-    currentPlayers: [currentUser],
-    status: 'waiting',
+    playerCount: 3/*selectedPlayerCount*/,
+    currentPlayers: players,
+    status: 'full'/*'waiting'*/,
     createdBy: currentUser,
     createdAt: new Date()
   };
@@ -155,13 +178,15 @@ async function handleSubmitUpdated(e: Event): Promise<void> {
   showSuccessMessage(tournamentData);
 
   displayChatMessage('system',
-    `Tournament "${tournamentData.name}" created! You (${currentUser}) are automatically enrolled. Waiting for ${tournamentData.playerCount - 1} more players to join.`,
+    `Tournament "${tournamentData.name}" created!` /*You (${currentUser}) are automatically enrolled. Waiting for ${tournamentData.playerCount - 1} more players to join.`*/,
     'success'
   );
 
-  setTimeout(() => {
-    checkAndSuggestTournaments();
-  }, 1000);
+  // setTimeout(() => {
+  //   checkAndSuggestTournaments();
+  // }, 1000);
+
+  showTournamentBracket(tournamentData);
 
   closeDialog();
 }
@@ -415,7 +440,6 @@ async function startTournament(tournamentId: string): Promise<void> {
 
 }
 
-
 async function updateCurrentUser(): Promise<void> {
   await initCurrentUser();
 }
@@ -441,25 +465,3 @@ export {
     updateCurrentUser,
     startTournament
 };
-
-
-
-// import { TournamentB } from "../back/tournament_back";
-// import type { User } from "../defines/types";
-
-// const player1: User = { id: 1, nick: "Anna", gameSocket: socket1 };
-// const player2: User = { id: 2, nick: "Marivanna", gameSocket: socket2 };
-// const player3: User = { id: 3, nick: "Dolboeb", gameSocket: socket3 };
-// const player4: User = { id: 4, nick: "Bot", gameSocket: socket4 };
-
-// const tournamentName = "Ultimate Battle";
-// const tournament = new TournamentB(tournamentName);
-
-// tournament.runTournament(player1, player2, player3, player4);
-// /* prinimaem json s resultatom */
-// tournament.handleGameOver(1, "Anna");
-// /* prinimaem json s resultatom */
-// tournament.handleGameOver(2, "Bot");
-// /* prinimaem json s resultatom */
-// tournament.handleGameOver(3, "Dolboeb");
-// /* rassylka */
