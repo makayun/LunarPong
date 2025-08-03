@@ -12,6 +12,8 @@ import { TournamentService }	from '../back/sqlib'
 
 const TrnmntSrv = new TournamentService();
 
+const SCORE_MAX = 11;
+
 // import { endGameLog } from "../back/db";
 
 export class PongBackScene extends PongBaseScene implements Game {
@@ -148,7 +150,7 @@ export class PongBackScene extends PongBaseScene implements Game {
         this.state = "over";
         this.sendGameState();
 
-        const winnerIndex = this.score[0] >= 11 ? 0 : 1;
+        const winnerIndex = this.score[0] >= SCORE_MAX ? 0 : 1;
         const message : GameOver = {
             type: "GameOver",
             winner: this.players[winnerIndex]?.nick,
@@ -183,7 +185,7 @@ export class PongBackScene extends PongBaseScene implements Game {
             player.gameSocket?.send(JSON.stringify(message));
         });
 
-        if (this.score[0] >= 11 || this.score[1] >= 11) {
+        if (this.score[0] >= SCORE_MAX || this.score[1] >= SCORE_MAX) {
             this.endGame();
             return;
         }

@@ -11,7 +11,7 @@ import { Rectangle } from "@babylonjs/gui/2D/controls/rectangle";
 import { Control } from "@babylonjs/gui/2D/controls/control";
 import { TextBlock } from "@babylonjs/gui/2D/controls/textBlock";
 
-import { HighlightLayer, Mesh } from "@babylonjs/core";
+import { Animation, HighlightLayer, Mesh } from "@babylonjs/core";
 
 
 import { PongBaseScene } from "./PongBaseScene";
@@ -21,7 +21,7 @@ import { PBRMaterial } from "@babylonjs/core/Materials/PBR";
 import { Color3 } from "@babylonjs/core/Maths";
 
 
-import { GLOW_MAX, GLOW_MIN } from "../defines/constants";
+import { FPS, GLOW_MAX, GLOW_MIN } from "../defines/constants";
 // import { AIOpponent } from "../back/aiOpponent";
 
 export class PongFrontScene extends PongBaseScene {
@@ -132,7 +132,32 @@ export class PongFrontScene extends PongBaseScene {
 			});
 		}
 	}
+
+	animateVisibility(mesh: Mesh, from: number, to: number, duration: number = 800) : void {
+		var animation = new Animation(
+			"meshVisibility",
+			"visibility",
+			FPS,
+			Animation.ANIMATIONTYPE_FLOAT,
+			Animation.ANIMATIONLOOPMODE_CONSTANT
+		)
+		var keys = [
+			{ frame: 0, value: from },
+			{ frame: FPS * (duration / 1000), value: to}
+		];
+
+		animation.setKeys(keys);
+		mesh.animations = [animation];
+
+		var scene = mesh.getScene();
+		if (scene) {
+			scene.stopAnimation(mesh);
+			scene.beginAnimation(mesh, 0, keys[keys.length - 1].frame, false);
+		}
+	}
 }
+
+
 
 function createScoreBlock(ui: AdvancedDynamicTexture, side: PlayerSide) : TextBlock {
 	const rectangle = new Rectangle("score" + side);
