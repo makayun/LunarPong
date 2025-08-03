@@ -1,7 +1,6 @@
 // import { getUserId } from '../helpers/helpers';
-
 import { generateNickname } from "../helpers/helpers";
-
+// import { User } from "../defines/types";
 
 interface Tournament {
   id: string;
@@ -16,6 +15,7 @@ interface Tournament {
 let selectedPlayerCount: number | null = null;
 let tournaments: Tournament[] = [];
 let currentUser: string | null = null;
+let socket: WebSocket | null = null;
 export let TournamentActive: boolean;
 
 async function initCurrentUser(): Promise<void> {
@@ -79,7 +79,7 @@ function setupEventListeners(): void {
   });
 
   nameInput.addEventListener('input', validateForm);
-  form.addEventListener('submit', handleSubmitUpdated);
+  form.addEventListener("submit", (e) => handleSubmitUpdated(e, socket));
 }
 
 function openDialog(): void {
@@ -131,7 +131,7 @@ function validateForm(): void {
   createSubmitBtn.disabled = !(hasName && hasPlayerCount);
 }
 
-async function handleSubmitUpdated(e: Event): Promise<void> {
+async function handleSubmitUpdated(e: Event, socket: any): Promise<void> {
   e.preventDefault();
 
   const player1Input = document.getElementById('player1') as HTMLInputElement;
@@ -186,7 +186,7 @@ async function handleSubmitUpdated(e: Event): Promise<void> {
   //   checkAndSuggestTournaments();
   // }, 1000);
 
-  showTournamentBracket(tournamentData);
+  showTournamentBracket(tournamentData, socket);
 
   closeDialog();
 }
@@ -264,7 +264,7 @@ function getTournamentsByStatus(status: Tournament['status']): Tournament[] {
   return tournaments.filter(t => t.status === status);
 }
 
-async function joinSpecificTournament(tournamentId: string): Promise<void> {
+async function joinSpecificTournament(tournamentId: string, socket: any): Promise<void> {
   if (!currentUser) {
     console.error('No current user set');
     displayChatMessage('system', 'User not initialized. Please refresh the page.', 'error');
@@ -304,7 +304,7 @@ async function joinSpecificTournament(tournamentId: string): Promise<void> {
       `Tournament "${tournament.name}" is now full and ready to start!`,
       'success'
     );
-    showTournamentBracket(tournament);
+    showTournamentBracket(tournament, socket);
   }
 }
 
@@ -371,7 +371,7 @@ function displayTournamentOption(tournament: Tournament): void {
   const joinBtn = document.createElement('button');
   joinBtn.className = 'join-tournament-btn';
   joinBtn.textContent = 'Join';
-  joinBtn.onclick = () => joinSpecificTournament(tournament.id);
+  joinBtn.onclick = () => joinSpecificTournament(tournament.id, socket);
 
   messageDiv.appendChild(tournamentInfo);
   messageDiv.appendChild(joinBtn);
@@ -396,7 +396,7 @@ function displayChatMessage(sender: string, message: string, type: 'info' | 'suc
   appendToChat(messageDiv);
 }
 
-function showTournamentBracket(tournament: Tournament): void {
+function showTournamentBracket(tournament: Tournament, socket: WebSocket): void {
   const bracketDiv = document.createElement('div');
   bracketDiv.className = 'tournament-bracket';
 
@@ -410,15 +410,18 @@ function showTournamentBracket(tournament: Tournament): void {
         `<div class="bracket-player">Seed ${index + 1}: ${player}</div>`
       ).join('')}
     </div>
-    <button class="start-tournament-btn" onclick="startTournament('${tournament.id}')">
-      Start Tournament
-    </button>
+    <button class="start-tournament-btn">Start Tournament</button>
   `;
 
   appendToChat(bracketDiv);
+
+  const btn = bracketDiv.querySelector('.start-tournament-btn');
+  if (btn) {
+    btn.addEventListener('click', () => startTournament(tournament.id, socket));
+  }
 }
 
-async function startTournament(tournamentId: string): Promise<void> {
+async function startTournament(tournamentId: string, socket: WebSocket): Promise<void> {
   const tournament = tournaments.find(t => t.id === tournamentId);
 
   if (!tournament) {
@@ -436,8 +439,13 @@ async function startTournament(tournamentId: string): Promise<void> {
   displayChatMessage('system',
     `Tournament "${tournament.name}" has started! Players: ${tournament.currentPlayers.join(', ')}`,
     'success'
-  );
+  ); // 💥💥💥 eto nado razoslat vsem uchastnikam chata
 
+  socket.send(JSON.stringify({
+    type: "InitGameRequest",
+    gameType: "Local game",
+    user: currentUser,
+  }));
 }
 
 async function updateCurrentUser(): Promise<void> {
