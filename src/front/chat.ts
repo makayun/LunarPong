@@ -24,6 +24,12 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
     	socket.send(JSON.stringify({ type: 'register', user }));
     });
 
+    // !!!!!!!!!!
+    window.addEventListener("t_start", (e: CustomEventInit<string>) => {
+      addMessage("Tournament " + e.detail + " has been created");
+    })
+    // !!!!!!!!!!
+
     socket.addEventListener('message', (event) => {
       console.log('Received:', event.data);
       try {

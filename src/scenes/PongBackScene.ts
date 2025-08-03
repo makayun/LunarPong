@@ -8,6 +8,9 @@ import { AIOpponent } from "../back/aiOpponent";
 import type { ScoreUpdate, MeshName, BallCollision } from "../defines/types";
 import { AbstractEngine } from "@babylonjs/core/Engines/abstractEngine";
 import { animatePaddleToX } from "../back/paddleMovement";
+import { TournamentService }	from '../back/sqlib'
+
+const TrnmntSrv = new TournamentService();
 
 // import { endGameLog } from "../back/db";
 
@@ -155,6 +158,7 @@ export class PongBackScene extends PongBaseScene implements Game {
         this.players.forEach(player => {
             player.gameSocket?.send(JSON.stringify(message));
         });
+
         this.onBeforeRenderObservable.clear();
         this.players.length = 0;
     }
@@ -167,6 +171,8 @@ export class PongBackScene extends PongBaseScene implements Game {
             this.score[1]++;
             this.sendBallCollision("edgeLeft");
         }
+
+        TrnmntSrv.updateGameScore(this.id, this.score[0], this.score[1]);
 
         const message: ScoreUpdate = {
             type: "ScoreUpdate",

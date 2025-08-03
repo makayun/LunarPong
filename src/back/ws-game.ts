@@ -14,6 +14,9 @@ import { animatePaddleToX } from "./paddleMovement";
 import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType } from "../defines/types";
 import { AIOpponent } from "./aiOpponent";
 import { error } from "node:console";
+// import EventEmitter from "node:events";
+
+// const emitter = new EventEmitter();
 
 const TrnmntSrv = new TournamentService();
 
@@ -117,6 +120,17 @@ async function createRemoteGame(engine: PongBackEngine, newPlayer: User, socket:
 	}
 	sendInitGameSuccess("Remote game", game.id, assignSide(game), socket);
 }
+
+// export async function createRemoteWithTwoPlayers(engine: PongBackEngine, playerA: User, playerB: User) {
+// 	const game = new PongBackScene(engine);
+// 	if (playerA.gameSocket && playerB.gameSocket) {
+// 		addPlayerToGame(game, playerA, playerA.gameSocket);
+// 		sendInitGameSuccess("Remote game", )
+// 		addPlayerToGame(game, playerB, playerB.gameSocket);
+
+// 	}
+// }
+
 
 async function createAiGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
 	const game = new PongBackScene(engine);
