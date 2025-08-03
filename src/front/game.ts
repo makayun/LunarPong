@@ -81,8 +81,8 @@ async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameS
 	pongScene.side = opts.playerSide;
 	pongScene.id = opts.gameId;
 	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType, socket);
-	pongScene.pongMeshes.ball.visibility = 1;
 	console.log(`Game initiated! Scene: [${pongScene.id}], player: [${player.nick}], input: ${window.onkeydown}`);
+	pongScene.animateVisibility(pongScene.pongMeshes.ball, 0, 1, 2000);
 
 	socket.onmessage = function(event: MessageEvent) {
 		try {
