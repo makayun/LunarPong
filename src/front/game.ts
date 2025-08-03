@@ -81,6 +81,7 @@ async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameS
 	pongScene.side = opts.playerSide;
 	pongScene.id = opts.gameId;
 	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType, socket);
+	pongScene.pongMeshes.ball.visibility = 1;
 	console.log(`Game initiated! Scene: [${pongScene.id}], player: [${player.nick}], input: ${window.onkeydown}`);
 
 	socket.onmessage = function(event: MessageEvent) {
@@ -92,12 +93,14 @@ async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameS
 					meshPositions = message;
 					break;
 				case "ScoreUpdate":
+					pongScene.animateVisibility(pongScene.pongMeshes.ball, 0, 1);
 					pongScene.updateScore(message.score);
 					break;
 				case "BallCollision":
 					pongScene.animateHighlightIntensity(message.collidedWith);
 					break;
 				case "GameOver":
+					pongScene.animateVisibility(pongScene.pongMeshes.ball, 1, 0);
 					showSuccessMessage({ type: 'LocalWon', winner: player.nick});
 					window.onkeydown = null;
 					setGameButtons(gameButtons, socket, player);
@@ -157,16 +160,16 @@ function showSuccessMessage(data: { name?: string; playerCount?: number; type: '
 	  message = `${data.winner} won the game!`;
 	  break;
   }
-  
+
   successDiv.textContent = message;
-  
+
   document.body.appendChild(successDiv);
-  
+
   setTimeout(() => {
     successDiv.classList.remove('translate-x-full');
     successDiv.classList.add('translate-x-0');
   }, 100);
-  
+
   setTimeout(() => {
     successDiv.classList.add('translate-x-full');
     setTimeout(() => {
