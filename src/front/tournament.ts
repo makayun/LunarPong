@@ -416,9 +416,18 @@ function showTournamentBracket(tournament: Tournament, socket: WebSocket): void 
   appendToChat(bracketDiv);
 
   const btn = bracketDiv.querySelector('.start-tournament-btn');
+  console.log('Button found:', btn);
   if (btn) {
-    btn.addEventListener('click', () => startTournament(tournament.id, socket));
+    btn.addEventListener('click', () => {
+      console.log('Start Tournament button clicked');
+      startTournament(tournament.id, socket);
+    });
   }
+
+  // const btn = bracketDiv.querySelector('.start-tournament-btn');
+  // if (btn) {
+  //   btn.addEventListener('click', () => startTournament(tournament.id, socket));
+  // }
 }
 
 async function startTournament(tournamentId: string, socket: WebSocket): Promise<void> {
@@ -434,18 +443,32 @@ async function startTournament(tournamentId: string, socket: WebSocket): Promise
     return;
   }
 
+  console.log('Tournament found:', tournament);
+  console.log('Status before:', tournament.status);
   tournament.status = 'active';
+  console.log('Status after:', tournament.status);
 
   displayChatMessage('system',
     `Tournament "${tournament.name}" has started! Players: ${tournament.currentPlayers.join(', ')}`,
     'success'
   ); // 💥💥💥 eto nado razoslat vsem uchastnikam chata
 
+  try {
   socket.send(JSON.stringify({
     type: "InitGameRequest",
     gameType: "Local game",
     user: currentUser,
   }));
+  console.log('InitGameRequest sent');
+} catch (err) {
+  console.error('Socket send error:', err);
+}
+
+  // socket.send(JSON.stringify({
+  //   type: "InitGameRequest",
+  //   gameType: "Local game",
+  //   user: currentUser,
+  // }));
 }
 
 async function updateCurrentUser(): Promise<void> {
@@ -453,6 +476,20 @@ async function updateCurrentUser(): Promise<void> {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  socket = new WebSocket('ws://localhost:12800');
+
+  socket.addEventListener('open', () => {
+    console.log('WebSocket connection opened.');
+  });
+
+  socket.addEventListener('error', (err) => {
+    console.error('WebSocket error:', err);
+  });
+
+  socket.addEventListener('close', () => {
+    console.warn('WebSocket connection closed.');
+  });
+
   await initTournamentDialog();
   await initJoinTournament();
 
@@ -462,6 +499,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }, 500);
 });
+
+
+// document.addEventListener('DOMContentLoaded', async () => {
+//   await initTournamentDialog();
+//   await initJoinTournament();
+
+//   setTimeout(() => {
+//     if (hasActiveTournaments()) {
+//       checkAndSuggestTournaments();
+//     }
+//   }, 500);
+// });
 
 export {
     initTournamentDialog,
