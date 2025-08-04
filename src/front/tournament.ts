@@ -442,9 +442,15 @@ function showTournamentBracket(tournament: Tournament, socket: WebSocket): void 
   appendToChat(bracketDiv);
 
   const btn = bracketDiv.querySelector('.start-tournament-btn');
+  console.log('Button found:', btn);
   if (btn) {
     btn.addEventListener('click', () => startTournamentWithCountdown(tournament.id, socket, matches));
   }
+
+  // const btn = bracketDiv.querySelector('.start-tournament-btn');
+  // if (btn) {
+  //   btn.addEventListener('click', () => startTournament(tournament.id, socket));
+  // }
 }
 
 async function startTournamentWithCountdown(tournamentId: string, socket: WebSocket, matches: Array<{player1: string, player2: string}>): Promise<void> {
@@ -460,6 +466,8 @@ async function startTournamentWithCountdown(tournamentId: string, socket: WebSoc
     return;
   }
 
+  console.log('Tournament found:', tournament);
+  console.log('Status before:', tournament.status);
   tournament.status = 'active';
 
 
@@ -616,6 +624,20 @@ async function startTournament(tournamentId: string, socket: WebSocket): Promise
 // }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  socket = new WebSocket('ws://localhost:12800');
+
+  socket.addEventListener('open', () => {
+    console.log('WebSocket connection opened.');
+  });
+
+  socket.addEventListener('error', (err) => {
+    console.error('WebSocket error:', err);
+  });
+
+  socket.addEventListener('close', () => {
+    console.warn('WebSocket connection closed.');
+  });
+
   await initTournamentDialog();
   await initJoinTournament();
 
@@ -625,6 +647,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }, 500);
 });
+
+
+// document.addEventListener('DOMContentLoaded', async () => {
+//   await initTournamentDialog();
+//   await initJoinTournament();
+
+//   setTimeout(() => {
+//     if (hasActiveTournaments()) {
+//       checkAndSuggestTournaments();
+//     }
+//   }, 500);
+// });
 
 export {
     initTournamentDialog,
