@@ -12,6 +12,7 @@ import type { FastifyInstance }			from "fastify/fastify";
 import type { FastifyListenOptions }	from "fastify";
 
 import cookie							from '@fastify/cookie'
+import fastifyFormbody from '@fastify/formbody';
 
 // import ActiveService			from "./active_service";
 import { wsGamePlugin }			from "./ws-game";
@@ -23,6 +24,9 @@ import type { User }			from "../defines/types";
 import protectedRoutes from '../auth/protectedRoutes';
 import authRoutes from '../auth/auth.routes';
 // import { initRedis } from './redis-client';
+import { tournamentRoutes } from './tournamentRoutes';
+
+
 
 async function main() {
 	await loadSecretsIntoEnv("env/google");
@@ -54,6 +58,7 @@ async function main() {
 	const engine = new PongBackEngine();
 
 	server.register(cookie);
+	server.register(fastifyFormbody); 
 	server.register(fastifyStatic, { root: path.resolve(appDir, frontDir) });
 	server.register(websocket);
 
@@ -66,6 +71,12 @@ async function main() {
 
 	server.register(authRoutes);
 	server.register(protectedRoutes, { prefix: '/api/protected' });
+	server.get('/ping', async () => {
+		console.log('get route called');
+  		return { message: 'pong' };
+	});
+
+	await server.register(tournamentRoutes);
 	await server.listen(listenOpts);
 
 

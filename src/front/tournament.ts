@@ -1,6 +1,17 @@
 // import { getUserId } from '../helpers/helpers';
 import { generateNickname } from "../helpers/helpers";
-// import { User } from "../defines/types";
+import { User_f } from "../defines/types";
+
+import '../styles/output.css';
+// import { Engine } from "@babylonjs/core/Engines/engine";
+// import { PongFrontScene } from "../scenes/PongFrontScene";
+
+// const tournamentCanvas = document.createElement('canvas');
+// tournamentCanvas.id = 'tournamentCanvas';
+// document.body.appendChild(tournamentCanvas);
+
+// const tournamentEngine = new Engine(tournamentCanvas, true);
+// const tournamentScene = new PongFrontScene(tournamentEngine);
 
 interface Tournament {
   id: string;
@@ -15,7 +26,7 @@ interface Tournament {
 let selectedPlayerCount: number | null = null;
 let tournaments: Tournament[] = [];
 let currentUser: string | null = null;
-let socket: WebSocket | null = null;
+// let socket: WebSocket | null = null;
 export let TournamentActive: boolean;
 
 // async function initCurrentUser(): Promise<void> {
@@ -83,7 +94,7 @@ function setupEventListeners(): void {
   player1.addEventListener('input', validateForm);
   player2.addEventListener('input', validateForm);
   player3.addEventListener('input', validateForm);
-  form.addEventListener("submit", (e) => handleSubmitUpdated(e, socket));
+  form.addEventListener("submit", (e) => handleSubmitUpdated(e));
 }
 
 function openDialog(): void {
@@ -139,7 +150,7 @@ function validateForm(): void {
   createSubmitBtn.disabled = !(hasName1 && hasName2 && hasName3 &&  hasPlayerCount);
 }
 
-async function handleSubmitUpdated(e: Event, socket: any): Promise<void> {
+async function handleSubmitUpdated(e: Event): Promise<void> {
   e.preventDefault();
 
   const player1 = document.getElementById('player1') as HTMLInputElement;
@@ -194,7 +205,7 @@ async function handleSubmitUpdated(e: Event, socket: any): Promise<void> {
   //   checkAndSuggestTournaments();
   // }, 1000);
 
-  showTournamentBracket(tournamentData, socket);
+  showTournamentBracket(tournamentData);
 
   closeDialog();
 }
@@ -274,7 +285,7 @@ function getTournamentsByStatus(status: Tournament['status']): Tournament[] {
   return tournaments.filter(t => t.status === status);
 }
 
-async function joinSpecificTournament(tournamentId: string, socket: any): Promise<void> {
+async function joinSpecificTournament(tournamentId: string): Promise<void> {
   if (!currentUser) {
     console.error('No current user set');
     displayChatMessage('system', 'User not initialized. Please refresh the page.', 'error');
@@ -314,7 +325,7 @@ async function joinSpecificTournament(tournamentId: string, socket: any): Promis
       `Tournament "${tournament.name}" is now full and ready to start!`,
       'success'
     );
-    showTournamentBracket(tournament, socket);
+    showTournamentBracket(tournament);
   }
 }
 
@@ -381,7 +392,7 @@ function displayTournamentOption(tournament: Tournament): void {
   const joinBtn = document.createElement('button');
   joinBtn.className = 'join-tournament-btn';
   joinBtn.textContent = 'Join';
-  joinBtn.onclick = () => joinSpecificTournament(tournament.id, socket);
+  joinBtn.onclick = () => joinSpecificTournament(tournament.id);
 
   messageDiv.appendChild(tournamentInfo);
   messageDiv.appendChild(joinBtn);
@@ -406,7 +417,7 @@ function displayChatMessage(sender: string, message: string, type: 'info' | 'suc
   appendToChat(messageDiv);
 }
 
-function showTournamentBracket(tournament: Tournament, socket: WebSocket): void {
+function showTournamentBracket(tournament: Tournament): void {
   const bracketDiv = document.createElement('div');
   bracketDiv.className = 'tournament-bracket';
 
@@ -438,16 +449,16 @@ function showTournamentBracket(tournament: Tournament, socket: WebSocket): void 
   const btn = bracketDiv.querySelector('.start-tournament-btn');
   console.log('Button found:', btn);
   if (btn) {
-    btn.addEventListener('click', () => startTournamentWithCountdown(tournament.id, socket, matches));
+    btn.addEventListener('click', () => startTournamentWithCountdown(tournament.id, matches));
   }
 
   // const btn = bracketDiv.querySelector('.start-tournament-btn');
   // if (btn) {
-  //   btn.addEventListener('click', () => startTournament(tournament.id, socket));
+  //   btn.addEventListener('click', () => startTournament(tournament.id));
   // }
 }
 
-async function startTournamentWithCountdown(tournamentId: string, socket: WebSocket, matches: Array<{player1: string, player2: string}>): Promise<void> {
+async function startTournamentWithCountdown(tournamentId: string, matches: Array<{player1: string, player2: string}>): Promise<void> {
   const tournament = tournaments.find(t => t.id === tournamentId);
 
   if (!tournament) {
@@ -463,12 +474,13 @@ async function startTournamentWithCountdown(tournamentId: string, socket: WebSoc
   console.log('Tournament found:', tournament);
   console.log('Status before:', tournament.status);
   tournament.status = 'active';
-
+  console.log('Status after set to active:', tournament.status);
 
   await showCountdown();
+  console.log('Status after countdown:', tournament.status);
 
-
-  startFirstRound(tournament, socket, matches);
+  startFirstRound(tournament, matches);
+  console.log('Status after startFirstRound:', tournament.status);
 }
 
 function showCountdown(): Promise<void> {
@@ -519,7 +531,7 @@ function showCountdown(): Promise<void> {
   });
 }
 
-function startFirstRound(tournament: Tournament, socket: WebSocket, matches: Array<{player1: string, player2: string}>): void {
+function startFirstRound(tournament: Tournament, matches: Array<{player1: string, player2: string}>): void {
   displayChatMessage('system',
     `🎮 Tournament "${tournament.name}" has started! 🎮`,
     'success'
@@ -535,26 +547,33 @@ function startFirstRound(tournament: Tournament, socket: WebSocket, matches: Arr
     'info'
   );
 
-
   (tournament as any).matches = matches;
   (tournament as any).currentMatchIndex = 0;
+  
+  const tournamentUser: User_f = {
+    id: Date.now(),
+    name: matches[0].player1,
+  };
 
+  window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
 
-  socket.send(JSON.stringify({
-    type: "InitGameRequest",
-    gameType: "Tournament",
-    user: currentUser,
-    tournamentId: tournament.id,
-    currentMatch: {
-      matchIndex: 0,
-      player1: matches[0].player1,
-      player2: matches[0].player2
-    }
-  }));
+  const ws = new WebSocket(`wss://${window.location.host}/ws-game`);
+
+  ws.onopen = () => {
+    console.log("Tournament game WS connected");
+    ws.send(JSON.stringify({
+      type: "InitGameRequest",
+      gameType: "Local game",
+      user: tournamentUser,
+    }));
+  };
+
+  ws.onerror = (err) => {
+    console.error("Tournament WS error:", err);
+  };
 }
 
-
-async function startTournament(tournamentId: string, socket: WebSocket): Promise<void> {
+async function startTournament(tournamentId: string): Promise<void> {
   const tournament = tournaments.find(t => t.id === tournamentId);
 
   if (!tournament) {
@@ -569,10 +588,10 @@ async function startTournament(tournamentId: string, socket: WebSocket): Promise
     { player1: players[2], player2: players[0] }
   ];
 
-  await startTournamentWithCountdown(tournamentId, socket, matches);
+  await startTournamentWithCountdown(tournamentId, matches);
 }
 
-// function advanceToNextMatch(tournamentId: string, socket: WebSocket): void {
+// function advanceToNextMatch(tournamentId: string): void {
 //   const tournament = tournaments.find(t => t.id === tournamentId) as any;
   
 //   if (!tournament || !tournament.matches) {
@@ -618,20 +637,6 @@ async function startTournament(tournamentId: string, socket: WebSocket): Promise
 // }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  socket = new WebSocket('ws://localhost:12800');
-
-  socket.addEventListener('open', () => {
-    console.log('WebSocket connection opened.');
-  });
-
-  socket.addEventListener('error', (err) => {
-    console.error('WebSocket error:', err);
-  });
-
-  socket.addEventListener('close', () => {
-    console.warn('WebSocket connection closed.');
-  });
-
   await initTournamentDialog();
   await initJoinTournament();
 

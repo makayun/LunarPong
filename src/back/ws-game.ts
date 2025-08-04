@@ -40,6 +40,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
     			// 	break;
                     // ✨✨✨✨✨✨✨✨✨✨✨✨
 				case "InitGameRequest":
+					console.log("InitGameRequest:", [msg.user.id], ", type : ", msg.gameType);
 					processInitGameRequest(engine, socket, msg as InitGameRequest);
 					break;
 				case "PlayerInput":
@@ -73,7 +74,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 	});
 }
 
-async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: InitGameRequest): Promise<void> {
+export async function processInitGameRequest(engine: PongBackEngine, socket: WebSocket, msg: InitGameRequest): Promise<void> {
 	// *Наташа: Старт логирования игры
     // const logId = await startGameLog(msg.user.id, msg.opponent.id);
     // (можно передать logId в сцену)
