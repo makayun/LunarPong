@@ -61,12 +61,15 @@
     "msg-input": "Type here..."
   },
   "tournament": {
+    "player1": "Player 1 Name",
+    "player2": "Player 2 Name",
+    "player3": "Player 3 Name",
     "create": "Create Tournament",
     "join": "Join Tournament",
     "title": "Create Tournament",
     "name": "Player Name",
     "name_placeholder": "Enter your name...",
-    "players": "Number of Players",
+    "players": "Confirm you not a robot...",
     "players_label": "Players",
     "cancel": "Cancel",
     "create_btn": "Create Tournament"

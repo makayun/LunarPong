@@ -1676,6 +1676,103 @@
 .hidden {
   display: none !important;
 }
+.tournament-bracket {
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid var(--color-blue);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 10px 0;
+  backdrop-filter: blur(10px);
+}
+.bracket-header h3 {
+  color: var(--color-blue);
+  margin-bottom: 5px;
+  font-size: 1.2em;
+}
+.bracket-header p {
+  color: var(--color-white);
+  margin-bottom: 15px;
+  opacity: 0.8;
+}
+.bracket-players h4, .tournament-matches h4 {
+  color: var(--color-blue);
+  margin: 15px 0 10px 0;
+  font-size: 1em;
+}
+.bracket-player {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  margin: 5px 0;
+  border-radius: 6px;
+  color: var(--color-white);
+  border-left: 3px solid var(--color-blue);
+}
+.match-info {
+  background: rgba(0, 100, 200, 0.2);
+  padding: 10px 15px;
+  margin: 8px 0;
+  border-radius: 8px;
+  color: var(--color-white);
+  border-left: 4px solid var(--color-blue);
+}
+.match-info strong {
+  color: var(--color-blue);
+}
+.start-tournament-btn {
+  background: linear-gradient(45deg, var(--color-blue), #0066cc);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 15px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 100, 200, 0.3);
+}
+.start-tournament-btn:hover {
+  background: linear-gradient(45deg, #0066cc, var(--color-blue));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 100, 200, 0.5);
+}
+.countdown-message {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 20, 0.95));
+  border: 2px solid var(--color-blue);
+  border-radius: 15px;
+  padding: 25px;
+  margin: 15px 0;
+  text-align: center;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 0 20px rgba(0, 100, 200, 0.3);
+}
+.countdown-content h3 {
+  color: var(--color-blue);
+  margin-bottom: 15px;
+  font-size: 1.3em;
+  text-shadow: 0 0 10px rgba(0, 100, 200, 0.5);
+}
+.countdown-number {
+  font-size: 4em;
+  font-weight: bold;
+  color: var(--color-white);
+  margin: 20px 0;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+.countdown-content p {
+  color: var(--color-white);
+  opacity: 0.9;
+  font-size: 1.1em;
+  margin-top: 15px;
+}
+.chat-message.info-message {
+  background: rgba(0, 100, 200, 0.2);
+  border-left: 4px solid var(--color-blue);
+}
+.chat-message.success-message {
+  background: rgba(46, 213, 115, 0.2);
+  border-left: 4px solid #2ed573;
+}
 @property --tw-translate-x {
   syntax: "*";
   inherits: false;
