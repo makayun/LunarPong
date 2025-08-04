@@ -422,12 +422,6 @@ function showTournamentBracket(tournament: Tournament, socket: WebSocket): void 
     <div class="bracket-header">
       <h3>Tournament Bracket: ${tournament.name}</h3>
     </div>
-    <div class="bracket-players">
-      <h4>Registered Players:</h4>
-      ${tournament.currentPlayers.map((player, index) =>
-        `<div class="bracket-player">Player ${index + 1}: ${player}</div>`
-      ).join('')}
-    </div>
     <div class="tournament-matches">
       <h4>Match Schedule:</h4>
       ${matches.map((match, index) =>
