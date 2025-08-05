@@ -148,7 +148,7 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
 
   if (!player1.value || !player2.value || !player3.value) {
     console.error('Missing required data for tournament creation');
-    displayChatMessage('system', 'All player name fields must be filled!', 'error');
+    showNotificationMessage('All player name fields must be filled!');
     return;
   }
 
@@ -161,7 +161,7 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
   const uniquePlayers = new Set(players);
   if (uniquePlayers.size !== 3) {
     console.error('Player names must be unique');
-    displayChatMessage('system', 'Player names must be unique!', 'error');
+    showNotificationMessage('Player names must be unique!');
     return;
   }
 
@@ -637,6 +637,40 @@ async function startTournament(socket: WebSocket,tournamentId: string): Promise<
 //     }
 //   }, 500);
 // });
+
+function showNotificationMessage(message: string): void {
+  const successDiv = document.createElement('div');
+  successDiv.className = `
+  fixed top-5 right-5 z-[2000]
+  text-white font-semibold font-mono
+  px-6 py-4 rounded-2xl
+  border-2 border-[--color-blue]
+  backdrop-blur-md
+  bg-[rgba(0,0,0,0.9)]
+  shadow-[0_0_6px_var(--color-white)]
+  transform translate-x-full
+  transition-transform duration-300 ease-out
+  pointer-events-none
+`;
+
+  successDiv.textContent = message;
+
+  document.body.appendChild(successDiv);
+
+  setTimeout(() => {
+    successDiv.classList.remove('translate-x-full');
+    successDiv.classList.add('translate-x-0');
+  }, 100);
+
+  setTimeout(() => {
+    successDiv.classList.add('translate-x-full');
+    setTimeout(() => {
+      if (successDiv.parentNode) {
+        successDiv.parentNode.removeChild(successDiv);
+      }
+    }, 300);
+  }, 3000);
+}
 
 export {
     joinSpecificTournament,
