@@ -1,17 +1,6 @@
-// import { getUserId } from '../helpers/helpers';
 import { generateNickname } from "../helpers/helpers";
 import { User_f } from "../defines/types";
-
 import '../styles/output.css';
-// import { Engine } from "@babylonjs/core/Engines/engine";
-// import { PongFrontScene } from "../scenes/PongFrontScene";
-
-// const tournamentCanvas = document.createElement('canvas');
-// tournamentCanvas.id = 'tournamentCanvas';
-// document.body.appendChild(tournamentCanvas);
-
-// const tournamentEngine = new Engine(tournamentCanvas, true);
-// const tournamentScene = new PongFrontScene(tournamentEngine);
 
 interface Tournament {
   id: string;
@@ -26,17 +15,7 @@ interface Tournament {
 let selectedPlayerCount: number | null = null;
 let tournaments: Tournament[] = [];
 let currentUser: string | null = null;
-// let socket: WebSocket | null = null;
 export let TournamentActive: boolean;
-
-// async function initCurrentUser(): Promise<void> {
-//   try {
-//     currentUser = nameInput.value.toString();
-//     console.log('Tournament system initialized with user :', currentUser);
-//   } catch (error) {
-//     console.error('Failed to get user ID:', error);
-//   }
-// }
 
 const dialog = document.getElementById('tournamentDialog') as HTMLDivElement;
 const createBtn = document.getElementById('createTournament') as HTMLButtonElement;
@@ -161,21 +140,16 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
   const uniquePlayers = new Set(players);
   if (uniquePlayers.size !== 3) {
     console.error('Player names must be unique');
-    displayChatMessage('system', 'Player names must be unique!', 'error');
+    showNotificationMessage('Player names must be unique!');
     return;
   }
-
-  // if (!selectedPlayerCount || !currentUser) {
-  //   console.error('Missing required data for tournament creation');
-  //   return;
-  // }
 
   const tournamentData: Tournament = {
     id: Date.now().toString(),
     name: generateNickname(),
-    playerCount: 3/*selectedPlayerCount*/,
+    playerCount: 3,
     currentPlayers: players,
-    status: 'full'/*'waiting'*/,
+    status: 'full',
     createdBy: "someone",
     createdAt: new Date()
   };
@@ -186,17 +160,47 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
   showSuccessMessage(tournamentData);
 
   displayChatMessage('system',
-    `Tournament "${tournamentData.name}" created!` /*You (${currentUser}) are automatically enrolled. Waiting for ${tournamentData.playerCount - 1} more players to join.`*/,
+    `Tournament "${tournamentData.name}" created!`,
     'success'
   );
-
-  // setTimeout(() => {
-  //   checkAndSuggestTournaments();
-  // }, 1000);
 
   showTournamentBracket(socket,tournamentData);
 
   closeDialog();
+}
+
+function showNotificationMessage(message: string): void {
+  const successDiv = document.createElement('div');
+  successDiv.className = `
+  fixed top-5 right-5 z-[2000]
+  text-white font-semibold font-mono
+  px-6 py-4 rounded-2xl
+  border-2 border-[--color-blue]
+  backdrop-blur-md
+  bg-[rgba(0,0,0,0.9)]
+  shadow-[0_0_6px_var(--color-white)]
+  transform translate-x-full
+  transition-transform duration-300 ease-out
+  pointer-events-none
+`;
+
+  successDiv.textContent = message;
+
+  document.body.appendChild(successDiv);
+
+  setTimeout(() => {
+    successDiv.classList.remove('translate-x-full');
+    successDiv.classList.add('translate-x-0');
+  }, 100);
+
+  setTimeout(() => {
+    successDiv.classList.add('translate-x-full');
+    setTimeout(() => {
+      if (successDiv.parentNode) {
+        successDiv.parentNode.removeChild(successDiv);
+      }
+    }, 300);
+  }, 3000);
 }
 
 function showSuccessMessage(data: { name: string; playerCount: number }): void {
@@ -318,70 +322,6 @@ async function joinSpecificTournament(socket: WebSocket,tournamentId: string): P
   }
 }
 
-
-
-// async function handleJoinTournament(socket: WebSocket): Promise<void> {
-
-//   // if (!currentUser) {
-//   //   await initCurrentUser();
-//   // }
-//   displayTournamentStatus(socket);
-// }
-
-// function displayTournamentStatus(socket: WebSocket): void {
-//   if (!hasActiveTournaments()) {
-//     displayChatMessage('system', 'No tournaments have been created yet. Create a new tournament to get started!', 'info');
-//     return;
-//   }
-
-//   const availableTournaments = tournaments.filter(t =>
-//     t.status === 'waiting' &&
-//     t.currentPlayers.length < t.playerCount &&
-//     !t.currentPlayers.includes(currentUser!)
-//   );
-
-//   if (availableTournaments.length === 0) {
-//     const waitingTournaments = getTournamentsByStatus('waiting');
-//     if (waitingTournaments.length > 0) {
-//       displayChatMessage('system', 'All available tournaments are either full or you are already participating in them.', 'info');
-//     } else {
-//       displayChatMessage('system', 'No tournaments available to join. Create a new tournament to get started!', 'info');
-//     }
-//   } else {
-//     displayChatMessage('system', `Found ${availableTournaments.length} tournament(s) available for ${currentUser}:`, 'info');
-
-//     availableTournaments.forEach(tournament => {
-//       displayTournamentOption(socket,tournament);
-//     });
-//   }
-// }
-
-// function displayTournamentOption(socket: WebSocket,tournament: Tournament): void {
-//   const messageDiv = document.createElement('div');
-//   messageDiv.className = 'tournament-option-message';
-
-//   const tournamentInfo = document.createElement('div');
-//   tournamentInfo.className = 'tournament-info';
-//   tournamentInfo.innerHTML = `
-//     <div class="tournament-details">
-//       <strong>${tournament.name}</strong>
-//       <span class="player-count">${tournament.currentPlayers.length}/${tournament.playerCount} players</span>
-//       <small>Created by: ${tournament.createdBy}</small>
-//       <div class="current-players">Players: ${tournament.currentPlayers.join(', ')}</div>
-//     </div>
-//   `;
-
-//   const joinBtn = document.createElement('button');
-//   joinBtn.className = 'join-tournament-btn';
-//   joinBtn.textContent = 'Join';
-//   joinBtn.onclick = () => joinSpecificTournament(socket,tournament.id);
-
-//   messageDiv.appendChild(tournamentInfo);
-//   messageDiv.appendChild(joinBtn);
-
-//   appendToChat(messageDiv);
-// }
-
 function displayChatMessage(sender: string, message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info'): void {
   const messageDiv = document.createElement('div');
   messageDiv.className = `chat-message ${type}-message`;
@@ -433,11 +373,6 @@ function showTournamentBracket(socket: WebSocket,tournament: Tournament): void {
   if (btn) {
     btn.addEventListener('click', () => startTournamentWithCountdown(socket,tournament.id, matches));
   }
-
-  // const btn = bracketDiv.querySelector('.start-tournament-btn');
-  // if (btn) {
-  //   btn.addEventListener('click', () => startTournament(tournament.id));
-  // }
 }
 
 async function startTournamentWithCountdown(socket: WebSocket,tournamentId: string, matches: Array<{player1: string, player2: string}>): Promise<void> {
