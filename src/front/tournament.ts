@@ -65,18 +65,6 @@ function setupEventListeners(socket: WebSocket): void {
   closeBtn.addEventListener('click', closeDialog);
   cancelBtn.addEventListener('click', closeDialog);
 
-  dialog.addEventListener('click', (e: MouseEvent) => {
-    if (e.target === dialog) {
-      closeDialog();
-    }
-  });
-
-  document.addEventListener('keydown', (e: KeyboardEvent) => {
-    if (e.key === 'Escape' && dialog.classList.contains('active')) {
-      closeDialog();
-    }
-  });
-
   playerOptions.forEach((option: HTMLDivElement) => {
     option.addEventListener('click', () => selectPlayerCount(option));
 
@@ -93,6 +81,7 @@ function setupEventListeners(socket: WebSocket): void {
   player1.addEventListener('input', validateForm);
   player2.addEventListener('input', validateForm);
   player3.addEventListener('input', validateForm);
+  
   form.addEventListener("submit", (e) => handleSubmitUpdated(socket,e));
 }
 
@@ -100,9 +89,10 @@ function openDialog(): void {
   dialog.classList.add('active');
 
   setTimeout(() => {
-    player1.focus();
+    
     player2.focus();
     player3.focus();
+    player1.focus();
   }, 300);
 }
 
