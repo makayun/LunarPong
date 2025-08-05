@@ -455,7 +455,7 @@ function startRounds(socket: WebSocket,tournament: Tournament, matches: Array<{p
     return;
   } 
   const tournamentUser: User_f = { id: user.id, name: user.nick };
-  window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+  // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
   displayChatMessage('system',
     `🎮 Tournament "${tournament.name}" has started! 🎮`,
     'success'
