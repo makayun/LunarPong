@@ -41,7 +41,7 @@ export function updateI18nContent() {
 		if (el.dataset.i18nArgs) {
 			try {
 				args = JSON.parse(el.dataset.i18nArgs);
-			} catch (err) {
+			} catch (err: any) {
 				console.warn("[i18n] Failed to parse data-i18n-args for", el, err);
 			}
 		}

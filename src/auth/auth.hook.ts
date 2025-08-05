@@ -28,7 +28,8 @@ export default async function authHook(
 		const payload = verifyToken(token);
 		request.user = payload;
 		// (request as any).user = payload;
-	} catch (err) {
+	} catch (err: any) {
+		console.error("[auth]", err);
 		return reply.status(401).send({ error: 'Invalid or expired token' });
 	}
 }

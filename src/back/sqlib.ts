@@ -10,15 +10,21 @@ export interface Profile {
 }
 
 export class TournamentService {
-	private db: DatabaseType;
+	private db: DatabaseType | undefined = undefined;
 
 	constructor() {
-		this.db = getDB();
+		try {
+			this.db = getDB();
+		} catch (err: any) {
+			console.error("TournamentService:", err);
+		}
 	}
 
 	// ===== TOURNAMENT =====
 
 	createTournament(name: string, user_count: number): number {
+		if (this.db === undefined)
+			return -1;
 		try {
 			const stmt = this.db.prepare(
 				`INSERT INTO tournaments (status, name, user_count) VALUES (1, ?, ?)`
@@ -32,6 +38,8 @@ export class TournamentService {
 	}
 
 	startTournament(id: number): boolean {
+		if (this.db === undefined)
+			return false;
 		try {
 			const stmt = this.db.prepare(
 				`UPDATE tournaments SET status = 2, end_at = datetime('now') WHERE id = ?`
@@ -45,6 +53,8 @@ export class TournamentService {
 	}
 
 	endTournament(id: number): boolean {
+		if (this.db === undefined)
+			return false;
 		try {
 			const stmt = this.db.prepare(
 				`UPDATE tournaments SET status = 3, end_at = datetime('now') WHERE id = ?`
@@ -58,6 +68,8 @@ export class TournamentService {
 	}
 
 	clearTournament(): boolean {
+		if (this.db === undefined)
+			return false;
 		try {
 			const stmt = this.db.prepare(
 				`UPDATE tournaments SET status = 3, end_at = datetime('now') WHERE status != 3`
@@ -73,6 +85,8 @@ export class TournamentService {
 	// ===== USERS =====
 
 	addUser(tournament: number, user: number): number {
+		if (this.db === undefined)
+			return -1;
 		try {
 			const stmt = this.db.prepare(
 				`INSERT INTO tournament_users (tournament, user) VALUES (?, ?)`
@@ -86,6 +100,8 @@ export class TournamentService {
 	}
 
 	updateUser(tournament: number, user: number, position: number): boolean {
+		if (this.db === undefined)
+			return false;
 		try {
 			const stmt = this.db.prepare(
 				`UPDATE tournament_users SET position = ? WHERE tournament = ? and user = ?`
@@ -99,6 +115,8 @@ export class TournamentService {
 	}
 
 	getUsers(tournamentId: number): Array<{ user: number, position: number }> {
+		if (this.db === undefined)
+			return [];
 		try {
 			const stmt = this.db.prepare(
 				`SELECT user, position FROM tournament_users WHERE tournament = ?`
@@ -113,6 +131,8 @@ export class TournamentService {
 	// ===== GAMES =====
 
 	createGame(tournamentId: number, user1: number, user2: number): number {
+		if (this.db === undefined)
+			return -1;
 		try {
 			let result;
 			const stmt = this.db.prepare(
@@ -130,6 +150,8 @@ export class TournamentService {
 	}
 
 	createRemoteGame(user: number): number {
+		if (this.db === undefined)
+			return -1;
 		try {
 			let result;
 			const stmt = this.db.prepare(
@@ -144,6 +166,8 @@ export class TournamentService {
 	}
 
 	addRemoteGame(game: number, user: number): number {
+		if (this.db === undefined)
+			return -1;
 		try {
 			let result;
 			const stmt = this.db.prepare(
@@ -158,6 +182,8 @@ export class TournamentService {
 	}
 
 	updateGame(id: number, score1: number, score2: number): boolean {
+		if (this.db === undefined)
+			return false;
 		try {
 			const stmt = this.db.prepare(`UPDATE games SET score1 = ?, score2 = ? WHERE id = ?`);
 			const result = stmt.run(score1, score2, id);
@@ -169,6 +195,8 @@ export class TournamentService {
 	}
 
 	updateGameScore(id: number, score1: number, score2: number): boolean {
+		if (this.db === undefined)
+			return false;
 		try {
 			const stmt = this.db.prepare(`UPDATE games SET score1 = score1 + ?, score2 = score2 + ? WHERE id = ?`);
 			const result = stmt.run(score1, score2, id);
@@ -180,6 +208,8 @@ export class TournamentService {
 	}
 
 	getProfile(user_id: number): Profile | null{
+		if (this.db === undefined)
+			return null;
 		try {
 			const stmt = this.db.prepare(
 				`SELECT user_id, games, wins, position, score FROM profiles WHERE user_id = ?`

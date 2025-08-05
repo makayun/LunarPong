@@ -10,8 +10,8 @@ try {
 	db = new Database(process.env.DATABASE_PATH!, { verbose: console.log });
 	console.log("✅ Database opened successfully");
 	// test_db(8);
-} catch (error) {
-	console.error("❌ Failed to open database:", error);
+} catch (err: any) {
+	console.error("❌ Failed to open database:", err);
 	process.exit(1); // or handle accordingly
 }
 

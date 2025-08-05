@@ -9,32 +9,32 @@ const { serialize } = require('@fastify/cookie')
 
 export const g_check_user = (userInfo: any) => {
 	console.log(`[db] start check G user;`);
-	const db = getDB();
-	const stmt = db.prepare("SELECT * FROM users WHERE g_id = ?");
-	console.log("[db] Running query for g_id =", userInfo.id);
-	let user = stmt.get(userInfo.id) as getUser | undefined;
-	console.log(`[db] user = `, user);
-	if (!user) {
-		console.log(`[db] user isn't exist`);
-		try {
+	try {
+		const db = getDB();
+		const stmt = db.prepare("SELECT * FROM users WHERE g_id = ?");
+		console.log("[db] Running query for g_id =", userInfo.id);
+		let user = stmt.get(userInfo.id) as getUser | undefined;
+		console.log(`[db] user = `, user);
+		if (!user) {
+			console.log(`[db] user isn't exist`);
 			db.prepare(`INSERT INTO users (username, g_id, g_username) VALUES (?, ?, ?)`).run(
 				userInfo.name,
 				userInfo.id,
 				userInfo.name
 			);
 			console.log(`[db.run] insert - OK`);
-		} catch (err) {
-			console.error("Failed to insert user:", err);
-			// You can re-throw or handle the error as needed
-			// throw err;
-			return undefined;
+			user = stmt.get(userInfo.id) as getUser | undefined;
+			console.log(`[db] user = `, user);
 		}
-		user = stmt.get(userInfo.id) as getUser | undefined;
-		console.log(`[db] user = `, user);
+		const refreshToken = signRefreshToken(user!.id, user!.username);
+		// const payload = verifyToken(refreshToken);
+		return ({ refreshToken: refreshToken, id: user!.id });
+	} catch (err: any) {
+		console.error("g_check_user:", err);
+		// You can re-throw or handle the error as needed
+		// throw err;
+		return undefined;
 	}
-	const refreshToken = signRefreshToken(user!.id, user!.username);
-	// const payload = verifyToken(refreshToken);
-	return ({ refreshToken: refreshToken, id: user!.id });
 }
 
 function getGoogleOAuthClient() {
@@ -125,8 +125,8 @@ export const g_auth_cb = async (req: FastifyRequest, reply: FastifyReply) => {
 
 		reply.header('Set-Cookie', cookie);
 		reply.redirect(`/`);
-	} catch (error) {
-		console.error('Access Token Error', error);
+	} catch (err: any) {
+		console.error('Access Token Error', err);
 		return reply.status(500).send('Authentication failed');
 	}
 };

@@ -10,32 +10,32 @@ const { serialize } = require('@fastify/cookie')
 
 export const ft_check_user = (userInfo: any) => {
 	console.log(`[db] start check FT user;`);
-	const db = getDB();
-	const stmt = db.prepare("SELECT * FROM users WHERE ft_id = ?");
-	console.log("[db] Running query for ft_id =", userInfo.id);
-	let user = stmt.get(userInfo.id) as getUser | undefined;
-	console.log(`[db] user = `, user);
-	if (!user) {
-		console.log(`[db] user isn't exist`);
-		try {
+	try {
+		const db = getDB();
+		const stmt = db.prepare("SELECT * FROM users WHERE ft_id = ?");
+		console.log("[db] Running query for ft_id =", userInfo.id);
+		let user = stmt.get(userInfo.id) as getUser | undefined;
+		console.log(`[db] user = `, user);
+		if (!user) {
+			console.log(`[db] user isn't exist`);
 			db.prepare(`INSERT INTO users (username, ft_id, ft_username) VALUES (?, ?, ?)`).run(
 				userInfo.displayname,
 				userInfo.id,
 				userInfo.displayname
 			);
 			console.log(`[db.run] insert - OK`);
-		} catch (err) {
-			console.error("Failed to insert user:", err);
-			// You can re-throw or handle the error as needed
-			// throw err;
-			return undefined;
+			user = stmt.get(userInfo.id) as getUser | undefined;
+			console.log(`[db] user = `, user);
 		}
-		user = stmt.get(userInfo.id) as getUser | undefined;
-		console.log(`[db] user = `, user);
+		const refreshToken = signRefreshToken(user!.id, user!.username);
+		// const payload = verifyToken(refreshToken);
+		return ({ refreshToken: refreshToken, id: user!.id });
+	} catch (err: any) {
+		console.error("ft_check_user:", err);
+		// You can re-throw or handle the error as needed
+		// throw err;
+		return undefined;
 	}
-	const refreshToken = signRefreshToken(user!.id, user!.username);
-	// const payload = verifyToken(refreshToken);
-	return ({ refreshToken: refreshToken, id: user!.id });
 }
 
 function getFTOAuthClient() {
@@ -56,13 +56,20 @@ function getFTOAuthClient() {
 }
 
 export const ft_auth = async (_: FastifyRequest, reply: FastifyReply) => {
-	const client = getFTOAuthClient();
-	const authorizationUri = client.authorizeURL({
-		redirect_uri: process.env.FT_REDIRECT_URI,
-		scope: ['public'],
-	});
-	console.log("[authorizationUri]", authorizationUri);
-	return reply.redirect(authorizationUri);
+	try {
+		const client = getFTOAuthClient();
+		const authorizationUri = client.authorizeURL({
+			redirect_uri: process.env.FT_REDIRECT_URI,
+			scope: ['public'],
+		});
+		console.log("[authorizationUri]", authorizationUri);
+		return reply.redirect(authorizationUri);
+	} catch (err: any) {
+		console.error("[authorizationUri]", err);
+		return reply
+			.code(500)
+			.send({ error: "Failed to generate authorization URL" });
+	}
 };
 
 async function getAccessToken(code: string) {
@@ -95,8 +102,8 @@ async function getAccessToken(code: string) {
 		//   refresh_token: '...'
 		// }
 		return accessToken.token;
-	} catch (error) {
-		console.error('Access Token Error', error);
+	} catch (err: any) {
+		console.error('Access Token Error', err);
 	}
 }
 
@@ -138,8 +145,8 @@ export const ft_auth_cb = async (req: FastifyRequest, reply: FastifyReply) => {
 
 		reply.header('Set-Cookie', cookie);
 		reply.redirect(`/`);
-	} catch (error) {
-		console.error('Access Token Error', error);
+	} catch (err: any) {
+		console.error('Access Token Error', err);
 		return reply.status(500).send('Authentication failed');
 	}
 };

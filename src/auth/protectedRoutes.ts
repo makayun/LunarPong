@@ -65,27 +65,33 @@ export default async function protectedRoutes(fastify: FastifyInstance) {
 	}, async (request: FastifyRequest, reply: FastifyReply) => {
 		const { id, token } = request.body as twofaBody;
 		console.log(`[2FA] Request id = ${id}, token = ${token}`);
-		const user = getDB().prepare('SELECT * FROM users WHERE id = ?').get(id) as getUser | undefined;
-		console.log(`[2FA] DB id = ${user!.id}, opt = ${user!.otp}`);
-		if (user == undefined) {
-			return reply.status(400).send({ error: 'Wrong request' });
-		}
+		try {
+			const user = getDB().prepare('SELECT * FROM users WHERE id = ?').get(id) as getUser | undefined;
 		
-		// const secret = authenticator.generateSecret();
-		// const otpauth = authenticator.keyuri(user!.username, "Pong", secret);
-		// const qr = await QRCode.toDataURL(otpauth);
-		// console.log(`[2FA] SECRET = ${secret}`);
-		// console.log(`[2FA] SECRET (QR)  = ${qr}`);
-		
-		const isValid = authenticator.check(token, user!.otp);
-		if (!isValid) {
-			return reply.status(401).send({ error: 'Wrong request' });
-		}
+			console.log(`[2FA] DB id = ${user!.id}, opt = ${user!.otp}`);
+			if (user == undefined) {
+				return reply.status(400).send({ error: 'Wrong request' });
+			}
+			
+			// const secret = authenticator.generateSecret();
+			// const otpauth = authenticator.keyuri(user!.username, "Pong", secret);
+			// const qr = await QRCode.toDataURL(otpauth);
+			// console.log(`[2FA] SECRET = ${secret}`);
+			// console.log(`[2FA] SECRET (QR)  = ${qr}`);
+			
+			const isValid = authenticator.check(token, user!.otp);
+			if (!isValid) {
+				return reply.status(401).send({ error: 'Wrong request' });
+			}
 
-		const accessToken = signAccessToken(user!.id, user!.username);
-		const refreshToken = signRefreshToken(user!.id, user!.username);
-		const payload = verifyToken(accessToken);
-		return reply.send ({ accessToken: accessToken, refreshToken: refreshToken, user: payload });
+			const accessToken = signAccessToken(user!.id, user!.username);
+			const refreshToken = signRefreshToken(user!.id, user!.username);
+			const payload = verifyToken(accessToken);
+			return reply.send ({ accessToken: accessToken, refreshToken: refreshToken, user: payload });
+		} catch (err: any) {
+			console.error("[2FA]", err)
+			return reply.status(500).send({ error: "An internal server error occurred. Please try again later."});
+		}
 	});
 
 	fastify.post('/settings', {
