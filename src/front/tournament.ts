@@ -1,5 +1,6 @@
 import { generateNickname } from "../helpers/helpers";
 import { User_f } from "../defines/types";
+import { user/*, socket*/ } from './game'
 import '../styles/output.css';
 
 interface Tournament {
@@ -15,7 +16,7 @@ interface Tournament {
 let selectedPlayerCount: number | null = null;
 let tournaments: Tournament[] = [];
 let currentUser: string | null = null;
-export let TournamentActive: boolean;
+export let TournamentActive: boolean = false; // нужна ли инициализация????
 
 const dialog = document.getElementById('tournamentDialog') as HTMLDivElement;
 const createBtn = document.getElementById('createTournament') as HTMLButtonElement;
@@ -396,8 +397,8 @@ async function startTournamentWithCountdown(socket: WebSocket,tournamentId: stri
   await showCountdown();
   console.log('Status after countdown:', tournament.status);
 
-  startFirstRound(socket,tournament, matches);
-  console.log('Status after startFirstRound:', tournament.status);
+  startRounds(socket,tournament, matches);
+  console.log('Status after startRounds:', tournament.status);
 }
 
 function showCountdown(): Promise<void> {
@@ -448,44 +449,109 @@ function showCountdown(): Promise<void> {
   });
 }
 
-function startFirstRound(socket: WebSocket,tournament: Tournament, matches: Array<{player1: string, player2: string}>): void {
+function startRounds(socket: WebSocket,tournament: Tournament, matches: Array<{player1: string, player2: string}>): void {
+  if (!user || !user.id || !user.nick) {
+    console.error("No user logged in");
+    return;
+  } 
+  const tournamentUser: User_f = { id: user.id, name: user.nick };
+  window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
   displayChatMessage('system',
     `🎮 Tournament "${tournament.name}" has started! 🎮`,
     'success'
   );
 
-  displayChatMessage('system',
-    `🥊 FIRST MATCH: ${matches[0].player1} vs ${matches[0].player2}`,
-    'info'
-  );
-
-  displayChatMessage('system',
-    `Players ${matches[0].player1} and ${matches[0].player2}, prepare for battle!`,
-    'info'
-  );
+  const scores: Record<string, number> = {};
+  let currentMatchIndex = 0;
 
   (tournament as any).matches = matches;
-  (tournament as any).currentMatchIndex = 0;
+
+  // ============================================
+
+  function playNextMatch(): void {
+    if (currentMatchIndex >= matches.length) {
+      displayWinners();
+      return;
+    }
+
+    const match = matches[currentMatchIndex];
+
+    displayChatMessage('system',
+      `🥊 MATCH ${currentMatchIndex + 1}: ${match.player1} vs ${match.player2}`,
+      'info'
+    );
+
+    displayChatMessage('system',
+      `Players ${match.player1} and ${match.player2}, prepare for battle!`,
+      'info'
+    );
+
+    if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage('system', 'Error: No user logged in!', 'error');
+      return;
+    }    
+
+    // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+
+    console.log("Tournament game WS connected");
+    try {
+        socket.send(JSON.stringify({
+        type: "InitGameRequest",
+        gameType: "Local game",
+        user: { id: user.id, name: user.nick },
+      }));
+      console.log("InitGameRequest sent");
+    } catch (e) {
+      console.error("Send error:", e);
+    }
+
+    console.log("befor exit from playNextMatch");
+    }
+
+  // ==================================================
   
-  const tournamentUser: User_f = {
-    id: Date.now(),
-    name: matches[0].player1,
+  socket.onmessage = (event) => {
+    // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+    console.log("Raw data:", event.data, "Type:", typeof event.data);
+    try {
+      const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+      console.log("Parsed:", data);
+      if (data.type === "GameOver") {
+        const winner = data.winner || "Unknown";
+        scores[winner] = (scores[winner] || 0) + 1;
+        displayChatMessage('system', `🏁 Game over! Winner: ${winner}`, 'success');
+        currentMatchIndex++;
+        console.log("Index++:", currentMatchIndex, "Data:", data);
+        setTimeout(() => playNextMatch(), 2000);
+      } else {
+        console.log("Not GameOver:", data);
+      }
+    } catch (e) {
+      console.error("Parse error:", e);
+    }
   };
-
-  window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
-
-
-
-  console.log("Tournament game WS connected");
-  socket.send(JSON.stringify({
-      type: "InitGameRequest",
-      gameType: "Local game",
-      user: tournamentUser,
-    }));
 
   socket.onerror = (err) => {
     console.error("Tournament WS error:", err);
   };
+
+// ======================================================
+
+  function displayWinners(): void {
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    displayChatMessage('system', '🏆 Final Scores:', 'success');
+    for (const [player, wins] of sorted) {
+      displayChatMessage('system', `${player}: ${wins} wins`, 'info');
+    }
+  }
+
+// ==========================================================
+
+  // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+  playNextMatch();
+  // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+  console.log("after exit from playNextMatch");
 }
 
 async function startTournament(socket: WebSocket,tournamentId: string): Promise<void> {
@@ -506,78 +572,10 @@ async function startTournament(socket: WebSocket,tournamentId: string): Promise<
   await startTournamentWithCountdown(socket,tournamentId, matches);
 }
 
-// function advanceToNextMatch(socket: WebSocket ,tournamentId: string): void {
-//   const tournament = tournaments.find(t => t.id === tournamentId) as any;
-  
-//   if (!tournament || !tournament.matches) {
-//     displayChatMessage('system', 'Tournament data not found!', 'error');
-//     return;
-//   }
-
-//   tournament.currentMatchIndex++;
-
-//   if (tournament.currentMatchIndex >= tournament.matches.length) {
-//     // Tournament completed
-//     tournament.status = 'completed';
-//     TournamentActive = false;
-//     displayChatMessage('system',
-//       `🏆 Tournament "${tournament.name}" has been completed! 🏆`,
-//       'success'
-//     );
-//     return;
-//   }
-
-//   // Start next match
-//   const nextMatch = tournament.matches[tournament.currentMatchIndex];
-//   displayChatMessage('system',
-//     `🥊 NEXT MATCH: ${nextMatch.player1} vs ${nextMatch.player2}`,
-//     'info'
-//   );
-
-//   socket.send(JSON.stringify({
-//     type: "InitGameRequest",
-//     gameType: "Tournament",
-//     user: currentUser,
-//     tournamentId: tournament.id,
-//     currentMatch: {
-//       matchIndex: tournament.currentMatchIndex,
-//       player1: nextMatch.player1,
-//       player2: nextMatch.player2
-//     }
-//   }));
-// }
-
-// async function updateCurrentUser(): Promise<void> {
-//   await initCurrentUser();
-// }
-
-// document.addEventListener('DOMContentLoaded', async () => {
-//   await initTournamentDialog();
-
-//   setTimeout(() => {
-//     if (hasActiveTournaments()) {
-//       checkAndSuggestTournaments();
-//     }
-//   }, 500);
-// });
-
-
-// document.addEventListener('DOMContentLoaded', async () => {
-//   await initTournamentDialog();
-//   await initJoinTournament();
-
-//   setTimeout(() => {
-//     if (hasActiveTournaments()) {
-//       checkAndSuggestTournaments();
-//     }
-//   }, 500);
-// });
-
 export {
     joinSpecificTournament,
     hasActiveTournaments,
     checkAndSuggestTournaments,
     getTournamentsByStatus,
-    // updateCurrentUser,
     startTournament
 };
