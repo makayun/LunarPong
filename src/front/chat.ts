@@ -46,7 +46,7 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
             let direction = 'all';
             if (data.to?.id === user.id) {
               direction = 'you';
-            } else if (data.to?.nick) {
+            } else if (data.to?.id) {
               direction = userMap.get(data.to.id) || data.to.id;
             }
             const fromNick = userMap.get(data.from) || data.from;
