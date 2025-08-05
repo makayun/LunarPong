@@ -7,7 +7,6 @@ export type GameType =
 	| "Local game"
 	| "Remote game"
 	| "createTournament"
-	| "joinTournament"
 	| "Versus AI";
 
 export type MeshName =

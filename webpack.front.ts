@@ -23,8 +23,7 @@ export default (env: { mode: BuildMode }) => {
 			"i18next": path.resolve(appDir, srcDir, frontDir, "i18next.ts"),
 			"login": path.resolve(appDir, srcDir, frontDir, "login.ts"),
 			"game": path.resolve(appDir, srcDir, frontDir, "game.ts"),
-			"chat": path.resolve(appDir, srcDir, frontDir, "chat.ts"),
-			"tournament": path.resolve(appDir, srcDir, frontDir, "tournament.ts")
+			"chat": path.resolve(appDir, srcDir, frontDir, "chat.ts")
 		},
 		output: path.resolve(appDir, frontDir),
 		public: path.resolve(appDir, pubDir),

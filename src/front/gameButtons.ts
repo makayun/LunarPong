@@ -1,9 +1,12 @@
 import type { GameType, GameButtons, User, InitGameRequest} from "../defines/types";
+import { initTournamentDialog } from "./tournament";
 // import type { PongFrontScene } from "../scenes/PongFrontScene";
+
+const createBtn = document.getElementById('createTournament') as HTMLButtonElement;
 
 export function initGameButtons() : GameButtons {
 	const buttons = new Map<GameType, HTMLButtonElement>;
-	const types: GameType[] = ["Local game", "Remote game", "Versus AI", "createTournament","joinTournament"];
+	const types: GameType[] = ["Local game", "Remote game", "Versus AI", "createTournament"];
 
 	types.forEach(type => {
 		const button = document.getElementById(type);
@@ -37,6 +40,10 @@ function createInitGameHandler(
 
 export async function setGameButtons(buttons: GameButtons, socket: WebSocket, player: User) {
 	buttons.forEach((btn, type) => {
+		if(btn === createBtn)
+		{
+			initTournamentDialog(socket)
+		}
 		btn.disabled = false;
 		btn.classList.remove("hidden", "absolute", "relative", "w-96", "cursor-not-allowed");
 		btn.classList.add("flex");
