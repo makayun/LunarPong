@@ -430,14 +430,13 @@ async function startTournamentWithCountdown(socket: WebSocket,tournamentId: stri
   tournament.status = 'active';
   console.log('Status after set to active:', tournament.status);
 
-  await showCountdown("first");
   console.log('Status after countdown:', tournament.status);
 
   startRoundsWithEventListener(socket,tournament, matches);
   console.log('Status after startRounds:', tournament.status);
 }
 
-function showCountdown(round: string): Promise<void> {
+function showCountdown(): Promise<void> {
   return new Promise((resolve) => {
     let countdown = 5;
     
@@ -447,7 +446,7 @@ function showCountdown(round: string): Promise<void> {
       <div class="countdown-content">
         <h3>Tournament Starting In:</h3>
         <div class="countdown-number">${countdown}</div>
-        <p>Get ready for the ${round} match!</p>
+        <p>Get ready for the match!</p>
       </div>
     `;
 
@@ -503,7 +502,7 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
 
   (tournament as any).matches = matches;
 
-  async function tournamentMessageHandler(event: MessageEvent) {
+  function tournamentMessageHandler(event: MessageEvent) {
     try {
       const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
       
@@ -525,7 +524,7 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
           return;
         }
         
-        await showCountdown("next");
+        
         playNextMatch();
       }
     } catch (e) {
@@ -535,18 +534,14 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
 
   socket.addEventListener('message', tournamentMessageHandler);
 
-  function playNextMatch(): void {
+  async function playNextMatch(): Promise<void> {
     const match = matches[currentMatchIndex];
 
     displayChatMessage('system',
       `🥊 MATCH ${currentMatchIndex + 1}: ${match.player1} vs ${match.player2}`,
       'info'
     );
-
-    displayChatMessage('system',
-      `Players ${match.player1} and ${match.player2}, prepare for battle!`,
-      'info'
-    );
+    await showCountdown();
     if (!user || !user.id || !user.nick) {
       console.error("No valid user available!", user);
       displayChatMessage('system', 'Error: No user logged in!', 'error');
@@ -570,11 +565,18 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
 
   function displayWinners(): void {
     const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
-    displayChatMessage('system', '🏆 Final Scores:', 'success');
+    
+    displayChatMessage('system', '🏆 TOURNAMENT COMPLETE! 🏆', 'success');
+    displayChatMessage('system', '📊 Final Scores:', 'success');
+    
     for (const [player, wins] of sorted) {
-      displayChatMessage('system', `${player}: ${wins} wins`, 'info');
+      const medal = wins === 0 ? '🥉' : wins === 1 ? '🥈' : '🥇';
+      displayChatMessage('system', `${medal} ${player}: ${wins} wins`, 'info');
+    };
+
+    if (sorted.length > 0) {
+      displayChatMessage('system', `👑 Champion: ${sorted[0][0]}! 👑`, 'success');
     }
-    TournamentActive = false;
   }
 
   playNextMatch();
