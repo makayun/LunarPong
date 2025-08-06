@@ -57,17 +57,17 @@ function setupEventListeners(socket: WebSocket): void {
     }
   });
 
-  dialog.addEventListener('click', (e: MouseEvent) => {
-    if (e.target === dialog) {
-      if (!user || !user.id || !user.nick) {
-      console.error("No valid user available!", user);
-      displayChatMessage('system', 'Error: No user logged in!', 'error');
-      return;
-      }  
-      setGameButtons(gameButtons,socket, user);
-      closeDialog();
-    }
-  });
+  // dialog.addEventListener('click', (e: MouseEvent) => {
+  //   if (e.target === dialog) {
+  //     if (!user || !user.id || !user.nick) {
+  //     console.error("No valid user available!", user);
+  //     displayChatMessage('system', 'Error: No user logged in!', 'error');
+  //     return;
+  //     }  
+  //     setGameButtons(gameButtons,socket, user);
+  //     closeDialog();
+  //   }
+  // });
 
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     
@@ -433,7 +433,7 @@ async function startTournamentWithCountdown(socket: WebSocket,tournamentId: stri
   await showCountdown();
   console.log('Status after countdown:', tournament.status);
 
-  startRounds(socket,tournament, matches);
+  startRoundsWithEventListener(socket,tournament, matches);
   console.log('Status after startRounds:', tournament.status);
 }
 
@@ -485,13 +485,14 @@ function showCountdown(): Promise<void> {
   });
 }
 
-function startRounds(socket: WebSocket,tournament: Tournament, matches: Array<{player1: string, player2: string}>): void {
+function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament, matches: Array<{player1: string, player2: string}>): void {
   if (!user || !user.id || !user.nick) {
     console.error("No user logged in");
     return;
   } 
+  
   const tournamentUser: User_f = { id: user.id, name: user.nick };
-  window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+  
   displayChatMessage('system',
     `🎮 Tournament "${tournament.name}" has started! 🎮`,
     'success'
@@ -502,14 +503,39 @@ function startRounds(socket: WebSocket,tournament: Tournament, matches: Array<{p
 
   (tournament as any).matches = matches;
 
-  // ============================================
+  function tournamentMessageHandler(event: MessageEvent) {
+    try {
+      const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+      
+      if (data.type === "GameOver") {
+        const [score1, score2] = data.finalScore;
+        const match = matches[currentMatchIndex];
+        const winner = score1 > score2 ? match.player1 : match.player2;
 
-function playNextMatch(): void {
-    if (currentMatchIndex >= matches.length) {
-      displayWinners();
-      return;
+        scores[winner] = (scores[winner] || 0) + 1;
+        displayChatMessage('system', `🏁 Game over! Winner: ${winner}`, 'success');
+        currentMatchIndex++;
+        console.log("Index++:", currentMatchIndex, "Data:", data);
+        
+        if (currentMatchIndex >= matches.length) {
+          displayWinners();
+          // Remove this specific handler when tournament is complete
+          socket.removeEventListener('message', tournamentMessageHandler);
+          TournamentActive = false;
+          return;
+        }
+        
+        // Wait a bit before starting next match
+        setTimeout(() => playNextMatch(), 2000);
+      }
+    } catch (e) {
+      console.error("Parse error:", e);
     }
+  }
 
+  socket.addEventListener('message', tournamentMessageHandler);
+
+  function playNextMatch(): void {
     const match = matches[currentMatchIndex];
 
     displayChatMessage('system',
@@ -528,11 +554,11 @@ function playNextMatch(): void {
       return;
     }    
 
-    // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+    window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
 
     console.log("Tournament game WS connected");
     try {
-        socket.send(JSON.stringify({
+      socket.send(JSON.stringify({
         type: "InitGameRequest",
         gameType: "Local game",
         user: { id: user.id, name: user.nick },
@@ -543,55 +569,19 @@ function playNextMatch(): void {
     }
   }
 
-  // ==================================================
-  
-  socket.onmessage = (event) => {
-    // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
-    // console.log("Raw data:", event.data, "Type:", typeof event.data);
-    try {
-      const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-      // console.log("Parsed:", data);
-      if (data.type === "GameOver") {
-
-        const [score1, score2] = data.finalScore;
-        const match = matches[currentMatchIndex];
-        const winner = score1 > score2 ? match.player1 : match.player2;
-
-        scores[winner] = (scores[winner] || 0) + 1;
-        displayChatMessage('system', `🏁 Game over! Winner: ${winner}`, 'success');
-        currentMatchIndex++;
-        console.log("Index++:", currentMatchIndex, "Data:", data);
-        setTimeout(() => playNextMatch(), 2000);
-      } else {
-        // console.log("Not GameOver:", data);
-      }
-    } catch (e) {
-      // console.error("Parse error:", e);
-    }
-  };
-
-  socket.onerror = (err) => {
-    console.error("Tournament WS error:", err);
-  };
-
-// ======================================================
-
   function displayWinners(): void {
     const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
     displayChatMessage('system', '🏆 Final Scores:', 'success');
     for (const [player, wins] of sorted) {
       displayChatMessage('system', `${player}: ${wins} wins`, 'info');
     }
-    
+    TournamentActive = false;
   }
 
-// ==========================================================
-
-  // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
   playNextMatch();
-  // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
-  console.log("after exit from playNextMatch");
 }
+
+// ======================================================
 
 async function startTournament(socket: WebSocket,tournamentId: string): Promise<void> {
   const tournament = tournaments.find(t => t.id === tournamentId);
