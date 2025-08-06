@@ -1,7 +1,7 @@
 import { generateNickname } from "../helpers/helpers";
 import { user/*, socket*/ } from './game'
 import '../styles/output.css';
-import { initGameButtons, setGameButtons } from "./gameButtons";
+import {  initGameButtons, setGameButtons, unsetGameButtons } from "./gameButtons";
 import type { User_f } from "../defines/types";
 interface Tournament {
   id: string;
@@ -414,12 +414,10 @@ function showTournamentBracket(socket: WebSocket,tournament: Tournament): void {
 
 async function startTournamentWithCountdown(socket: WebSocket,tournamentId: string, matches: Array<{player1: string, player2: string}>): Promise<void> {
   const tournament = tournaments.find(t => t.id === tournamentId);
-
   if (!tournament) {
     displayChatMessage('system', 'Tournament not found!', 'error');
     return;
   }
-
   if (tournament.status !== 'full') {
     displayChatMessage('system', 'Tournament is not ready to start. Need more players!', 'warning');
     return;
@@ -512,18 +510,16 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
         const winner = score1 > score2 ? match.player1 : match.player2;
 
         scores[winner] = (scores[winner] || 0) + 1;
-        displayChatMessage('system', `🏁 Game over! Winner: ${winner}`, 'success');
         currentMatchIndex++;
         console.log("Index++:", currentMatchIndex, "Data:", data);
-        
         if (currentMatchIndex >= matches.length) {
           displayWinners();
-          // Remove this specific handler when tournament is complete
           socket.removeEventListener('message', tournamentMessageHandler);
           TournamentActive = false;
           return;
         }
-        
+        unsetGameButtons(gameButtons, "Local game");
+        displayChatMessage('system', `🏁 Game over! Winner: ${winner}`, 'success');
         
         playNextMatch();
       }
@@ -549,7 +545,7 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
     }    
 
     window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
-
+    unsetGameButtons(gameButtons, "Local game");
     console.log("Tournament game WS connected");
     try {
       socket.send(JSON.stringify({
@@ -578,7 +574,7 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
       displayChatMessage('system', `👑 Champion: ${sorted[0][0]}! 👑`, 'success');
     }
   }
-
+  
   playNextMatch();
 }
 
