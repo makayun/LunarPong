@@ -505,30 +505,32 @@ function startRounds(socket: WebSocket,tournament: Tournament, matches: Array<{p
     } catch (e) {
       console.error("Send error:", e);
     }
-
-    console.log("befor exit from playNextMatch");
-    }
+  }
 
   // ==================================================
   
   socket.onmessage = (event) => {
     // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
-    console.log("Raw data:", event.data, "Type:", typeof event.data);
+    // console.log("Raw data:", event.data, "Type:", typeof event.data);
     try {
       const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-      console.log("Parsed:", data);
+      // console.log("Parsed:", data);
       if (data.type === "GameOver") {
-        const winner = data.winner || "Unknown";
+
+        const [score1, score2] = data.finalScore;
+        const match = matches[currentMatchIndex];
+        const winner = score1 > score2 ? match.player1 : match.player2;
+
         scores[winner] = (scores[winner] || 0) + 1;
         displayChatMessage('system', `🏁 Game over! Winner: ${winner}`, 'success');
         currentMatchIndex++;
         console.log("Index++:", currentMatchIndex, "Data:", data);
         setTimeout(() => playNextMatch(), 2000);
       } else {
-        console.log("Not GameOver:", data);
+        // console.log("Not GameOver:", data);
       }
     } catch (e) {
-      console.error("Parse error:", e);
+      // console.error("Parse error:", e);
     }
   };
 
