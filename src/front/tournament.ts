@@ -430,14 +430,14 @@ async function startTournamentWithCountdown(socket: WebSocket,tournamentId: stri
   tournament.status = 'active';
   console.log('Status after set to active:', tournament.status);
 
-  await showCountdown();
+  await showCountdown("first");
   console.log('Status after countdown:', tournament.status);
 
   startRoundsWithEventListener(socket,tournament, matches);
   console.log('Status after startRounds:', tournament.status);
 }
 
-function showCountdown(): Promise<void> {
+function showCountdown(round: string): Promise<void> {
   return new Promise((resolve) => {
     let countdown = 5;
     
@@ -447,7 +447,7 @@ function showCountdown(): Promise<void> {
       <div class="countdown-content">
         <h3>Tournament Starting In:</h3>
         <div class="countdown-number">${countdown}</div>
-        <p>Get ready for the first match!</p>
+        <p>Get ready for the ${round} match!</p>
       </div>
     `;
 
@@ -503,7 +503,7 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
 
   (tournament as any).matches = matches;
 
-  function tournamentMessageHandler(event: MessageEvent) {
+  async function tournamentMessageHandler(event: MessageEvent) {
     try {
       const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
       
@@ -525,8 +525,8 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
           return;
         }
         
-        // Wait a bit before starting next match
-        setTimeout(() => playNextMatch(), 2000);
+        await showCountdown("next");
+        playNextMatch();
       }
     } catch (e) {
       console.error("Parse error:", e);
@@ -547,7 +547,6 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
       `Players ${match.player1} and ${match.player2}, prepare for battle!`,
       'info'
     );
-
     if (!user || !user.id || !user.nick) {
       console.error("No valid user available!", user);
       displayChatMessage('system', 'Error: No user logged in!', 'error');
