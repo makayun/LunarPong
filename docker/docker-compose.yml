@@ -4,23 +4,29 @@ services:
       context: vault/
       dockerfile: Dockerfile
     container_name: vault
+    # environment:
+    #   - VAULT_LOG_LEVEL=debug
+    #   - VAULT_ADDR=http://vault:8200
+    #   - VAULT_TOKEN=hvs.gjND6NGC8I1zoYCUy9RDyzVT
+    #   - GOOGLE_APPLICATION_CREDENTIALS=/vault/config/vault-gcp-creds.json
     environment:
-      - VAULT_LOG_LEVEL=debug
       - VAULT_ADDR=http://vault:8200
-      # УДАЛИТЬ ТОКЕН ПРИ ЗАПУСКЕ В GIT !!!!!
       - VAULT_TOKEN=hvs.gjND6NGC8I1zoYCUy9RDyzVT
+      - VAULT_LOG_LEVEL=debug
+      - GOOGLE_APPLICATION_CREDENTIALS=/vault/config/vault-gcp-creds.json
+      - VAULT_LOCAL_CONFIG={\"api_addr\":\"http://vault:8200\",\"listener\":[{\"tcp\":{\"address\":\"0.0.0.0:8200\",\"tls_disable\":true}}],\"seal\":{\"gcpckms\":{\"credentials\":\"/vault/config/vault-gcp-creds.json\",\"project\":\"pong-463310\",\"region\":\"global\",\"key_ring\":\"vault-keyring\",\"crypto_key\":\"vault-key\"}},\"storage\":{\"file\":{\"path\":\"/vault/file\"}},\"default_lease_ttl\":\"168h\",\"max_lease_ttl\":\"720h\",\"ui\":true}
+
     ports:
       - "8200:8200"
     cap_add:
       - IPC_LOCK
     volumes:
-      # - ./vault/vault.hcl:/vault/config/vault.hcl
-      # - ./vault/vault.json:/vault/config/vault.json
       - vdata:/vault/file
-    # command: server -config=/vault/config/vault.hcl
-    # command: server -config=/vault/config/vault.json
     command: server
+    # command: server -config=/vault/config/local.json
+    # command: sleep infinitely
     networks:
+      - front-tier
       - back-tier
 
   node_sqlite:
@@ -124,4 +130,5 @@ volumes:
 
 networks:
   front-tier: {}
+  # back-tier: {}
   back-tier: {internal: true}

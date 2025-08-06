@@ -1,0 +1,222 @@
+c1r10s3% gcloud init
+Welcome! This command will take you through the configuration of gcloud.
+
+Your current configuration has been set to: [default]
+
+You can skip diagnostics next time by using the following flag:
+  gcloud init --skip-diagnostics
+
+Network diagnostic detects and fixes local network connection issues.
+Checking network connection...done.                                            
+Reachability Check passed.
+Network diagnostic passed (1/1 checks passed).
+
+You must sign in to continue. Would you like to sign in (Y/n)?  Y
+
+Your browser has been opened to visit:
+
+    https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=32555940559.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8085%2F&scope=openid+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fappengine.admin+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fsqlservice.login+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcompute+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Faccounts.reauth&state=F22kjNhgBjVe3BgowVVmecMwQG2jan&access_type=offline&code_challenge=LL249M1b7A7DrkWv7QF_MxbaNZftgpRXKznjFQ-i7t0&code_challenge_method=S256
+
+You are signed in as: [ksorokolit@gmail.com].
+
+Pick cloud project to use: 
+ [1] pong-463310
+ [2] preferans-12066995
+ [3] Enter a project ID
+ [4] Create a new project
+Please enter numeric choice or text value (must exactly match list item):  1
+
+Your current project has been set to: [pong-463310].
+
+Not setting default zone/region (this feature makes it easier to use
+[gcloud compute] by setting an appropriate default value for the
+--zone and --region flag).
+See https://cloud.google.com/compute/docs/gcloud-compute section on how to set
+default compute region and zone manually. If you would like [gcloud init] to be
+able to do this for you the next time you run it, make sure the
+Compute Engine API is enabled for your project on the
+https://console.developers.google.com/apis page.
+
+Created a default .boto configuration file at [/home/ksorokol/.boto]. See this file and
+[https://cloud.google.com/storage/docs/gsutil/commands/config] for more
+information about configuring Google Cloud Storage.
+The Google Cloud CLI is configured and ready to use!
+
+* Commands that require authentication will use ksorokolit@gmail.com by default
+* Commands will reference project `pong-463310` by default
+Run `gcloud help config` to learn how to change individual settings
+
+This gcloud configuration is called [default]. You can create additional configurations if you work with multiple accounts and/or projects.
+Run `gcloud topic configurations` to learn more.
+
+Some things to try next:
+
+* Run `gcloud --help` to see the Cloud Platform services you can interact with. And run `gcloud help COMMAND` to get help on any gcloud command.
+* Run `gcloud topic --help` to learn about advanced features of the CLI like arg files and output formatting
+* Run `gcloud cheat-sheet` to see a roster of go-to `gcloud` commands.
+c1r10s3% gcloud kms keyrings create vault-keyring \
+  --location=global
+ERROR: (gcloud.kms.keyrings.create) FAILED_PRECONDITION: Billing is disabled for project 162767075818. Enable it by visiting https://console.cloud.google.com/billing/projects and associating your project with a billing account.
+- '@type': type.googleapis.com/google.rpc.PreconditionFailure
+  violations:
+  - subject: '162767075818'
+    type: BILLING_DISABLED
+c1r10s3% gcloud kms keyrings create vault-keyring \
+  --location=global
+c1r10s3% gcloud kms keys create vault-key \
+  --location=global \
+  --keyring=vault-keyring \
+  --purpose=encryption
+ERROR: (gcloud.kms.keys.create) FAILED_PRECONDITION: Billing is disabled for project 162767075818. Enable it by visiting https://console.cloud.google.com/billing/projects and associating your project with a billing account.
+- '@type': type.googleapis.com/google.rpc.PreconditionFailure
+  violations:
+  - subject: '162767075818'
+    type: BILLING_DISABLED
+c1r10s3% 
+c1r10s3% gcloud kms keys create vault-key \
+  --location=global \
+  --keyring=vault-keyring \
+  --purpose=encryption
+
+c1r10s3% gsutil mb -l europe-central2 gs://pong-vault-storage/
+Creating gs://pong-vault-storage/...
+c1r10s3% gcloud iam service-accounts create vault-server \
+  --display-name="Vault Server"
+Created service account [vault-server].
+c1r10s3% gcloud projects add-iam-policy-binding pong-463310 \
+  --member="serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com" \
+  --role="roles/cloudkms.cryptoKeyEncrypterDecrypter"
+Updated IAM policy for project [pong-463310].
+bindings:
+- members:
+  - serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com
+  role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+- members:
+  - user:ksorokolit@gmail.com
+  role: roles/owner
+etag: BwY7r5k8-KY=
+version: 1
+c1r10s3% gcloud projects add-iam-policy-binding pong-463310 \
+  --member="serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com" \
+  --role="roles/storage.objectAdmin"
+Updated IAM policy for project [pong-463310].
+bindings:
+- members:
+  - serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com
+  role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+- members:
+  - user:ksorokolit@gmail.com
+  role: roles/owner
+- members:
+  - serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com
+  role: roles/storage.objectAdmin
+etag: BwY7r5qXbtU=
+version: 1
+c1r10s3% gcloud iam service-accounts keys create ~/vault-gcp-creds.json \
+  --iam-account=vault-server@pong-463310.iam.gserviceaccount.com
+
+created key [ad89e9ba231520eced78421aed68e0de6b5970ab] of type [json] as [/home/ksorokol/vault-gcp-creds.json] for [vault-server@pong-463310.iam.gserviceaccount.com]
+c1r10s3% ls
+123.txt  Desktop    Downloads  git     goinfre	Pictures  sgoinfre	Templates	      Videos
+data	 Documents  eval       GitHub  Music	Public	  SQLiteStudio	vault-gcp-creds.json
+c1r10s3% gcloud kms keys list \
+  --keyring=vault-keyring \
+  --location=global \
+  --project=pong-463310
+NAME                                                                               PURPOSE          ALGORITHM                    PROTECTION_LEVEL  LABELS  PRIMARY_ID  PRIMARY_STATE
+projects/pong-463310/locations/global/keyRings/vault-keyring/cryptoKeys/vault-key  ENCRYPT_DECRYPT  GOOGLE_SYMMETRIC_ENCRYPTION  SOFTWARE                  1           ENABLED
+c1r10s3% cat
+c1r10s3% ls
+123.txt  Desktop    Downloads  git     goinfre	Pictures  sgoinfre	Templates
+data	 Documents  eval       GitHub  Music	Public	  SQLiteStudio	Videos
+c1r10s3% ls /data
+ls: cannot access '/data': No such file or directory
+c1r10s3% ls -ls  
+total 8
+0 -rw-r--r--  1 ksorokol 2024_prague    0 Jul  3 17:37 123.txt
+0 drwxr-xr-x  4 ksorokol 2024_prague   26 Jun  6 11:51 data
+0 drwxr-xr-x  2 ksorokol 2024_prague    6 Dec 16  2024 Desktop
+0 drwxr-xr-x  3 ksorokol 2024_prague  289 Jul 28 12:18 Documents
+4 drwxr-xr-x  8 ksorokol 2024_prague 4096 Aug  6 11:09 Downloads
+0 drwxr-xr-x  8 ksorokol 2024_prague   84 Jul 29 14:34 eval
+0 drwxr-xr-x  3 ksorokol 2024_prague   21 Jul 22 12:21 git
+0 drwxr-xr-x 19 ksorokol 2024_prague  301 Aug  6 12:17 GitHub
+0 lrwxrwxrwx  1 ksorokol 2024_prague   17 Dec 16  2024 goinfre -> /goinfre/ksorokol
+0 drwxr-xr-x  2 ksorokol 2024_prague    6 Dec 16  2024 Music
+0 drwxr-xr-x  3 ksorokol 2024_prague  101 Aug  6 11:09 Pictures
+0 drwxr-xr-x  2 ksorokol 2024_prague    6 Dec 16  2024 Public
+0 lrwxrwxrwx  1 ksorokol 2024_prague   18 Dec 18  2024 sgoinfre -> /sgoinfre/ksorokol
+4 drwxr-xr-x 16 ksorokol 2024_prague 4096 Feb 23 22:53 SQLiteStudio
+0 drwxr-xr-x  2 ksorokol 2024_prague    6 Dec 16  2024 Templates
+0 drwxr-xr-x  2 ksorokol 2024_prague    6 Dec 16  2024 Videos
+c1r10s3% gcloud kms keys list \
+  --location=global \
+  --keyring=vault-keyring \
+  --project=pong-463310
+
+
+NAME                                                                               PURPOSE          ALGORITHM                    PROTECTION_LEVEL  LABELS  PRIMARY_ID  PRIMARY_STATE
+projects/pong-463310/locations/global/keyRings/vault-keyring/cryptoKeys/vault-key  ENCRYPT_DECRYPT  GOOGLE_SYMMETRIC_ENCRYPTION  SOFTWARE                  1           ENABLED
+c1r10s3% 
+c1r10s3% gcloud kms keys get-iam-policy vault-key \
+  --location=global \
+  --keyring=vault-keyring \
+  --project=pong-463310
+
+etag: ACAB
+c1r10s3% gcloud kms keys get-iam-policy vault-key \
+  --location=global \
+  --keyring=vault-keyring \
+  --project=pong-463310 \
+  --format=json
+
+{
+  "etag": "ACAB"
+}
+c1r10s3% gcloud kms keys add-iam-policy-binding vault-key \
+  --location=global \
+  --keyring=vault-keyring \
+  --member="serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com" \
+  --role="roles/cloudkms.cryptoKeyEncrypterDecrypter" \
+  --project=pong-463310
+
+Updated IAM policy for key [vault-key].
+bindings:
+- members:
+  - serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com
+  role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+etag: BwY7sUppjg4=
+version: 1
+c1r10s3% gcloud kms keys get-iam-policy vault-key \        
+  --location=global \
+  --keyring=vault-keyring \
+  --project=pong-463310 \                                                     
+  --format=json                                        
+  
+{
+  "bindings": [
+    {
+      "members": [
+        "serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com"
+      ],
+      "role": "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+    }
+  ],
+  "etag": "BwY7sUppjg4=",
+  "version": 1
+}
+c1r10s3% gcloud kms keys add-iam-policy-binding vault-key \
+  --location=global \
+  --keyring=vault-keyring \
+  --member="serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com" \
+  --role="roles/cloudkms.cryptoKeyEncrypterDecrypter" \
+  --project=pong-463310
+
+Updated IAM policy for key [vault-key].
+bindings:
+- members:
+  - serviceAccount:vault-server@pong-463310.iam.gserviceaccount.com
+  role: roles/cloudkms.cryptoKeyEncrypterDecrypter
+etag: BwY7ssK7-RU=
+version: 1
+c1r10s3% 
