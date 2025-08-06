@@ -44,7 +44,17 @@ export async function initTournamentDialog(socket: WebSocket): Promise<void> {
 
 function setupEventListeners(socket: WebSocket): void {
   createBtn.addEventListener('click', openDialog);
-  closeBtn.addEventListener('click', closeDialog);
+  closeBtn.addEventListener('click', (e: MouseEvent) => {
+    if (e.target === cancelBtn) {
+      if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage('system', 'Error: No user logged in!', 'error');
+      return;
+      }  
+      setGameButtons(gameButtons,socket, user);
+      closeDialog();
+    }
+  });
   cancelBtn.addEventListener('click', (e: MouseEvent) => {
     if (e.target === cancelBtn) {
       if (!user || !user.id || !user.nick) {
@@ -562,8 +572,7 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
   function displayWinners(): void {
     const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
     
-    displayChatMessage('system', '🏆 TOURNAMENT COMPLETE! 🏆', 'success');
-    displayChatMessage('system', '📊 Final Scores:', 'success');
+    displayChatMessage('system', '🏆 TOURNAMENT COMPLETE! 🏆 ', 'success');
     
     for (const [player, wins] of sorted) {
       const medal = wins === 0 ? '🥉' : wins === 1 ? '🥈' : '🥇';
