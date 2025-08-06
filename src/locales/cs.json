@@ -4,20 +4,20 @@
   "error": {
     "title": "Chyba",
     "button": "Zavřít",
-    "server": "Ups! Něco se pokazilo na naší straně. Zkuste to prosím za chvíli znovu.",
+    "server": "Ups! Něco se pokazilo na naší straně. Zkuste to za chvilku znovu.",
     "default": "Něco se pokazilo...",
     "user_password_problem": "Špatné uživatelské jméno nebo heslo.",
     "user_exist": "Uživatelské jméno již existuje.",
     "refresh_token_problem": "Nelze obnovit token.",
-    "2fa_problem": "Chyba dvouúrovňového ověření.",
-    "2fa_required": "Je vyžadováno dvouúrovňové ověření.",
-    "2fa_invalid_code": "Neplatný kód dvouúrovňového ověření.",
-    "2fa_token": "Neplatný dvouúrovňový token.",
-    "check_agreemnt": "Prosím přečtěte si a přijměte naše Oznámení o ochraně osobních údajů před pokračováním.",
-    "register_password": "Hesla se neshodují. Zkuste to prosím znovu.",
-    "register_password_weak": "Heslo musí mít alespoň 8 znaků a obsahovat alespoň jedno velké písmeno, jedno malé písmeno, jednu číslici a jeden speciální znak.",
+    "2fa_problem": "Chyba dvoufaktorového ověření.",
+    "2fa_required": "Vyžaduje se dvoufaktorové ověření.",
+    "2fa_invalid_code": "Neplatný kód dvoufaktorového ověření.",
+    "2fa_token": "Neplatný token dvoufaktorového ověření.",
+    "check_agreemnt": "Před pokračováním si prosím přečtěte a přijměte naše Prohlášení o ochraně osobních údajů.",
+    "register_password": "Hesla se neshodují. Zkuste to znovu.",
+    "register_password_weak": "Heslo musí mít alespoň 8 znaků a obsahovat alespoň jedno velké písmeno, jedno malé písmeno, jedno číslo a jeden speciální znak.",
     "register_username_short": "Příliš krátké! Vaše uživatelské jméno musí mít alespoň 4 znaky.",
-    "register_username_duplicate": "Ups! Toto uživatelské jméno je již používáno. Zkuste jiné."
+    "register_username_duplicate": "Ups! Toto uživatelské jméno se již používá. Zkuste jiné."
   },
   "login": {
     "title": "Vítejte!",
@@ -37,21 +37,21 @@
     "title": "Registrace",
     "label_name": "Uživatelské jméno",
     "label_password1": "Heslo",
-    "label_password2": "Zopakovat heslo",
-    "label_email": "Email",
-    "button": "Registrovat",
-    "qrcode": "Důležité: Nyní musíte naskenovat QR kód pomocí Google Authenticator nebo Microsoft Authenticator. Pokud tento krok přeskočíte, vaše registrace bude ztracena a nebude možné ji obnovit."
+    "label_password2": "Opakovat heslo",
+    "label_email": "E-mail",
+    "button": "Registrovat se",
+    "qrcode": "Důležité: Nyní musíte naskenovat QR kód pomocí Google Authenticator nebo Microsoft Authenticator. Pokud tento krok přeskočíte, vaše registrace bude ztracena a nebude ji možné obnovit."
   },
   "agreement": {
-    "notice": "Oznámení o ochraně osobních údajů",
-    "p1": "Sbíráme vaše osobní údaje (například jméno, email) pouze za účelem kontaktování vás a poskytování našich služeb. Vaše údaje nebudou sdíleny s třetími stranami bez vašeho výslovného souhlasu, pokud to nevyžaduje zákon.",
-    "p2": "Máte právo kdykoli přistupovat ke svým údajům, opravovat je nebo je smazat. Kontaktujte nás prosím na [your-email@example.com].",
-    "p3": "Zaškrtnutím políčka níže souhlasíte se zpracováním vašich osobních údajů v souladu s Obecným nařízením o ochraně údajů (GDPR) (EU) 2016/679.",
-    "checkbox": "Přečetl(a) jsem si a souhlasím s výše uvedeným Oznámením o ochraně osobních údajů."
+    "notice": "Prohlášení o ochraně osobních údajů",
+    "p1": "Shromažďujeme vaše osobní údaje (např. jméno, e-mail) výhradně za účelem kontaktování vás a poskytování našich služeb. Vaše údaje nebudou sdíleny s třetími stranami bez vašeho výslovného souhlasu, pokud to nevyžaduje zákon.",
+    "p2": "Máte právo kdykoliv přistupovat ke svým údajům, opravovat je nebo je smazat. Kontaktujte nás na adrese [your-email@example.com].",
+    "p3": "Zaškrtnutím políčka níže souhlasíte se zpracováním vašich osobních údajů v souladu s Obecným nařízením o ochraně osobních údajů (GDPR) (EU) 2016/679.",
+    "checkbox": "Přečetl(a) jsem si a souhlasím s výše uvedeným Prohlášením o ochraně osobních údajů."
   },
   "continue": "Pokračovat",
   "game": {
-    "title": "Lunární Pong",
+    "title": "Měsíční Pong",
     "local-btn": "Místní hra",
     "remote-btn": "Vzdálená hra",
     "versusai-btn": "Proti AI",
@@ -61,18 +61,21 @@
     "msg-input": "Napište zde..."
   },
   "tournament": {
+    "player1": "Jméno hráče 1",
+    "player2": "Jméno hráče 2",
+    "player3": "Jméno hráče 3",
     "create": "Vytvořit turnaj",
     "join": "Připojit se k turnaji",
     "title": "Vytvořit turnaj",
-    "name": "Název turnaje",
-    "name_placeholder": "Zadejte název turnaje...",
-    "players": "Počet hráčů",
+    "name": "Jméno hráče",
+    "name_placeholder": "Zadejte vaše jméno...",
+    "players": "Potvrďte, že nejste robot...",
     "players_label": "Hráči",
     "cancel": "Zrušit",
     "create_btn": "Vytvořit turnaj"
   },
   "2fa": {
-    "title": "Zadejte klíč dvouúrovňového ověření",
+    "title": "Zadejte klíč dvoufaktorového ověření",
     "label_token": "Zadejte kód zde...",
     "continue": "Pokračovat"
   },

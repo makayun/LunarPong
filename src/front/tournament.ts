@@ -1,8 +1,8 @@
 import { generateNickname } from "../helpers/helpers";
-import { User_f } from "../defines/types";
 import { user/*, socket*/ } from './game'
 import '../styles/output.css';
-
+import { initGameButtons, setGameButtons } from "./gameButtons";
+import type { User_f } from "../defines/types";
 interface Tournament {
   id: string;
   name: string;
@@ -30,6 +30,8 @@ const createSubmitBtn = document.getElementById('createBtn') as HTMLButtonElemen
 const playerOptions = document.querySelectorAll('.player-count-option') as NodeListOf<HTMLDivElement>;
 const messagesContainer = document.getElementById('messages') as HTMLDivElement;
 
+const	gameButtons = initGameButtons();
+
 export async function initTournamentDialog(socket: WebSocket): Promise<void> {
 
 
@@ -43,8 +45,42 @@ export async function initTournamentDialog(socket: WebSocket): Promise<void> {
 function setupEventListeners(socket: WebSocket): void {
   createBtn.addEventListener('click', openDialog);
   closeBtn.addEventListener('click', closeDialog);
-  cancelBtn.addEventListener('click', closeDialog);
+  cancelBtn.addEventListener('click', (e: MouseEvent) => {
+    if (e.target === cancelBtn) {
+      if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage('system', 'Error: No user logged in!', 'error');
+      return;
+      }  
+      setGameButtons(gameButtons,socket, user);
+      closeDialog();
+    }
+  });
 
+  dialog.addEventListener('click', (e: MouseEvent) => {
+    if (e.target === dialog) {
+      if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage('system', 'Error: No user logged in!', 'error');
+      return;
+      }  
+      setGameButtons(gameButtons,socket, user);
+      closeDialog();
+    }
+  });
+
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    
+    if (e.key === 'Escape' && dialog.classList.contains('active')) {
+      if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage('system', 'Error: No user logged in!', 'error');
+      return;
+      }  
+      setGameButtons(gameButtons,socket, user);
+      closeDialog();
+    }
+  });
   playerOptions.forEach((option: HTMLDivElement) => {
     option.addEventListener('click', () => selectPlayerCount(option));
 
@@ -468,7 +504,7 @@ function startRounds(socket: WebSocket,tournament: Tournament, matches: Array<{p
 
   // ============================================
 
-  function playNextMatch(): void {
+function playNextMatch(): void {
     if (currentMatchIndex >= matches.length) {
       displayWinners();
       return;
@@ -546,6 +582,7 @@ function startRounds(socket: WebSocket,tournament: Tournament, matches: Array<{p
     for (const [player, wins] of sorted) {
       displayChatMessage('system', `${player}: ${wins} wins`, 'info');
     }
+    
   }
 
 // ==========================================================

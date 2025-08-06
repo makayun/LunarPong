@@ -1,10 +1,10 @@
 {
-  "or": "或者",
+  "or": "或",
   "hello": "你好，{{name}}！",
   "error": {
     "title": "错误",
     "button": "关闭",
-    "server": "糟糕！我们这边出了点问题。请稍后再试。",
+    "server": "哎呀！我们这边出了点问题。请稍后再试。",
     "default": "出了点问题...",
     "user_password_problem": "用户名或密码错误。",
     "user_exist": "用户名已存在。",
@@ -15,9 +15,9 @@
     "2fa_token": "无效的双因素令牌。",
     "check_agreemnt": "请在继续之前阅读并接受我们的隐私声明。",
     "register_password": "密码不匹配。请重试。",
-    "register_password_weak": "密码必须至少8个字符长，并包含至少一个大写字母、一个小写字母、一个数字和一个特殊字符。",
+    "register_password_weak": "密码必须至少8个字符，并包含至少一个大写字母、一个小写字母、一个数字和一个特殊字符。",
     "register_username_short": "太短了！您的用户名必须至少4个字符。",
-    "register_username_duplicate": "糟糕！该用户名已被使用。请尝试其他用户名。"
+    "register_username_duplicate": "哎呀！该用户名已被使用。请尝试其他的。"
   },
   "login": {
     "title": "欢迎！",
@@ -38,15 +38,15 @@
     "label_name": "用户名",
     "label_password1": "密码",
     "label_password2": "重复密码",
-    "label_email": "邮箱",
+    "label_email": "电子邮件",
     "button": "注册",
-    "qrcode": "重要：您现在必须使用Google Authenticator或Microsoft Authenticator扫描二维码。如果您跳过此步骤，您的注册将丢失且无法恢复。"
+    "qrcode": "重要提示：您现在必须使用Google身份验证器或Microsoft身份验证器扫描二维码。如果您跳过此步骤，您的注册将丢失且无法恢复。"
   },
   "agreement": {
     "notice": "隐私声明",
-    "p1": "我们收集您的个人数据（例如姓名、邮箱）仅用于联系您和提供我们的服务。未经您明确同意，您的数据不会与第三方共享，除非法律要求。",
-    "p2": "您有权随时访问、更正或删除您的数据。请联系我们：[your-email@example.com]。",
-    "p3": "通过勾选下面的复选框，您同意根据通用数据保护条例（GDPR）（EU）2016/679处理您的个人数据。",
+    "p1": "我们收集您的个人数据（例如姓名、电子邮件）仅用于联系您和提供我们的服务。除非法律要求，否则您的数据不会在没有您明确同意的情况下与第三方共享。",
+    "p2": "您有权随时访问、更正或删除您的数据。如需操作，请通过[your-email@example.com]联系我们。",
+    "p3": "通过勾选下面的框，您同意根据《通用数据保护条例》(GDPR) (EU) 2016/679 处理您的个人数据。",
     "checkbox": "我已阅读并同意上述隐私声明。"
   },
   "continue": "继续",
@@ -57,16 +57,19 @@
     "versusai-btn": "对战AI",
     "block-chat": "屏蔽",
     "invite-chat": "邀请",
-    "profile-chat": "资料",
+    "profile-chat": "个人资料",
     "msg-input": "在此输入..."
   },
   "tournament": {
+    "player1": "玩家1姓名",
+    "player2": "玩家2姓名",
+    "player3": "玩家3姓名",
     "create": "创建锦标赛",
     "join": "加入锦标赛",
     "title": "创建锦标赛",
-    "name": "锦标赛名称",
-    "name_placeholder": "输入锦标赛名称...",
-    "players": "玩家数量",
+    "name": "玩家姓名",
+    "name_placeholder": "输入您的姓名...",
+    "players": "确认您不是机器人...",
     "players_label": "玩家",
     "cancel": "取消",
     "create_btn": "创建锦标赛"
