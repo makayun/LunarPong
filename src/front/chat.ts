@@ -34,19 +34,19 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
       console.log('Received:', event.data);
       try {
         const data = JSON.parse(event.data);
-        if (data.type === 'nick-confirm') {
-          if (data.nick !== user.nick) {
-            user.nick = data.nick;
-            sessionStorage.setItem('pong-nickname', data.nick);
-            addMessage(`[System] Your nickname was changed to ${data.nick} because the previous one was taken.`);
-          }
-        }
+        // if (data.type === 'nick-confirm') {
+        //   if (data.nick !== user.nick) {
+        //     user.nick = data.nick;
+        //     sessionStorage.setItem('pong-nickname', data.nick);
+        //     addMessage(`[System] Your nickname was changed to ${data.nick} because the previous one was taken.`);
+        //   }
+        // }
         switch (data.type) {
           case 'message': {
             let direction = 'all';
-            if (data.to?.nick === user.nick) {
+            if (data.to?.id === user.id) {
               direction = 'you';
-            } else if (data.to?.nick) {
+            } else if (data.to?.id) {
               direction = userMap.get(data.to.id) || data.to.id;
             }
             const fromNick = userMap.get(data.from) || data.from;
@@ -75,7 +75,7 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
       recipient.innerHTML = '<option value="all">👥</option>';
       users.forEach((u) => {
         userMap.set(u.id, u.nick);
-        if (u.nick !== user.nick) {
+        if (u.id !== user.id) {
           const option = document.createElement('option');
           option.value = u.id.toString();
           option.textContent = u.nick;

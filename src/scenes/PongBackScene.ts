@@ -169,12 +169,12 @@ export class PongBackScene extends PongBaseScene implements Game {
         if (this.pongMeshes.ball.position.x > 0) {
             this.score[0]++;
             this.sendBallCollision("edgeRight");
+            TrnmntSrv.updateGameScore(this.id, 1, 0);
         } else {
             this.score[1]++;
             this.sendBallCollision("edgeLeft");
+            TrnmntSrv.updateGameScore(this.id, 0, 1);
         }
-
-        TrnmntSrv.updateGameScore(this.id, this.score[0], this.score[1]);
 
         const message: ScoreUpdate = {
             type: "ScoreUpdate",

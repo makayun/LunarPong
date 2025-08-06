@@ -55,16 +55,16 @@ export async function wsChatPlugin(server: FastifyInstance) {
             // case 'register': {
                 const rawUser = msg.user;
                 let nickname = (rawUser.nick && rawUser.nick.trim());
-                const isNickTaken = Array.from(users.values()).some(u => u.nick === nickname);
+                // const isNickTaken = Array.from(users.values()).some(u => u.nick === nickname);
 
-                  if (isNickTaken) {
-                  let suffix = 1;
-                  let newNick: string;
-                  do {
-                    newNick = `${nickname}_${suffix++}`;  // никнейм_номер
-                  } while (Array.from(users.values()).some(u => u.nick === newNick));
-                  nickname = newNick;
-                }
+                //   if (isNickTaken) {
+                //   let suffix = 1;
+                //   let newNick: string;
+                //   do {
+                //     newNick = `${nickname}_${suffix++}`;  // никнейм_номер
+                //   } while (Array.from(users.values()).some(u => u.nick === newNick));
+                //   nickname = newNick;
+                // }
 
                 currentUser = {
                 ...rawUser,
@@ -77,7 +77,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
             server.log.info(`[CHAT] Number of active users: ${users.size}`);
             socket.send(JSON.stringify({ type: 'system', content: `Welcome, ✨${currentUser.nick}✨` }));
             broadcastUserList();
-            socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
+            // socket.send(JSON.stringify({ type: 'nick-confirm', nick: currentUser.nick }));
             break;
           }
 
@@ -105,6 +105,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
                 user.chatSocket?.send(JSON.stringify({
                   type: 'message',
                   from: currentUser.id,
+                  // nick: currentUser.nick, // не знаю
                   content: msg.content,
                 }));
               }
@@ -131,6 +132,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
             sendToUser(msg.to.id, {
               type: 'invite',
               from: currentUser.id,
+              // nick: currentUser.nick, // не знаю
               game: msg.game || 'pong',
             });
             break;
@@ -201,7 +203,7 @@ export async function wsChatPlugin(server: FastifyInstance) {
 
     socket.on("close", () => {
       if (currentUser) {
-        server.log.info(`[CHAT] WebSocket disconnected, user: ${currentUser.nick}`);
+        server.log.info(`[CHAT] WebSocket disconnected, user: ${currentUser.id}`);
         users.delete(currentUser.id);
         server.log.info(`[CHAT] Number of active users: ${users.size}`);
         broadcastUserList();

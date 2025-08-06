@@ -139,7 +139,7 @@ async function refreshToken() {
 			}
 			console.log("[refresh] Refresh accessToken:", data.accessToken);
 			localStorage.setItem("accessToken", data.accessToken);
-		}  catch (err) {
+		}  catch (err: any) {
 			console.error("[refresh] Network error:", err);
 			return false;
 		}
@@ -191,7 +191,7 @@ export async function login() {
 		// 💾 Сохраняем токены (в localStorage или sessionStorage)
 		localStorage.setItem("twofaToken", data.twofaToken);
 		navigateTo(ViewState.TWOFA);
-	} catch (err) {
+	} catch (err: any) {
 		console.error("[login] Network error:", err);
 	}
 }
@@ -217,7 +217,7 @@ export async function getUserData(tokenName: string) {
 			user_f.name = data.user.username;
 			// setUser(user_f);
 			console.log("[USER] Get user data:", data);
-		}  catch (err) {
+		}  catch (err: any) {
 			console.error("[USER] Get user data:", err);
 		}
 	}
@@ -260,7 +260,7 @@ export async function twofa() {
 			localStorage.setItem("refreshToken", data.refreshToken);
 			navigateTo(ViewState.GAME);
 			return;
-		}  catch (err) {
+		}  catch (err: any) {
 			console.error("[2FA] Network error:", err);
 		}
 	}
@@ -353,7 +353,7 @@ export async function register() {
 		password1.value = "";
 		password2.value = "";
 		navigateTo(ViewState.QRCODE);
-	}  catch (err) {
+	}  catch (err: any) {
 		console.error("[REGISTER] Network error:", err);
 	}
 }
@@ -407,7 +407,7 @@ export function validateToken(tokenName: string): number {
 				return 0;
 			}
 			return life_time;
-		} catch (err) {
+		} catch (err: any) {
 			console.error("Invalid token", err);
 		}
 	}
@@ -422,7 +422,7 @@ export function getTokenLife(token: string): number {
 				const now = Math.floor(Date.now() / 1000); // in seconds
 				return decoded.exp - now; // returns remaining time in seconds
 			}
-		} catch (err) {
+		} catch (err: any) {
 			console.error("Invalid token", err);
 		}
 	}

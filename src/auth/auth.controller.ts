@@ -53,8 +53,8 @@ export const login = async (
 		// const refreshToken = signRefreshToken(user.id, username);
 		const payload = verifyToken(twofaToken);
 		return reply.send ({ twofaToken: twofaToken, user: payload });
-	} catch (error) {
-		console.error("[login] Error during login:", error);
+	} catch (err: any) {
+		console.error("[login] Error during login:", err);
 		return reply.status(500).send({ error: 'Internal server error' });
 	}
 };
