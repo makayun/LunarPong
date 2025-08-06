@@ -1,17 +1,7 @@
-// import { getUserId } from '../helpers/helpers';
 import { generateNickname } from "../helpers/helpers";
 import { User_f } from "../defines/types";
-
+import { user/*, socket*/ } from './game'
 import '../styles/output.css';
-// import { Engine } from "@babylonjs/core/Engines/engine";
-// import { PongFrontScene } from "../scenes/PongFrontScene";
-
-// const tournamentCanvas = document.createElement('canvas');
-// tournamentCanvas.id = 'tournamentCanvas';
-// document.body.appendChild(tournamentCanvas);
-
-// const tournamentEngine = new Engine(tournamentCanvas, true);
-// const tournamentScene = new PongFrontScene(tournamentEngine);
 
 interface Tournament {
   id: string;
@@ -26,17 +16,7 @@ interface Tournament {
 let selectedPlayerCount: number | null = null;
 let tournaments: Tournament[] = [];
 let currentUser: string | null = null;
-// let socket: WebSocket | null = null;
-export let TournamentActive: boolean;
-
-// async function initCurrentUser(): Promise<void> {
-//   try {
-//     currentUser = nameInput.value.toString();
-//     console.log('Tournament system initialized with user :', currentUser);
-//   } catch (error) {
-//     console.error('Failed to get user ID:', error);
-//   }
-// }
+export let TournamentActive: boolean = false; // нужна ли инициализация????
 
 const dialog = document.getElementById('tournamentDialog') as HTMLDivElement;
 const createBtn = document.getElementById('createTournament') as HTMLButtonElement;
@@ -165,17 +145,12 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
     return;
   }
 
-  // if (!selectedPlayerCount || !currentUser) {
-  //   console.error('Missing required data for tournament creation');
-  //   return;
-  // }
-
   const tournamentData: Tournament = {
     id: Date.now().toString(),
     name: generateNickname(),
-    playerCount: 3/*selectedPlayerCount*/,
+    playerCount: 3,
     currentPlayers: players,
-    status: 'full'/*'waiting'*/,
+    status: 'full',
     createdBy: "someone",
     createdAt: new Date()
   };
@@ -186,17 +161,47 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
   showSuccessMessage(tournamentData);
 
   displayChatMessage('system',
-    `Tournament "${tournamentData.name}" created!` /*You (${currentUser}) are automatically enrolled. Waiting for ${tournamentData.playerCount - 1} more players to join.`*/,
+    `Tournament "${tournamentData.name}" created!`,
     'success'
   );
-
-  // setTimeout(() => {
-  //   checkAndSuggestTournaments();
-  // }, 1000);
 
   showTournamentBracket(socket,tournamentData);
 
   closeDialog();
+}
+
+function showNotificationMessage(message: string): void {
+  const successDiv = document.createElement('div');
+  successDiv.className = `
+  fixed top-5 right-5 z-[2000]
+  text-white font-semibold font-mono
+  px-6 py-4 rounded-2xl
+  border-2 border-[--color-blue]
+  backdrop-blur-md
+  bg-[rgba(0,0,0,0.9)]
+  shadow-[0_0_6px_var(--color-white)]
+  transform translate-x-full
+  transition-transform duration-300 ease-out
+  pointer-events-none
+`;
+
+  successDiv.textContent = message;
+
+  document.body.appendChild(successDiv);
+
+  setTimeout(() => {
+    successDiv.classList.remove('translate-x-full');
+    successDiv.classList.add('translate-x-0');
+  }, 100);
+
+  setTimeout(() => {
+    successDiv.classList.add('translate-x-full');
+    setTimeout(() => {
+      if (successDiv.parentNode) {
+        successDiv.parentNode.removeChild(successDiv);
+      }
+    }, 300);
+  }, 3000);
 }
 
 function showSuccessMessage(data: { name: string; playerCount: number }): void {
@@ -318,70 +323,6 @@ async function joinSpecificTournament(socket: WebSocket,tournamentId: string): P
   }
 }
 
-
-
-// async function handleJoinTournament(socket: WebSocket): Promise<void> {
-
-//   // if (!currentUser) {
-//   //   await initCurrentUser();
-//   // }
-//   displayTournamentStatus(socket);
-// }
-
-// function displayTournamentStatus(socket: WebSocket): void {
-//   if (!hasActiveTournaments()) {
-//     displayChatMessage('system', 'No tournaments have been created yet. Create a new tournament to get started!', 'info');
-//     return;
-//   }
-
-//   const availableTournaments = tournaments.filter(t =>
-//     t.status === 'waiting' &&
-//     t.currentPlayers.length < t.playerCount &&
-//     !t.currentPlayers.includes(currentUser!)
-//   );
-
-//   if (availableTournaments.length === 0) {
-//     const waitingTournaments = getTournamentsByStatus('waiting');
-//     if (waitingTournaments.length > 0) {
-//       displayChatMessage('system', 'All available tournaments are either full or you are already participating in them.', 'info');
-//     } else {
-//       displayChatMessage('system', 'No tournaments available to join. Create a new tournament to get started!', 'info');
-//     }
-//   } else {
-//     displayChatMessage('system', `Found ${availableTournaments.length} tournament(s) available for ${currentUser}:`, 'info');
-
-//     availableTournaments.forEach(tournament => {
-//       displayTournamentOption(socket,tournament);
-//     });
-//   }
-// }
-
-// function displayTournamentOption(socket: WebSocket,tournament: Tournament): void {
-//   const messageDiv = document.createElement('div');
-//   messageDiv.className = 'tournament-option-message';
-
-//   const tournamentInfo = document.createElement('div');
-//   tournamentInfo.className = 'tournament-info';
-//   tournamentInfo.innerHTML = `
-//     <div class="tournament-details">
-//       <strong>${tournament.name}</strong>
-//       <span class="player-count">${tournament.currentPlayers.length}/${tournament.playerCount} players</span>
-//       <small>Created by: ${tournament.createdBy}</small>
-//       <div class="current-players">Players: ${tournament.currentPlayers.join(', ')}</div>
-//     </div>
-//   `;
-
-//   const joinBtn = document.createElement('button');
-//   joinBtn.className = 'join-tournament-btn';
-//   joinBtn.textContent = 'Join';
-//   joinBtn.onclick = () => joinSpecificTournament(socket,tournament.id);
-
-//   messageDiv.appendChild(tournamentInfo);
-//   messageDiv.appendChild(joinBtn);
-
-//   appendToChat(messageDiv);
-// }
-
 function displayChatMessage(sender: string, message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info'): void {
   const messageDiv = document.createElement('div');
   messageDiv.className = `chat-message ${type}-message`;
@@ -433,11 +374,6 @@ function showTournamentBracket(socket: WebSocket,tournament: Tournament): void {
   if (btn) {
     btn.addEventListener('click', () => startTournamentWithCountdown(socket,tournament.id, matches));
   }
-
-  // const btn = bracketDiv.querySelector('.start-tournament-btn');
-  // if (btn) {
-  //   btn.addEventListener('click', () => startTournament(tournament.id));
-  // }
 }
 
 async function startTournamentWithCountdown(socket: WebSocket,tournamentId: string, matches: Array<{player1: string, player2: string}>): Promise<void> {
@@ -461,8 +397,8 @@ async function startTournamentWithCountdown(socket: WebSocket,tournamentId: stri
   await showCountdown();
   console.log('Status after countdown:', tournament.status);
 
-  startFirstRound(socket,tournament, matches);
-  console.log('Status after startFirstRound:', tournament.status);
+  startRounds(socket,tournament, matches);
+  console.log('Status after startRounds:', tournament.status);
 }
 
 function showCountdown(): Promise<void> {
@@ -513,44 +449,111 @@ function showCountdown(): Promise<void> {
   });
 }
 
-function startFirstRound(socket: WebSocket,tournament: Tournament, matches: Array<{player1: string, player2: string}>): void {
+function startRounds(socket: WebSocket,tournament: Tournament, matches: Array<{player1: string, player2: string}>): void {
+  if (!user || !user.id || !user.nick) {
+    console.error("No user logged in");
+    return;
+  } 
+  const tournamentUser: User_f = { id: user.id, name: user.nick };
+  window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
   displayChatMessage('system',
     `🎮 Tournament "${tournament.name}" has started! 🎮`,
     'success'
   );
 
-  displayChatMessage('system',
-    `🥊 FIRST MATCH: ${matches[0].player1} vs ${matches[0].player2}`,
-    'info'
-  );
-
-  displayChatMessage('system',
-    `Players ${matches[0].player1} and ${matches[0].player2}, prepare for battle!`,
-    'info'
-  );
+  const scores: Record<string, number> = {};
+  let currentMatchIndex = 0;
 
   (tournament as any).matches = matches;
-  (tournament as any).currentMatchIndex = 0;
+
+  // ============================================
+
+  function playNextMatch(): void {
+    if (currentMatchIndex >= matches.length) {
+      displayWinners();
+      return;
+    }
+
+    const match = matches[currentMatchIndex];
+
+    displayChatMessage('system',
+      `🥊 MATCH ${currentMatchIndex + 1}: ${match.player1} vs ${match.player2}`,
+      'info'
+    );
+
+    displayChatMessage('system',
+      `Players ${match.player1} and ${match.player2}, prepare for battle!`,
+      'info'
+    );
+
+    if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage('system', 'Error: No user logged in!', 'error');
+      return;
+    }    
+
+    // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+
+    console.log("Tournament game WS connected");
+    try {
+        socket.send(JSON.stringify({
+        type: "InitGameRequest",
+        gameType: "Local game",
+        user: { id: user.id, name: user.nick },
+      }));
+      console.log("InitGameRequest sent");
+    } catch (e) {
+      console.error("Send error:", e);
+    }
+  }
+
+  // ==================================================
   
-  const tournamentUser: User_f = {
-    id: Date.now(),
-    name: matches[0].player1,
+  socket.onmessage = (event) => {
+    // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+    // console.log("Raw data:", event.data, "Type:", typeof event.data);
+    try {
+      const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+      // console.log("Parsed:", data);
+      if (data.type === "GameOver") {
+
+        const [score1, score2] = data.finalScore;
+        const match = matches[currentMatchIndex];
+        const winner = score1 > score2 ? match.player1 : match.player2;
+
+        scores[winner] = (scores[winner] || 0) + 1;
+        displayChatMessage('system', `🏁 Game over! Winner: ${winner}`, 'success');
+        currentMatchIndex++;
+        console.log("Index++:", currentMatchIndex, "Data:", data);
+        setTimeout(() => playNextMatch(), 2000);
+      } else {
+        // console.log("Not GameOver:", data);
+      }
+    } catch (e) {
+      // console.error("Parse error:", e);
+    }
   };
-
-  window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
-
-
-
-  console.log("Tournament game WS connected");
-  socket.send(JSON.stringify({
-      type: "InitGameRequest",
-      gameType: "Local game",
-      user: tournamentUser,
-    }));
 
   socket.onerror = (err) => {
     console.error("Tournament WS error:", err);
   };
+
+// ======================================================
+
+  function displayWinners(): void {
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    displayChatMessage('system', '🏆 Final Scores:', 'success');
+    for (const [player, wins] of sorted) {
+      displayChatMessage('system', `${player}: ${wins} wins`, 'info');
+    }
+  }
+
+// ==========================================================
+
+  // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+  playNextMatch();
+  // window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+  console.log("after exit from playNextMatch");
 }
 
 async function startTournament(socket: WebSocket,tournamentId: string): Promise<void> {
@@ -571,112 +574,10 @@ async function startTournament(socket: WebSocket,tournamentId: string): Promise<
   await startTournamentWithCountdown(socket,tournamentId, matches);
 }
 
-// function advanceToNextMatch(socket: WebSocket ,tournamentId: string): void {
-//   const tournament = tournaments.find(t => t.id === tournamentId) as any;
-  
-//   if (!tournament || !tournament.matches) {
-//     displayChatMessage('system', 'Tournament data not found!', 'error');
-//     return;
-//   }
-
-//   tournament.currentMatchIndex++;
-
-//   if (tournament.currentMatchIndex >= tournament.matches.length) {
-//     // Tournament completed
-//     tournament.status = 'completed';
-//     TournamentActive = false;
-//     displayChatMessage('system',
-//       `🏆 Tournament "${tournament.name}" has been completed! 🏆`,
-//       'success'
-//     );
-//     return;
-//   }
-
-//   // Start next match
-//   const nextMatch = tournament.matches[tournament.currentMatchIndex];
-//   displayChatMessage('system',
-//     `🥊 NEXT MATCH: ${nextMatch.player1} vs ${nextMatch.player2}`,
-//     'info'
-//   );
-
-//   socket.send(JSON.stringify({
-//     type: "InitGameRequest",
-//     gameType: "Tournament",
-//     user: currentUser,
-//     tournamentId: tournament.id,
-//     currentMatch: {
-//       matchIndex: tournament.currentMatchIndex,
-//       player1: nextMatch.player1,
-//       player2: nextMatch.player2
-//     }
-//   }));
-// }
-
-// async function updateCurrentUser(): Promise<void> {
-//   await initCurrentUser();
-// }
-
-// document.addEventListener('DOMContentLoaded', async () => {
-//   await initTournamentDialog();
-
-//   setTimeout(() => {
-//     if (hasActiveTournaments()) {
-//       checkAndSuggestTournaments();
-//     }
-//   }, 500);
-// });
-
-
-// document.addEventListener('DOMContentLoaded', async () => {
-//   await initTournamentDialog();
-//   await initJoinTournament();
-
-//   setTimeout(() => {
-//     if (hasActiveTournaments()) {
-//       checkAndSuggestTournaments();
-//     }
-//   }, 500);
-// });
-
-function showNotificationMessage(message: string): void {
-  const successDiv = document.createElement('div');
-  successDiv.className = `
-  fixed top-5 right-5 z-[2000]
-  text-white font-semibold font-mono
-  px-6 py-4 rounded-2xl
-  border-2 border-[--color-blue]
-  backdrop-blur-md
-  bg-[rgba(0,0,0,0.9)]
-  shadow-[0_0_6px_var(--color-white)]
-  transform translate-x-full
-  transition-transform duration-300 ease-out
-  pointer-events-none
-`;
-
-  successDiv.textContent = message;
-
-  document.body.appendChild(successDiv);
-
-  setTimeout(() => {
-    successDiv.classList.remove('translate-x-full');
-    successDiv.classList.add('translate-x-0');
-  }, 100);
-
-  setTimeout(() => {
-    successDiv.classList.add('translate-x-full');
-    setTimeout(() => {
-      if (successDiv.parentNode) {
-        successDiv.parentNode.removeChild(successDiv);
-      }
-    }, 300);
-  }, 3000);
-}
-
 export {
     joinSpecificTournament,
     hasActiveTournaments,
     checkAndSuggestTournaments,
     getTournamentsByStatus,
-    // updateCurrentUser,
     startTournament
 };

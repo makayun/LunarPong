@@ -69,7 +69,7 @@
     "title": "Create Tournament",
     "name": "Player Name",
     "name_placeholder": "Enter your name...",
-    "players": "Confirm you not a robot...",
+    "players": "Confirm you are not a robot...",
     "players_label": "Players",
     "cancel": "Cancel",
     "create_btn": "Create Tournament"

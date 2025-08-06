@@ -10,8 +10,8 @@ const	engine = new Engine(canvas, true);
 const	pongScene = new PongFrontScene(engine);
 const	gameButtons = initGameButtons();
 const	pongLogoff = new Event("pongLogoff");
-var		socket: WebSocket;
-var		user: User | null;
+export var		socket: WebSocket;
+export var		user: User | null;
 var		meshPositions: MeshPositions;
 
 disableGameButtons(gameButtons);
