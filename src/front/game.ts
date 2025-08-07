@@ -4,6 +4,7 @@ import { PongFrontScene } from "../scenes/PongFrontScene";
 import { aiInputHandler, localInputHandler, remoteInputHandler } from './gameInputVariants';
 import { disableGameButtons, initGameButtons, setGameButtons } from "./gameButtons";
 import type { User, GameType, InitGameSuccess, MeshPositions, WSMessage, User_f } from "../defines/types";
+import { Vector3 } from '@babylonjs/core';
 
 const	canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 const	engine = new Engine(canvas, true);
@@ -82,6 +83,7 @@ async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameS
 	pongScene.id = opts.gameId;
 	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType, socket);
 	console.log(`Game initiated! Scene: [${pongScene.id}], player: [${player.nick}], input: ${window.onkeydown}`);
+	pongScene.pongMeshes.ball.position = new Vector3(0,15,0);
 	pongScene.animateVisibility(pongScene.pongMeshes.ball, 0, 1, 2000);
 
 	socket.onmessage = function(event: MessageEvent) {
