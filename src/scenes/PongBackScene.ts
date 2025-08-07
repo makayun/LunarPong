@@ -12,7 +12,7 @@ import { TournamentService }	from '../back/sqlib'
 
 const TrnmntSrv = new TournamentService();
 
-const SCORE_MAX = 11;
+const SCORE_MAX = 1;
 
 // import { endGameLog } from "../back/db";
 
@@ -208,7 +208,6 @@ export class PongBackEngine extends NullEngine {
         this.scenes = this.scenes.filter(scene => {
             if (scene.players.length === 0) {
                 console.log("Removing game:", [scene.id]);
-                scene.dispose();
                 return false;
             }
             return true;

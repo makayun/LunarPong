@@ -35,6 +35,8 @@ export class PongFrontScene extends PongBaseScene {
 	private advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("ui1", true, this);
 	private scoreLeft = createScoreBlock(this.advancedTexture, "left");
 	private scoreRight = createScoreBlock(this.advancedTexture, "right");
+	private nickLeft = createNickBlock(this.advancedTexture, "left");
+	private nickRight = createNickBlock(this.advancedTexture, "right");
 
 	constructor (inEngine: Engine) {
 		super(inEngine);
@@ -155,6 +157,23 @@ export class PongFrontScene extends PongBaseScene {
 			scene.beginAnimation(mesh, 0, keys[keys.length - 1].frame, false);
 		}
 	}
+
+	hideNicks() {
+		this.nickLeft.isVisible = false;
+		this.nickRight.isVisible = false;
+	}
+
+	showNicks(left: string, right: string) {
+		var leftText = this.nickLeft.getChildByName("nickTextleft");
+		var rightText = this.nickRight.getChildByName("nickTextright");
+
+		if (leftText instanceof TextBlock && rightText instanceof TextBlock) {
+			leftText.text = left;
+			rightText.text = right;
+			this.nickLeft.isVisible = true;
+			this.nickRight.isVisible = true;
+		}
+	}
 }
 
 
@@ -187,6 +206,38 @@ function createScoreBlock(ui: AdvancedDynamicTexture, side: PlayerSide) : TextBl
 	ui.addControl(rectangle);
 
 	return scoreText;
+}
+
+function createNickBlock(ui: AdvancedDynamicTexture, side: PlayerSide) : Rectangle {
+	const rectangle = new Rectangle("nick" + side);
+	rectangle.width = 0.2;
+	rectangle.height = "60px";
+	rectangle.cornerRadius = 20;
+	rectangle.thickness = 3;
+	rectangle.color = "White";
+	rectangle.background = "rgb(57,61,71)";
+
+	const padding = 14;
+
+	if (side === "left") {
+		rectangle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+		rectangle.paddingLeft = padding;
+	}
+	else {
+		rectangle.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_RIGHT;
+		rectangle.paddingRight = padding;
+	}
+
+	rectangle.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+	rectangle.paddingBottom = padding;
+	const scoreText = new TextBlock("nickText" + side, " ");
+	rectangle.addControl(scoreText);
+
+	ui.addControl(rectangle);
+
+	rectangle.isVisible = false;
+
+	return rectangle;
 }
 
 

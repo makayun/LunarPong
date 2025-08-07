@@ -12,10 +12,10 @@
     "2fa_problem": "Error de autenticación de dos factores.",
     "2fa_required": "Se requiere autenticación de dos factores.",
     "2fa_invalid_code": "Código de autenticación de dos factores inválido.",
-    "2fa_token": "Token de dos factores inválido.",
-    "check_agreemnt": "Por favor, lea y acepte nuestro Aviso de Privacidad antes de continuar.",
+    "2fa_token": "Token de autenticación de dos factores inválido.",
+    "check_agreemnt": "Por favor, lee y acepta nuestro Aviso de Privacidad antes de continuar.",
     "register_password": "Las contraseñas no coinciden. Por favor, inténtalo de nuevo.",
-    "register_password_weak": "La contraseña debe tener al menos 8 caracteres e incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial.",
+    "register_password_weak": "La contraseña debe tener al menos 8 caracteres e incluir al menos una letra mayúscula, una letra minúscula, un número y un carácter especial.",
     "register_username_short": "¡Demasiado corto! Tu nombre de usuario debe tener al menos 4 caracteres.",
     "register_username_duplicate": "¡Ups! Ese nombre de usuario ya está en uso. Prueba con uno diferente."
   },
@@ -40,13 +40,13 @@
     "label_password2": "Repetir contraseña",
     "label_email": "Correo electrónico",
     "button": "Registrarse",
-    "qrcode": "Importante: Debes escanear el código QR usando Google Authenticator o Microsoft Authenticator ahora. Si omites este paso, tu registro se perderá y no podrá recuperarse."
+    "qrcode": "Importante: Debes escanear el código QR usando Google Authenticator o Microsoft Authenticator ahora. Si omites este paso, tu registro se perderá y no se podrá recuperar."
   },
   "agreement": {
     "notice": "Aviso de Privacidad",
-    "p1": "Recopilamos sus datos personales (por ejemplo, nombre, correo electrónico) únicamente con el propósito de contactarlo y brindar nuestros servicios. Sus datos no serán compartidos con terceros sin su consentimiento explícito, a menos que lo requiera la ley.",
-    "p2": "Tiene derecho a acceder, corregir o eliminar sus datos en cualquier momento. Para hacerlo, contáctenos en [your-email@example.com].",
-    "p3": "Al marcar la casilla a continuación, acepta el procesamiento de sus datos personales de acuerdo con el Reglamento General de Protección de Datos (RGPD) (UE) 2016/679.",
+    "p1": "Recopilamos tus datos personales (p.ej., nombre, correo electrónico) únicamente con el propósito de contactarte y proporcionarte nuestros servicios. Tus datos no serán compartidos con terceros sin tu consentimiento explícito, a menos que sea requerido por ley.",
+    "p2": "Tienes el derecho de acceder, corregir o eliminar tus datos en cualquier momento. Para hacerlo, por favor contáctanos en [your-email@example.com].",
+    "p3": "Al marcar la casilla a continuación, aceptas el procesamiento de tus datos personales de acuerdo con el Reglamento General de Protección de Datos (GDPR) (UE) 2016/679.",
     "checkbox": "He leído y acepto el Aviso de Privacidad anterior."
   },
   "continue": "Continuar",
@@ -61,19 +61,22 @@
     "msg-input": "Escribe aquí..."
   },
   "tournament": {
+    "player1": "Nombre del jugador 1",
+    "player2": "Nombre del jugador 2",
+    "player3": "Nombre del jugador 3",
     "create": "Crear torneo",
     "join": "Unirse al torneo",
     "title": "Crear torneo",
-    "name": "Nombre del torneo",
-    "name_placeholder": "Ingresa el nombre del torneo...",
-    "players": "Número de jugadores",
+    "name": "Nombre del jugador",
+    "name_placeholder": "Introduce tu nombre...",
+    "players": "Confirma que no eres un robot...",
     "players_label": "Jugadores",
     "cancel": "Cancelar",
     "create_btn": "Crear torneo"
   },
   "2fa": {
-    "title": "Ingresa la clave de autenticación de dos factores",
-    "label_token": "Ingresa el código aquí...",
+    "title": "Introduce la clave de autenticación de dos factores",
+    "label_token": "Introduce el código aquí...",
     "continue": "Continuar"
   },
   "back": {

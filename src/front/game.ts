@@ -4,14 +4,15 @@ import { PongFrontScene } from "../scenes/PongFrontScene";
 import { aiInputHandler, localInputHandler, remoteInputHandler } from './gameInputVariants';
 import { disableGameButtons, initGameButtons, setGameButtons } from "./gameButtons";
 import type { User, GameType, InitGameSuccess, MeshPositions, WSMessage, User_f } from "../defines/types";
+import { Vector3 } from '@babylonjs/core';
 
 const	canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 const	engine = new Engine(canvas, true);
-const	pongScene = new PongFrontScene(engine);
+export const	pongScene = new PongFrontScene(engine);
 const	gameButtons = initGameButtons();
 const	pongLogoff = new Event("pongLogoff");
-var		socket: WebSocket;
-var		user: User | null;
+export var		socket: WebSocket;
+export var		user: User | null;
 var		meshPositions: MeshPositions;
 
 disableGameButtons(gameButtons);
@@ -35,6 +36,7 @@ pongScene.executeWhenReady(() => {
 	};
 	pongScene.registerBeforeRender(() => pongScene.applyMeshPositions(meshPositions));
 	pongScene.registerAfterRender(() => pongScene.sendPlayerInput(socket));
+	pongScene.hideNicks();
 })
 
 window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
@@ -76,12 +78,14 @@ function setGameInitListener(pongScene:  PongFrontScene, player: User) {
 }
 
 async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameSuccess) : Promise<void> {
+	pongScene.hideNicks();
 	pongScene.score = [0,0];
 	pongScene.updateScore(pongScene.score);
 	pongScene.side = opts.playerSide;
 	pongScene.id = opts.gameId;
 	pongScene.sendPlayerInput =  assignInputHandler(pongScene, opts.gameType, socket);
 	console.log(`Game initiated! Scene: [${pongScene.id}], player: [${player.nick}], input: ${window.onkeydown}`);
+	pongScene.pongMeshes.ball.position = new Vector3(0,15,0);
 	pongScene.animateVisibility(pongScene.pongMeshes.ball, 0, 1, 2000);
 
 	socket.onmessage = function(event: MessageEvent) {
@@ -89,6 +93,9 @@ async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameS
 			const message: WSMessage = JSON.parse(event.data);
 
 			switch (message.type) {
+				case "PlayersNicks":
+					pongScene.showNicks(message.left, message.right);
+					break;
 				case "MeshPositions":
 					meshPositions = message;
 					break;

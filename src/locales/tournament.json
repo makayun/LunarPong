@@ -1,0 +1,36 @@
+{
+"en": {
+  "tournament": {
+        "player1": "Player 1 Name",
+        "player2": "Player 2 Name",
+        "player3": "Player 3 Name",
+        "create": "Create Tournament",
+        "join": "Join Tournament",
+        "title": "Create Tournament",
+        "name": "Player Name",
+        "name_placeholder": "Enter your name...",
+        "players": "Confirm you are not a robot...",
+        "players_label": "Players",
+        "cancel": "Cancel",
+        "create_btn": "Create Tournament",
+        "sender": "system"
+        }
+    },
+"ru": {
+        "tournament": {
+        "player1": "Имя игрока 1",
+        "player2": "Имя игрока 2",
+        "player3": "Имя игрока 3",
+        "create": "Создать турнир",
+        "join": "Присоединиться к турниру",
+        "title": "Создать турнир",
+        "name": "Имя игрока",
+        "name_placeholder": "Введите ваше имя...",
+        "players": "Подтвердите, что вы не робот...",
+        "players_label": "Игроки",
+        "cancel": "Отмена",
+        "create_btn": "Создать турнир",
+        "sender": "система"
+        }
+    }
+}

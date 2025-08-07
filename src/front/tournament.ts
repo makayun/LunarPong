@@ -1,6 +1,9 @@
 import { generateNickname } from "../helpers/helpers";
-import { User_f } from "../defines/types";
+import { user/*, socket*/ } from './game'
 import '../styles/output.css';
+import {  initGameButtons, setGameButtons, unsetGameButtons } from "./gameButtons";
+import type { User_f } from "../defines/types";
+import i18next from 'i18next';
 
 interface Tournament {
   id: string;
@@ -15,7 +18,7 @@ interface Tournament {
 let selectedPlayerCount: number | null = null;
 let tournaments: Tournament[] = [];
 let currentUser: string | null = null;
-export let TournamentActive: boolean;
+export let TournamentActive: boolean = false; // нужна ли инициализация????
 
 const dialog = document.getElementById('tournamentDialog') as HTMLDivElement;
 const createBtn = document.getElementById('createTournament') as HTMLButtonElement;
@@ -29,6 +32,8 @@ const createSubmitBtn = document.getElementById('createBtn') as HTMLButtonElemen
 const playerOptions = document.querySelectorAll('.player-count-option') as NodeListOf<HTMLDivElement>;
 const messagesContainer = document.getElementById('messages') as HTMLDivElement;
 
+const	gameButtons = initGameButtons();
+
 export async function initTournamentDialog(socket: WebSocket): Promise<void> {
 
 
@@ -41,9 +46,53 @@ export async function initTournamentDialog(socket: WebSocket): Promise<void> {
 
 function setupEventListeners(socket: WebSocket): void {
   createBtn.addEventListener('click', openDialog);
-  closeBtn.addEventListener('click', closeDialog);
-  cancelBtn.addEventListener('click', closeDialog);
+  closeBtn.addEventListener('click', (e: MouseEvent) => {
+    if (e.target === cancelBtn) {
+      if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage( 'Error: No user logged in!', 'error');
+      return;
+      }  
+      setGameButtons(gameButtons,socket, user);
+      closeDialog();
+    }
+  });
+  cancelBtn.addEventListener('click', (e: MouseEvent) => {
+    if (e.target === cancelBtn) {
+      if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage( 'Error: No user logged in!', 'error');
+      return;
+      }  
+      setGameButtons(gameButtons,socket, user);
+      closeDialog();
+    }
+  });
 
+  // dialog.addEventListener('click', (e: MouseEvent) => {
+  //   if (e.target === dialog) {
+  //     if (!user || !user.id || !user.nick) {
+  //     console.error("No valid user available!", user);
+  //     displayChatMessage( 'Error: No user logged in!', 'error');
+  //     return;
+  //     }  
+  //     setGameButtons(gameButtons,socket, user);
+  //     closeDialog();
+  //   }
+  // });
+
+  document.addEventListener('keydown', (e: KeyboardEvent) => {
+    
+    if (e.key === 'Escape' && dialog.classList.contains('active')) {
+      if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage( 'Error: No user logged in!', 'error');
+      return;
+      }  
+      setGameButtons(gameButtons,socket, user);
+      closeDialog();
+    }
+  });
   playerOptions.forEach((option: HTMLDivElement) => {
     option.addEventListener('click', () => selectPlayerCount(option));
 
@@ -104,10 +153,10 @@ function validateForm(): void {
   const hasPlayerCount = selectedPlayerCount !== null;
   if(TournamentActive)
   {
-    displayChatMessage('system',
-    `You cannot create new tournament until active is not finished`,
-    'error'
-  );
+    displayChatMessage(
+      i18next.t('tournament.cannot_create'),
+      'error'
+    );
   dialog.classList.remove('active');
 
   setTimeout(() => {
@@ -127,7 +176,7 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
 
   if (!player1.value || !player2.value || !player3.value) {
     console.error('Missing required data for tournament creation');
-    displayChatMessage('system', 'All player name fields must be filled!', 'error');
+    showNotificationMessage('All player name fields must be filled!');
     return;
   }
 
@@ -159,8 +208,8 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
   TournamentActive = true;
   showSuccessMessage(tournamentData);
 
-  displayChatMessage('system',
-    `Tournament "${tournamentData.name}" created!`,
+  displayChatMessage(
+    i18next.t('tournament.created', { name: tournamentData.name }),
     'success'
   );
 
@@ -263,7 +312,7 @@ function checkAndSuggestTournaments(): void {
   );
 
   if (waitingTournaments.length > 0) {
-    displayChatMessage('system',
+    displayChatMessage(
       `${waitingTournaments.length} tournament(s) waiting for players. Click "Join Tournament" to see available options!`,
       'info'
     );
@@ -281,24 +330,24 @@ function getTournamentsByStatus(status: Tournament['status']): Tournament[] {
 async function joinSpecificTournament(socket: WebSocket,tournamentId: string): Promise<void> {
   if (!currentUser) {
     console.error('No current user set');
-    displayChatMessage('system', 'User not initialized. Please refresh the page.', 'error');
+    displayChatMessage( 'User not initialized. Please refresh the page.', 'error');
     return;
   }
 
   const tournament = tournaments.find(t => t.id === tournamentId);
 
   if (!tournament) {
-    displayChatMessage('system', 'Tournament not found!', 'error');
+    displayChatMessage( 'Tournament not found!', 'error');
     return;
   }
 
   if (tournament.currentPlayers.includes(currentUser)) {
-    displayChatMessage('system', `You (${currentUser}) are already in this tournament!`, 'warning');
+    displayChatMessage( `You (${currentUser}) are already in this tournament!`, 'warning');
     return;
   }
 
   if (tournament.currentPlayers.length >= tournament.playerCount) {
-    displayChatMessage('system', 'Tournament is full!', 'error');
+    displayChatMessage( 'Tournament is full!', 'error');
     return;
   }
 
@@ -308,13 +357,13 @@ async function joinSpecificTournament(socket: WebSocket,tournamentId: string): P
     tournament.status = 'full';
   }
 
-  displayChatMessage('system',
+  displayChatMessage(
     `Successfully joined "${tournament.name}" as ${currentUser}! (${tournament.currentPlayers.length}/${tournament.playerCount} players)`,
     'success'
   );
 
   if (tournament.status === 'full') {
-    displayChatMessage('system',
+    displayChatMessage(
       `Tournament "${tournament.name}" is now full and ready to start!`,
       'success'
     );
@@ -322,18 +371,20 @@ async function joinSpecificTournament(socket: WebSocket,tournamentId: string): P
   }
 }
 
-function displayChatMessage(sender: string, message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info'): void {
+function displayChatMessage(message: string, type: 'info' | 'success' | 'error' | 'warning' = 'info', translateMessage: boolean = false): void {
   const messageDiv = document.createElement('div');
   messageDiv.className = `chat-message ${type}-message`;
 
   const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const senderText = i18next.t('tournament.sender');
+  const finalMessage = translateMessage ? i18next.t(message) : message;
 
   messageDiv.innerHTML = `
     <div class="message-header">
-      <span class="sender">${sender}</span>
+      <span class="sender">${senderText}</span>
       <span class="timestamp">${timestamp}</span>
     </div>
-    <div class="message-content">${message}</div>
+    <div class="message-content">${finalMessage}</div>
   `;
 
   appendToChat(messageDiv);
@@ -377,14 +428,12 @@ function showTournamentBracket(socket: WebSocket,tournament: Tournament): void {
 
 async function startTournamentWithCountdown(socket: WebSocket,tournamentId: string, matches: Array<{player1: string, player2: string}>): Promise<void> {
   const tournament = tournaments.find(t => t.id === tournamentId);
-
   if (!tournament) {
-    displayChatMessage('system', 'Tournament not found!', 'error');
+    displayChatMessage(i18next.t('tournament.not_found'), 'error');
     return;
   }
-
   if (tournament.status !== 'full') {
-    displayChatMessage('system', 'Tournament is not ready to start. Need more players!', 'warning');
+    displayChatMessage(i18next.t('tournament.not_ready'), 'warning');
     return;
   }
 
@@ -393,11 +442,10 @@ async function startTournamentWithCountdown(socket: WebSocket,tournamentId: stri
   tournament.status = 'active';
   console.log('Status after set to active:', tournament.status);
 
-  await showCountdown();
   console.log('Status after countdown:', tournament.status);
 
-  startFirstRound(socket,tournament, matches);
-  console.log('Status after startFirstRound:', tournament.status);
+  startRoundsWithEventListener(socket,tournament, matches);
+  console.log('Status after startRounds:', tournament.status);
 }
 
 function showCountdown(): Promise<void> {
@@ -410,7 +458,7 @@ function showCountdown(): Promise<void> {
       <div class="countdown-content">
         <h3>Tournament Starting In:</h3>
         <div class="countdown-number">${countdown}</div>
-        <p>Get ready for the first match!</p>
+        <p>Get ready for the match!</p>
       </div>
     `;
 
@@ -448,51 +496,108 @@ function showCountdown(): Promise<void> {
   });
 }
 
-function startFirstRound(socket: WebSocket,tournament: Tournament, matches: Array<{player1: string, player2: string}>): void {
-  displayChatMessage('system',
-    `🎮 Tournament "${tournament.name}" has started! 🎮`,
+function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament, matches: Array<{player1: string, player2: string}>): void {
+  if (!user || !user.id || !user.nick) {
+    console.error("No user logged in");
+    return;
+  } 
+  
+  const tournamentUser: User_f = { id: user.id, name: user.nick };
+  
+  displayChatMessage(
+    i18next.t('tournament.started', { name: tournament.name }),
     'success'
   );
 
-  displayChatMessage('system',
-    `🥊 FIRST MATCH: ${matches[0].player1} vs ${matches[0].player2}`,
-    'info'
-  );
-
-  displayChatMessage('system',
-    `Players ${matches[0].player1} and ${matches[0].player2}, prepare for battle!`,
-    'info'
-  );
+  const scores: Record<string, number> = {};
+  let currentMatchIndex = 0;
 
   (tournament as any).matches = matches;
-  (tournament as any).currentMatchIndex = 0;
+
+  function tournamentMessageHandler(event: MessageEvent) {
+    try {
+      const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+      
+      if (data.type === "GameOver") {
+        const [score1, score2] = data.finalScore;
+        const match = matches[currentMatchIndex];
+        const winner = score1 > score2 ? match.player1 : match.player2;
+
+        scores[winner] = (scores[winner] || 0) + 1;
+        currentMatchIndex++;
+        console.log("Index++:", currentMatchIndex, "Data:", data);
+        if (currentMatchIndex >= matches.length) {
+          displayWinners();
+          socket.removeEventListener('message', tournamentMessageHandler);
+          TournamentActive = false;
+          return;
+        }
+        unsetGameButtons(gameButtons, "Local game");
+        displayChatMessage(i18next.t('tournament.winner', { winner }), 'success');
+        
+        playNextMatch();
+      }
+    } catch (e) {
+      console.error("Parse error:", e);
+    }
+  }
+
+  socket.addEventListener('message', tournamentMessageHandler);
+
+  async function playNextMatch(): Promise<void> {
+    const match = matches[currentMatchIndex];
+
+    displayChatMessage(
+      i18next.t('tournament.match', { 
+        number: currentMatchIndex + 1, 
+        player1: match.player1, 
+        player2: match.player2 
+      }),
+      'info'
+    );
+    await showCountdown();
+    if (!user || !user.id || !user.nick) {
+      console.error("No valid user available!", user);
+      displayChatMessage( 'Error: No user logged in!', 'error');
+      return;
+    }    
+
+    window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
+    unsetGameButtons(gameButtons, "Local game");
+    console.log("Tournament game WS connected");
+    try {
+      socket.send(JSON.stringify({
+        type: "InitGameRequest",
+        gameType: "Local game",
+        user: { id: user.id, name: user.nick },
+      }));
+      console.log("InitGameRequest sent");
+    } catch (e) {
+      console.error("Send error:", e);
+    }
+  }
+
+  function displayWinners(): void {
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    
+    displayChatMessage(i18next.t('tournament.complete'), 'success');
+    
+    for (const [player, wins] of sorted) {
+      const medal = wins === 0 ? '🥉' : wins === 1 ? '🥈' : '🥇 Champion:';
+      displayChatMessage( `${medal} ${player}: ${wins} wins`, 'info');
+    };
+  }
   
-  const tournamentUser: User_f = {
-    id: Date.now(),
-    name: matches[0].player1,
-  };
-
-  window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
-
-
-
-  console.log("Tournament game WS connected");
-  socket.send(JSON.stringify({
-      type: "InitGameRequest",
-      gameType: "Local game",
-      user: tournamentUser,
-    }));
-
-  socket.onerror = (err) => {
-    console.error("Tournament WS error:", err);
-  };
+  playNextMatch();
 }
+
+// ======================================================
 
 async function startTournament(socket: WebSocket,tournamentId: string): Promise<void> {
   const tournament = tournaments.find(t => t.id === tournamentId);
 
   if (!tournament) {
-    displayChatMessage('system', 'Tournament not found!', 'error');
+    displayChatMessage( 'Tournament not found!', 'error');
     return;
   }
 
@@ -506,78 +611,10 @@ async function startTournament(socket: WebSocket,tournamentId: string): Promise<
   await startTournamentWithCountdown(socket,tournamentId, matches);
 }
 
-// function advanceToNextMatch(socket: WebSocket ,tournamentId: string): void {
-//   const tournament = tournaments.find(t => t.id === tournamentId) as any;
-  
-//   if (!tournament || !tournament.matches) {
-//     displayChatMessage('system', 'Tournament data not found!', 'error');
-//     return;
-//   }
-
-//   tournament.currentMatchIndex++;
-
-//   if (tournament.currentMatchIndex >= tournament.matches.length) {
-//     // Tournament completed
-//     tournament.status = 'completed';
-//     TournamentActive = false;
-//     displayChatMessage('system',
-//       `🏆 Tournament "${tournament.name}" has been completed! 🏆`,
-//       'success'
-//     );
-//     return;
-//   }
-
-//   // Start next match
-//   const nextMatch = tournament.matches[tournament.currentMatchIndex];
-//   displayChatMessage('system',
-//     `🥊 NEXT MATCH: ${nextMatch.player1} vs ${nextMatch.player2}`,
-//     'info'
-//   );
-
-//   socket.send(JSON.stringify({
-//     type: "InitGameRequest",
-//     gameType: "Tournament",
-//     user: currentUser,
-//     tournamentId: tournament.id,
-//     currentMatch: {
-//       matchIndex: tournament.currentMatchIndex,
-//       player1: nextMatch.player1,
-//       player2: nextMatch.player2
-//     }
-//   }));
-// }
-
-// async function updateCurrentUser(): Promise<void> {
-//   await initCurrentUser();
-// }
-
-// document.addEventListener('DOMContentLoaded', async () => {
-//   await initTournamentDialog();
-
-//   setTimeout(() => {
-//     if (hasActiveTournaments()) {
-//       checkAndSuggestTournaments();
-//     }
-//   }, 500);
-// });
-
-
-// document.addEventListener('DOMContentLoaded', async () => {
-//   await initTournamentDialog();
-//   await initJoinTournament();
-
-//   setTimeout(() => {
-//     if (hasActiveTournaments()) {
-//       checkAndSuggestTournaments();
-//     }
-//   }, 500);
-// });
-
 export {
     joinSpecificTournament,
     hasActiveTournaments,
     checkAndSuggestTournaments,
     getTournamentsByStatus,
-    // updateCurrentUser,
     startTournament
 };
