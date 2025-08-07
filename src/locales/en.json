@@ -72,7 +72,18 @@
     "players": "Confirm you are not a robot...",
     "players_label": "Players",
     "cancel": "Cancel",
-    "create_btn": "Create Tournament"
+    "create_btn": "Create Tournament",
+    "sender": "system",
+    "created": "Tournament \"{{name}}\" created!",
+    "starting": "Tournament Starting In:",
+    "started": "🎮 Tournament \"{{name}}\" has started! 🎮",
+    "complete": "🏆 TOURNAMENT COMPLETE! 🏆",
+    "winner": "🏁 Game over! Winner: {{winner}}",
+    "match": "🥊 MATCH {{number}}: {{player1}} vs {{player2}}",
+    "not_found": "Tournament not found!",
+    "full": "Tournament is full!",
+    "not_ready": "Tournament is not ready to start. Need more players!",
+    "cannot_create": "You cannot create new tournament until active is not finished"
   },
   "2fa": {
     "title": "Enter two-factor authentication key",
