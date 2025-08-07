@@ -17,7 +17,12 @@ window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
     let userMap = new Map<number, string>();
     if (!socket || socket.readyState != socket.OPEN)
       socket = new WebSocket(`wss://${window.location.host}/ws-chat`);
-    window.addEventListener("pongLogoff", () => { socket.close(); })
+    window.addEventListener("pongLogoff", () => {
+      socket.close();
+      while (messages.firstChild) {
+        messages.removeChild(messages.firstChild);
+      }
+    })
 
     socket.addEventListener('open', () => {
 		console.debug("WebSocket (socket_c) connection established.");
