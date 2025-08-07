@@ -11,7 +11,7 @@ import { PongBackEngine }	from "../scenes/PongBackScene";
 import { PongBackScene }	from "../scenes/PongBackScene";
 import { PADDLE_STEP }				from "../defines/constants";
 import { animatePaddleToX } from "./paddleMovement";
-import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType } from "../defines/types";
+import type { InitGameRequest, WSMessage, User, InitGameSuccess, PlayerSide, GameType, PlayersNicks } from "../defines/types";
 import { AIOpponent } from "./aiOpponent";
 import { error } from "node:console";
 // import EventEmitter from "node:events";
@@ -36,7 +36,7 @@ export async function wsGamePlugin(server: FastifyInstance, options: WsGamePlugi
 				switch (msg.type) {
 				    // ✨✨✨✨✨✨✨✨✨✨✨✨
                 // case "Tournament":
-				// 		// 
+				// 		//
     			// 	break;
                     // ✨✨✨✨✨✨✨✨✨✨✨✨
 				case "InitGameRequest":
@@ -120,6 +120,9 @@ async function createRemoteGame(engine: PongBackEngine, newPlayer: User, socket:
 		addPlayerToGame(game, newPlayer, socket);
 	}
 	sendInitGameSuccess("Remote game", game.id, assignSide(game), socket);
+	if (game.players.length == 2) {
+		sendNicks(game.players, game.players[0].nick, game.players[1].nick);
+	}
 }
 
 // export async function createRemoteWithTwoPlayers(engine: PongBackEngine, playerA: User, playerB: User) {
@@ -132,6 +135,18 @@ async function createRemoteGame(engine: PongBackEngine, newPlayer: User, socket:
 // 	}
 // }
 
+function sendNicks(players: User[], nickLeft: string, nickRight: string) : void {
+	var msg: PlayersNicks = {
+		type: "PlayersNicks",
+		left: nickLeft,
+		right: nickRight
+	};
+
+	for (var i = 0; i < players.length; i++) {
+		players[i].gameSocket?.send(JSON.stringify(msg));
+	}
+}
+
 
 async function createAiGame(engine: PongBackEngine, newPlayer: User, socket: WebSocket) : Promise<void> {
 	const game = new PongBackScene(engine);
@@ -139,6 +154,7 @@ async function createAiGame(engine: PongBackEngine, newPlayer: User, socket: Web
 	addAiOpponent(game);
 	await game.enablePongPhysics();
 	sendInitGameSuccess("Versus AI", game.id, "left", socket);
+	sendNicks(game.players, game.players[0].nick, "AI");
 }
 
 function addPlayerToGame(game: PongBackScene, newPlayer: User, socket: WebSocket) : void {

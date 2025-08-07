@@ -8,7 +8,7 @@ import { Vector3 } from '@babylonjs/core';
 
 const	canvas = document.getElementById("pongCanvas") as HTMLCanvasElement;
 const	engine = new Engine(canvas, true);
-const	pongScene = new PongFrontScene(engine);
+export const	pongScene = new PongFrontScene(engine);
 const	gameButtons = initGameButtons();
 const	pongLogoff = new Event("pongLogoff");
 export var		socket: WebSocket;
@@ -36,6 +36,7 @@ pongScene.executeWhenReady(() => {
 	};
 	pongScene.registerBeforeRender(() => pongScene.applyMeshPositions(meshPositions));
 	pongScene.registerAfterRender(() => pongScene.sendPlayerInput(socket));
+	pongScene.hideNicks();
 })
 
 window.addEventListener("pongLogin", (e: CustomEventInit<User_f>) => {
@@ -77,6 +78,7 @@ function setGameInitListener(pongScene:  PongFrontScene, player: User) {
 }
 
 async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameSuccess) : Promise<void> {
+	pongScene.hideNicks();
 	pongScene.score = [0,0];
 	pongScene.updateScore(pongScene.score);
 	pongScene.side = opts.playerSide;
@@ -91,6 +93,9 @@ async function gameInit(pongScene: PongFrontScene, player: User, opts: InitGameS
 			const message: WSMessage = JSON.parse(event.data);
 
 			switch (message.type) {
+				case "PlayersNicks":
+					pongScene.showNicks(message.left, message.right);
+					break;
 				case "MeshPositions":
 					meshPositions = message;
 					break;

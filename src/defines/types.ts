@@ -86,6 +86,12 @@ export type InitGameRequest = {
 	// opponent: User
 };
 
+export type PlayersNicks = {
+	type: "PlayersNicks",
+	left: string,
+	right: string
+}
+
 export type InitGameSuccess = {
 	type: "InitGameSuccess",
 	gameType: GameType,
@@ -139,6 +145,7 @@ export type WSMessage =
 	| ChatMessage
 	| InitGameRequest
 	| InitGameSuccess
+	| PlayersNicks
 	| BallCollision
 	| ScoreUpdate
 	| GameOver
