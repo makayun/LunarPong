@@ -12,7 +12,7 @@ import { TournamentService }	from '../back/sqlib'
 
 const TrnmntSrv = new TournamentService();
 
-const SCORE_MAX = 1;
+const SCORE_MAX = 11;
 
 // import { endGameLog } from "../back/db";
 
