@@ -59,8 +59,7 @@
     "invite-chat": "Invite",
     "profile-chat": "Profile",
     "msg-input": "Type here..."
-  },
-  "tournament": {
+  },  "tournament": {
     "player1": "Player 1 Name",
     "player2": "Player 2 Name",
     "player3": "Player 3 Name",
@@ -83,7 +82,27 @@
     "not_found": "Tournament not found!",
     "full": "Tournament is full!",
     "not_ready": "Tournament is not ready to start. Need more players!",
-    "cannot_create": "You cannot create new tournament until active is not finished"
+    "cannot_create": "You cannot create new tournament until active is not finished",
+    "error_no_user": "Error: No user logged in!",
+    "all_fields_required": "All player name fields must be filled!",
+    "unique_names_required": "Player names must be unique!",
+    "created_for_players": "Tournament \"{{name}}\" created for {{count}} players!",
+    "waiting_tournaments": "{{count}} tournament(s) waiting for players. Click \"Join Tournament\" to see available options!",
+    "user_not_initialized": "User not initialized. Please refresh the page.",
+    "already_in_tournament": "You ({{user}}) are already in this tournament!",
+    "joined_successfully": "Successfully joined \"{{name}}\" as {{user}}! ({{current}}/{{total}} players)",
+    "tournament_full_ready": "Tournament \"{{name}}\" is now full and ready to start!",
+    "bracket_title": "Tournament Bracket: {{name}}",
+    "match_schedule": "Match Schedule:",
+    "match_info": "Match {{number}}:",
+    "start_tournament": "Start Tournament",
+    "countdown_title": "Tournament Starting In:",
+    "countdown_ready": "Get ready for the match!",
+    "countdown_start": "START!",
+    "wins_count": "{{count}} wins",
+    "medal_champion": "🥇 Champion:",
+    "medal_second": "🥈",
+    "medal_third": "🥉"
   },
   "2fa": {
     "title": "Enter two-factor authentication key",

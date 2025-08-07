@@ -3,7 +3,7 @@ import { user/*, socket*/ } from './game'
 import '../styles/output.css';
 import {  initGameButtons, setGameButtons, unsetGameButtons } from "./gameButtons";
 import type { User_f } from "../defines/types";
-import i18next from 'i18next';
+import i18next from './i18next';
 
 interface Tournament {
   id: string;
@@ -45,12 +45,11 @@ export async function initTournamentDialog(socket: WebSocket): Promise<void> {
 }
 
 function setupEventListeners(socket: WebSocket): void {
-  createBtn.addEventListener('click', openDialog);
-  closeBtn.addEventListener('click', (e: MouseEvent) => {
+  createBtn.addEventListener('click', openDialog);  closeBtn.addEventListener('click', (e: MouseEvent) => {
     if (e.target === cancelBtn) {
       if (!user || !user.id || !user.nick) {
       console.error("No valid user available!", user);
-      displayChatMessage( 'Error: No user logged in!', 'error');
+      displayChatMessage(i18next.t('tournament.error_no_user'), 'error');
       return;
       }  
       setGameButtons(gameButtons,socket, user);
@@ -61,7 +60,7 @@ function setupEventListeners(socket: WebSocket): void {
     if (e.target === cancelBtn) {
       if (!user || !user.id || !user.nick) {
       console.error("No valid user available!", user);
-      displayChatMessage( 'Error: No user logged in!', 'error');
+      displayChatMessage(i18next.t('tournament.error_no_user'), 'error');
       return;
       }  
       setGameButtons(gameButtons,socket, user);
@@ -80,13 +79,12 @@ function setupEventListeners(socket: WebSocket): void {
   //     closeDialog();
   //   }
   // });
-
   document.addEventListener('keydown', (e: KeyboardEvent) => {
     
     if (e.key === 'Escape' && dialog.classList.contains('active')) {
       if (!user || !user.id || !user.nick) {
       console.error("No valid user available!", user);
-      displayChatMessage( 'Error: No user logged in!', 'error');
+      displayChatMessage(i18next.t('tournament.error_no_user'), 'error');
       return;
       }  
       setGameButtons(gameButtons,socket, user);
@@ -173,10 +171,9 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
   const player1 = document.getElementById('player1') as HTMLInputElement;
   const player2 = document.getElementById('player2') as HTMLInputElement;
   const player3 = document.getElementById('player3') as HTMLInputElement;
-
   if (!player1.value || !player2.value || !player3.value) {
     console.error('Missing required data for tournament creation');
-    showNotificationMessage('All player name fields must be filled!');
+    showNotificationMessage(i18next.t('tournament.all_fields_required'));
     return;
   }
 
@@ -189,7 +186,7 @@ async function handleSubmitUpdated(socket: WebSocket,e: Event): Promise<void> {
   const uniquePlayers = new Set(players);
   if (uniquePlayers.size !== 3) {
     console.error('Player names must be unique');
-    showNotificationMessage('Player names must be unique!');
+    showNotificationMessage(i18next.t('tournament.unique_names_required'));
     return;
   }
 
@@ -266,7 +263,7 @@ function showSuccessMessage(data: { name: string; playerCount: number }): void {
   transition-transform duration-300 ease-out
   pointer-events-none
 `;
-  successDiv.textContent = `Tournament "${data.name}" created for ${data.playerCount} players!`;
+  successDiv.textContent = i18next.t('tournament.created_for_players', { name: data.name, count: data.playerCount });
 
   document.body.appendChild(successDiv);
 
@@ -313,7 +310,7 @@ function checkAndSuggestTournaments(): void {
 
   if (waitingTournaments.length > 0) {
     displayChatMessage(
-      `${waitingTournaments.length} tournament(s) waiting for players. Click "Join Tournament" to see available options!`,
+      i18next.t('tournament.waiting_tournaments', { count: waitingTournaments.length }),
       'info'
     );
   }
@@ -330,24 +327,24 @@ function getTournamentsByStatus(status: Tournament['status']): Tournament[] {
 async function joinSpecificTournament(socket: WebSocket,tournamentId: string): Promise<void> {
   if (!currentUser) {
     console.error('No current user set');
-    displayChatMessage( 'User not initialized. Please refresh the page.', 'error');
+    displayChatMessage(i18next.t('tournament.user_not_initialized'), 'error');
     return;
   }
 
   const tournament = tournaments.find(t => t.id === tournamentId);
 
   if (!tournament) {
-    displayChatMessage( 'Tournament not found!', 'error');
+    displayChatMessage(i18next.t('tournament.not_found'), 'error');
     return;
   }
 
   if (tournament.currentPlayers.includes(currentUser)) {
-    displayChatMessage( `You (${currentUser}) are already in this tournament!`, 'warning');
+    displayChatMessage(i18next.t('tournament.already_in_tournament', { user: currentUser }), 'warning');
     return;
   }
 
   if (tournament.currentPlayers.length >= tournament.playerCount) {
-    displayChatMessage( 'Tournament is full!', 'error');
+    displayChatMessage(i18next.t('tournament.full'), 'error');
     return;
   }
 
@@ -358,13 +355,18 @@ async function joinSpecificTournament(socket: WebSocket,tournamentId: string): P
   }
 
   displayChatMessage(
-    `Successfully joined "${tournament.name}" as ${currentUser}! (${tournament.currentPlayers.length}/${tournament.playerCount} players)`,
+    i18next.t('tournament.joined_successfully', { 
+      name: tournament.name, 
+      user: currentUser, 
+      current: tournament.currentPlayers.length, 
+      total: tournament.playerCount 
+    }),
     'success'
   );
 
   if (tournament.status === 'full') {
     displayChatMessage(
-      `Tournament "${tournament.name}" is now full and ready to start!`,
+      i18next.t('tournament.tournament_full_ready', { name: tournament.name }),
       'success'
     );
     showTournamentBracket(socket,tournament);
@@ -401,20 +403,19 @@ function showTournamentBracket(socket: WebSocket,tournament: Tournament): void {
     { player1: players[1], player2: players[2] },
     { player1: players[2], player2: players[0] }
   ];
-
   bracketDiv.innerHTML = `
     <div class="bracket-header">
-      <h3>Tournament Bracket: ${tournament.name}</h3>
+      <h3>${i18next.t('tournament.bracket_title', { name: tournament.name })}</h3>
     </div>
     <div class="tournament-matches">
-      <h4>Match Schedule:</h4>
+      <h4>${i18next.t('tournament.match_schedule')}</h4>
       ${matches.map((match, index) =>
         `<div class="match-info">
-          <strong>Match ${index + 1}:</strong> ${match.player1} vs ${match.player2}
+          <strong>${i18next.t('tournament.match_info', { number: index + 1 })}</strong> ${match.player1} vs ${match.player2}
         </div>`
       ).join('')}
     </div>
-    <button class="start-tournament-btn">Start Tournament</button>
+    <button class="start-tournament-btn">${i18next.t('tournament.start_tournament')}</button>
   `;
 
   appendToChat(bracketDiv);
@@ -451,14 +452,13 @@ async function startTournamentWithCountdown(socket: WebSocket,tournamentId: stri
 function showCountdown(): Promise<void> {
   return new Promise((resolve) => {
     let countdown = 5;
-    
-    const countdownDiv = document.createElement('div');
+      const countdownDiv = document.createElement('div');
     countdownDiv.className = 'countdown-message';
     countdownDiv.innerHTML = `
       <div class="countdown-content">
-        <h3>Tournament Starting In:</h3>
+        <h3>${i18next.t('tournament.countdown_title')}</h3>
         <div class="countdown-number">${countdown}</div>
-        <p>Get ready for the match!</p>
+        <p>${i18next.t('tournament.countdown_ready')}</p>
       </div>
     `;
 
@@ -481,9 +481,8 @@ function showCountdown(): Promise<void> {
 
       if (countdown <= 0) {
         clearInterval(countdownInterval);
-        
-        if (numberElement) {
-          numberElement.textContent = 'START!';
+          if (numberElement) {
+          numberElement.textContent = i18next.t('tournament.countdown_start');
           numberElement.style.color = '#2ed573';
           numberElement.style.transform = 'scale(1.5)';
         }
@@ -555,12 +554,11 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
       }),
       'info'
     );
-    await showCountdown();
-    if (!user || !user.id || !user.nick) {
+    await showCountdown();    if (!user || !user.id || !user.nick) {
       console.error("No valid user available!", user);
-      displayChatMessage( 'Error: No user logged in!', 'error');
+      displayChatMessage(i18next.t('tournament.error_no_user'), 'error');
       return;
-    }    
+    }
 
     window.dispatchEvent(new CustomEvent('pongLogin', { detail: tournamentUser }));
     unsetGameButtons(gameButtons, "Local game");
@@ -576,15 +574,14 @@ function startRoundsWithEventListener(socket: WebSocket, tournament: Tournament,
       console.error("Send error:", e);
     }
   }
-
   function displayWinners(): void {
     const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
     
     displayChatMessage(i18next.t('tournament.complete'), 'success');
     
     for (const [player, wins] of sorted) {
-      const medal = wins === 0 ? '🥉' : wins === 1 ? '🥈' : '🥇 Champion:';
-      displayChatMessage( `${medal} ${player}: ${wins} wins`, 'info');
+      const medal = wins === 0 ? i18next.t('tournament.medal_third') : wins === 1 ? i18next.t('tournament.medal_second') : i18next.t('tournament.medal_champion');
+      displayChatMessage(`${medal} ${player}: ${i18next.t('tournament.wins_count', { count: wins })}`, 'info');
     };
   }
   
@@ -597,7 +594,7 @@ async function startTournament(socket: WebSocket,tournamentId: string): Promise<
   const tournament = tournaments.find(t => t.id === tournamentId);
 
   if (!tournament) {
-    displayChatMessage( 'Tournament not found!', 'error');
+    displayChatMessage(i18next.t('tournament.not_found'), 'error');
     return;
   }
 
