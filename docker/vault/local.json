@@ -3,11 +3,11 @@
     "listener": [{"tcp": {"address": "0.0.0.0:8200", "tls_disable": true}}],
     "seal": {
         "gcpckms": {
-            "credentials": "/vault/config/vault-gcp-creds.json",
+            "credentials": "/vault/config/pong-463310-48ce985acabb.json",
             "project": "pong-463310",
             "region": "global",
-            "key_ring": "vault-keyring",
-            "crypto_key": "vault-key"
+            "key_ring": "vault-unseal-keyring",
+            "crypto_key": "unseal-keyring"
         }
     },
     "storage": {"file": {"path": "/vault/file"}},  

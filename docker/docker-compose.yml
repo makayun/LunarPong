@@ -11,10 +11,10 @@ services:
     #   - GOOGLE_APPLICATION_CREDENTIALS=/vault/config/vault-gcp-creds.json
     environment:
       - VAULT_ADDR=http://vault:8200
-      - VAULT_TOKEN=hvs.gjND6NGC8I1zoYCUy9RDyzVT
+      - VAULT_TOKEN=hvs.OkNusKMr676jFa6zAb8GFDeA
       - VAULT_LOG_LEVEL=debug
-      - GOOGLE_APPLICATION_CREDENTIALS=/vault/config/vault-gcp-creds.json
-      - VAULT_LOCAL_CONFIG={\"api_addr\":\"http://vault:8200\",\"listener\":[{\"tcp\":{\"address\":\"0.0.0.0:8200\",\"tls_disable\":true}}],\"seal\":{\"gcpckms\":{\"credentials\":\"/vault/config/vault-gcp-creds.json\",\"project\":\"pong-463310\",\"region\":\"global\",\"key_ring\":\"vault-keyring\",\"crypto_key\":\"vault-key\"}},\"storage\":{\"file\":{\"path\":\"/vault/file\"}},\"default_lease_ttl\":\"168h\",\"max_lease_ttl\":\"720h\",\"ui\":true}
+      # - GOOGLE_APPLICATION_CREDENTIALS=/vault/config/vault-gcp-creds.json
+      # - VAULT_LOCAL_CONFIG={\"api_addr\":\"http://vault:8200\",\"listener\":[{\"tcp\":{\"address\":\"0.0.0.0:8200\",\"tls_disable\":true}}],\"seal\":{\"gcpckms\":{\"credentials\":\"/vault/config/vault-gcp-creds.json\",\"project\":\"pong-463310\",\"region\":\"global\",\"key_ring\":\"vault-keyring\",\"crypto_key\":\"vault-key\"}},\"storage\":{\"file\":{\"path\":\"/vault/file\"}},\"default_lease_ttl\":\"168h\",\"max_lease_ttl\":\"720h\",\"ui\":true}
 
     ports:
       - "8200:8200"
@@ -40,8 +40,10 @@ services:
       - NODE_ENV=developmen
       # - NODE_ENV=production
       - DATABASE_PATH=/var/sqlite_data/fp.db
+      - FT_REDIRECT_URI=https://localhost:8443/api/auth/ft/callback
+      - GOOGLE_REDIRECT_URI=https://localhost:8443/api/auth/google/callback
       # УДАЛИТЬ ТОКЕН ПРИ ЗАПУСКЕ В GIT !!!!!
-      - VAULT_TOKEN=hvs.gjND6NGC8I1zoYCUy9RDyzVT
+      - VAULT_TOKEN=hvs.OkNusKMr676jFa6zAb8GFDeA
     volumes:
       # - fp_data:/var/fp_data/
       - sqlite_data:/var/sqlite_data/

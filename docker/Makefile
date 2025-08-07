@@ -70,7 +70,13 @@ mc:
 	@echo "run interactive session on "$(ARGUMENTS)".";
 	@docker exec -it $(ARGUMENTS) mc
 
+rm:
+	@echo "delete container & image of "$(ARGUMENTS)".";
+	docker container stop $(ARGUMENTS)
+	docker container rm $(ARGUMENTS)
+	docker image rm docker-$(ARGUMENTS)
+
 help:
 	@echo "Help will here!";
 
-.PHONY:	all build prepare down re clean env bash sh mc help
+.PHONY:	all build prepare down re clean env bash sh rm mc help

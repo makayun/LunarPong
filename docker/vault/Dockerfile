@@ -33,9 +33,10 @@ FROM hashicorp/vault
 #   \"ui\": true\
 # }"
 # Copy the GCP credentials file into the container
-RUN apk add curl
-COPY --chmod=0444 vault-gcp-creds.json /vault/config/vault-gcp-creds.json
-# COPY --chmod=0444 local.json /vault/config/local.json
+RUN apk add curl mc
+# COPY --chmod=0444 vault-gcp-creds.json /vault/config/vault-gcp-creds.json
+COPY --chmod=0444 pong-463310-48ce985acabb.json /vault/config/pong-463310-48ce985acabb.json
+COPY --chmod=0444 local.json /vault/config/local.json
 
 
 # LABEL keep=true
