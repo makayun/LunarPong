@@ -25,7 +25,9 @@
     "name": "Nombre de usuario",
     "label_password": "Contraseña",
     "password": "Contraseña",
-    "button": "Iniciar sesión"
+    "button": "Iniciar sesión",
+    "google-login": "Iniciar sesión con GOOGLE",
+    "42-login": "Iniciar sesión con 42"
   },
   "logged": {
     "title": "¡Hola, {{name}}! (id: {{id}})"

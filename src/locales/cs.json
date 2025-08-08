@@ -25,7 +25,9 @@
     "name": "Uživatelské jméno",
     "label_password": "Heslo",
     "password": "Heslo",
-    "button": "Přihlásit se"
+    "button": "Přihlásit se",
+    "google-login": "Přihlásit se přes GOOGLE",
+    "42-login": "Přihlásit se přes 42"
   },
   "logged": {
     "title": "Ahoj, {{name}}! (id: {{id}})"

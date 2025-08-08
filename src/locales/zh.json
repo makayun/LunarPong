@@ -25,7 +25,9 @@
     "name": "用户名",
     "label_password": "密码",
     "password": "密码",
-    "button": "登录"
+    "button": "登录",
+    "google-login": "通过GOOGLE登录",
+    "42-login": "通过42登录"
   },
   "logged": {
     "title": "你好，{{name}}！(id: {{id}})"

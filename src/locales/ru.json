@@ -26,7 +26,9 @@
     "name": "Имя пользователя",
     "label_password": "Пароль",
     "password": "Пароль",
-    "button": "Войти"
+    "button": "Войти",
+    "google-login": "Войти через GOOGLE",
+    "42-login": "Войти через 42"
   },
   "logged": {
     "title": "Привет, {{name}}! (id: {{id}})"

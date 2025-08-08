@@ -25,7 +25,9 @@
     "name": "Username",
     "label_password": "Password",
     "password": "Password",
-    "button": "Login"
+    "button": "Login",
+    "google-login": "Login through GOOGLE",
+    "42-login": "Login through 42"
   },
   "logged": {
     "title": "Hello, {{name}}! (id: {{id}})"
