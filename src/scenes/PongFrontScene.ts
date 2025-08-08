@@ -168,12 +168,26 @@ export class PongFrontScene extends PongBaseScene {
 		var rightText = this.nickRight.getChildByName("nickTextright");
 
 		if (leftText instanceof TextBlock && rightText instanceof TextBlock) {
-			leftText.text = left;
-			rightText.text = right;
+			var shortL = shortenNick(left);
+			var shortR = shortenNick(right);
+			leftText.text = shortL;
+			rightText.text = shortR;
 			this.nickLeft.isVisible = true;
 			this.nickRight.isVisible = true;
 		}
 	}
+}
+
+function shortenNick(inNick: string): string {
+    var splitted: string[] = inNick.split(' ');
+    var result: string = splitted[0];
+    for (var i: number = 1; i < splitted.length; i++) {
+        result = result + (splitted[i][0] || "");
+    }
+    if (result.length > 10) {
+        result = result.slice(0, 10) + '.';
+    }
+    return result;
 }
 
 
